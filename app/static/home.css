@@ -1,0 +1,37 @@
+.stApp {
+    background-color: #000000;
+}
+
+header[data-testid="stHeader"] {
+    background-color: #000000;
+}
+
+section[data-testid="stSidebar"] {
+    display: none;
+}
+
+[data-testid="collapsedControl"] {
+    display: none;
+}
+
+div[data-testid="stToolbar"] {
+    display: none;
+}
+
+footer {
+    visibility: hidden;
+}
+
+.main .block-container {
+    padding-top: 22vh;
+    max-width: 100%;
+}
+
+.splash {
+    color: #ffffff;
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    text-align: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.04em;
+    margin: 0;
+}

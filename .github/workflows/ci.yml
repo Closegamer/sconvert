@@ -19,3 +19,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: rhysd/actionlint@v1.7.12
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: docker compose config & build
+        env:
+          POSTGRES_PASSWORD: ci_not_a_real_secret
+        run: |
+          docker compose config
+          docker compose build
