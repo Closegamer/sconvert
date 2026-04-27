@@ -1,8 +1,19 @@
 services:
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app:
+        condition: service_started
+    restart: unless-stopped
+
   app:
     build: .
     ports:
-      - "${STREAMLIT_PORT:-8501}:8501"
+      - "127.0.0.1:${STREAMLIT_PORT:-8501}:8501"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-sconvert}:${POSTGRES_PASSWORD:-dev_only_change_me}@db:5432/${POSTGRES_DB:-sconvert}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
