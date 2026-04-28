@@ -1,9 +1,9 @@
 import streamlit as st
 
 
-def render_about() -> None:
-    st.markdown('<p class="title">О проекте</p>', unsafe_allow_html=True)
+def render_about(texts: dict[str, str]) -> None:
+    st.markdown(f'<p class="title">{texts["about.title"]}</p>', unsafe_allow_html=True)
     st.markdown(
-        '<p class="subtitle">sconvert — проект конвертации форматов и единиц с упором на простоту и расширяемость.</p>',
+        f'<p class="subtitle">{texts["about.subtitle"]}</p>',
         unsafe_allow_html=True,
     )

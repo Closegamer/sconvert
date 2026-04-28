@@ -1,9 +1,9 @@
 import streamlit as st
 
 
-def render_units() -> None:
-    st.markdown('<p class="title">Единицы измерения</p>', unsafe_allow_html=True)
+def render_units(texts: dict[str, str]) -> None:
+    st.markdown(f'<p class="title">{texts["units.title"]}</p>', unsafe_allow_html=True)
     st.markdown(
-        '<p class="subtitle">Раздел в разработке. Здесь будет конвертер единиц.</p>',
+        f'<p class="subtitle">{texts["units.subtitle"]}</p>',
         unsafe_allow_html=True,
     )

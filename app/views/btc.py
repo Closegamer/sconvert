@@ -1,9 +1,9 @@
 import streamlit as st
 
 
-def render_btc() -> None:
-    st.markdown('<p class="title">Биткоин (BTC)</p>', unsafe_allow_html=True)
+def render_btc(texts: dict[str, str]) -> None:
+    st.markdown(f'<p class="title">{texts["btc.title"]}</p>', unsafe_allow_html=True)
     st.markdown(
-        '<p class="subtitle">Раздел в разработке. Здесь будет конвертер и инструменты для BTC.</p>',
+        f'<p class="subtitle">{texts["btc.subtitle"]}</p>',
         unsafe_allow_html=True,
     )
