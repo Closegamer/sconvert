@@ -51,6 +51,15 @@ footer {
     top: 0.55rem;
     left: 0.55rem;
     z-index: 1400;
+    width: max-content;
+  }
+
+  .st-key-mobile_trigger div[data-testid="stHorizontalBlock"] {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    flex-wrap: nowrap;
+    white-space: nowrap;
   }
 
   .st-key-mobile_trigger div[data-testid="stButton"] > button {
@@ -66,6 +75,25 @@ footer {
     color: var(--text) !important;
     font-size: 1.05rem;
     line-height: 1;
+  }
+
+  .mobile-trigger-logo {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1;
+    white-space: nowrap;
+    margin-left: 0;
+    position: fixed;
+    top: 1.6rem;
+    left: 3.35rem;
+    transform: translateY(-50%);
+  }
+
+  @media (max-width: 420px) {
+    .mobile-trigger-logo {
+      font-size: 0.98rem;
+    }
   }
 
   .st-key-mobile_drawer_overlay,

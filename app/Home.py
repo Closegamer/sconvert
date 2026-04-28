@@ -34,9 +34,13 @@ view_to_label = {
 label_to_view = {value: key for key, value in view_to_label.items()}
 
 with st.container(key="mobile_trigger"):
-    if st.button("✕" if st.session_state.mobile_menu_open else "☰", key="mobile_trigger_btn"):
-        st.session_state.mobile_menu_open = not st.session_state.mobile_menu_open
-        st.rerun()
+    burger_col, logo_col = st.columns([0.55, 4.45], vertical_alignment="center")
+    with burger_col:
+        if st.button("✕" if st.session_state.mobile_menu_open else "☰", key="mobile_trigger_btn"):
+            st.session_state.mobile_menu_open = not st.session_state.mobile_menu_open
+            st.rerun()
+    with logo_col:
+        st.markdown('<span class="mobile-trigger-logo">sconvert</span>', unsafe_allow_html=True)
 
 if st.session_state.mobile_menu_open:
     with st.container(key="mobile_drawer_overlay"):
