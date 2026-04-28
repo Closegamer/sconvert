@@ -46,27 +46,27 @@ if st.session_state.mobile_menu_open:
     with st.container(key="mobile_drawer_overlay"):
         st.markdown("")
     with st.container(key="mobile_drawer"):
-        drawer_use_english = st.toggle(
-            "ENG",
-            value=st.session_state.lang == "en",
-            key="mobile_drawer_lang",
-            help=f'{texts["lang.ru"]} / {texts["lang.en"]}',
-        )
         selected_mobile_label = st.radio(
             "menu",
             options=list(view_to_label.values()),
             index=["home", "units", "files", "btc", "about"].index(st.session_state.view),
             key="mobile_drawer_menu",
         )
-        selected_drawer_lang = "en" if drawer_use_english else "ru"
-        if selected_drawer_lang != st.session_state.lang:
-            st.session_state.lang = selected_drawer_lang
-            st.rerun()
-
         selected_mobile_view = label_to_view.get(selected_mobile_label, st.session_state.view)
         if selected_mobile_view != st.session_state.view:
             st.session_state.view = selected_mobile_view
             st.session_state.mobile_menu_open = False
+            st.rerun()
+
+        drawer_use_english = st.toggle(
+            " ",
+            value=st.session_state.lang == "en",
+            key="mobile_drawer_lang",
+            help=f'{texts["lang.ru"]}/{texts["lang.en"]}',
+        )
+        selected_drawer_lang = "en" if drawer_use_english else "ru"
+        if selected_drawer_lang != st.session_state.lang:
+            st.session_state.lang = selected_drawer_lang
             st.rerun()
 
 st.session_state.view = render_header(st.session_state.view, st.session_state.lang, texts)

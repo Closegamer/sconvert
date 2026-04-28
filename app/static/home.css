@@ -96,9 +96,7 @@ footer {
     }
   }
 
-  .st-key-mobile_drawer_overlay,
-  .st-key-mobile_drawer_overlay > div,
-  .st-key-mobile_drawer_overlay > div > div {
+  .st-key-mobile_drawer_overlay {
     display: block !important;
     position: fixed;
     inset: 0;
@@ -106,9 +104,7 @@ footer {
     z-index: 1300;
   }
 
-  .st-key-mobile_drawer,
-  .st-key-mobile_drawer > div,
-  .st-key-mobile_drawer > div > div {
+  .st-key-mobile_drawer {
     display: block !important;
     position: fixed;
     top: 0;
@@ -122,9 +118,34 @@ footer {
     overflow-y: auto;
   }
 
+  .st-key-mobile_drawer > div,
+  .st-key-mobile_drawer > div > div,
+  .st-key-mobile_drawer div[data-testid="stVerticalBlock"] {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
   .st-key-mobile_drawer label,
   .st-key-mobile_drawer p {
     color: var(--muted) !important;
+  }
+
+  .st-key-mobile_drawer div[data-testid="stRadio"] > div {
+    gap: 0.6rem !important;
+  }
+
+  .st-key-mobile_drawer div[data-testid="stRadio"] [role="radiogroup"] > label:first-child {
+    margin-top: 0.75rem !important;
+  }
+
+  .st-key-mobile_drawer div[data-testid="stCheckbox"] {
+    margin-top: 0.6rem !important;
+  }
+
+  .st-key-mobile_drawer div[data-testid="stRadio"] label {
+    font-size: 1.15rem !important;
+    line-height: 1.3 !important;
   }
 }
 
@@ -250,6 +271,12 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
 
 [data-testid="stTooltipIcon"] svg {
   margin-top: 4px !important;
+}
+
+[role="tooltip"],
+[data-testid="stTooltipContent"] {
+  white-space: nowrap !important;
+  max-width: max-content !important;
 }
 
 @media (max-width: 860px) {
