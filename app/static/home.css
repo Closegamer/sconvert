@@ -102,45 +102,50 @@ div[data-testid="stMainBlockContainer"] > div:first-child {
   letter-spacing: 0.01em;
 }
 
-div[data-testid="stButton"] {
+div[data-testid="stSegmentedControl"] {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
+  width: 100%;
+  margin: 0.15rem 0 0.25rem;
 }
 
-div[data-testid="stButton"] > button {
-  min-height: 2.15rem;
-  height: auto !important;
-  width: 100%;
-  padding: 0 0.9rem !important;
-  border-radius: 0.5rem !important;
-  border: 1px solid var(--btn-border) !important;
-  background: linear-gradient(180deg, var(--btn-bg-top) 0%, var(--panel) 100%) !important;
+div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] {
+  display: flex;
+  gap: 0.45rem !important;
+  flex-wrap: nowrap !important;
+  justify-content: center !important;
+  width: max-content;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button {
+  min-height: 2rem;
+  padding: 0.28rem 0.75rem;
+  border-radius: 0.48rem;
+  border: 1px solid transparent;
   color: var(--text) !important;
   text-decoration: none;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  white-space: normal;
-  word-break: normal;
-  overflow-wrap: normal;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  line-height: 1.15;
-  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.1;
+  background: transparent;
+  transition: border-color 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
 }
 
-div[data-testid="stButton"] > button:hover {
-  border-color: var(--btn-border-hover) !important;
+div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button:hover {
+  border-color: var(--btn-border-hover);
+  color: var(--text) !important;
+  text-shadow: 0 0 8px var(--brand-glow);
 }
 
-div[data-testid="stButton"] > button[kind="primary"] {
-  border-color: var(--btn-border-hover) !important;
-  background: linear-gradient(180deg, var(--accent-top) 0%, var(--accent) 100%) !important;
-  color: var(--accent-text) !important;
-}
-
-@media (min-width: 960px) {
-  div[data-testid="stButton"] > button {
-    white-space: nowrap !important;
-  }
+div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-pressed="true"] {
+  border-color: var(--btn-border-hover);
+  background: transparent;
+  color: var(--text) !important;
+  font-weight: 600;
 }
