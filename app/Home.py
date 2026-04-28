@@ -6,7 +6,7 @@ st.set_page_config(
     page_title="sconvert",
     layout="centered",
     initial_sidebar_state="collapsed",
-    menu_items={"1": None, "2": None, "3": None},
+    menu_items={"Get help": None, "Report a bug": None, "About": None},
 )
 
 _css_path = Path(__file__).resolve().parent / "static" / "home.css"
