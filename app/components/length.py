@@ -88,17 +88,15 @@ def render_length_converter(texts: dict[str, str]) -> None:
     if needs_sync:
         _sync_length_inputs_from_base()
 
-    st.markdown(f'<p class="subtitle">{texts["units.length.title"]}</p>', unsafe_allow_html=True)
-    st.markdown('<div class="subsection-divider"></div>', unsafe_allow_html=True)
-
-    left_col, right_col = st.columns(2, gap="small")
-    columns = [left_col, right_col]
-    for idx, (unit_code, label_key, _factor) in enumerate(LENGTH_UNITS):
-        with columns[idx % 2]:
-            st.text_input(
-                texts[label_key],
-                key=f"units_length_{unit_code}",
-            )
+    with st.expander(texts["units.length.title"], expanded=True):
+        left_col, right_col = st.columns(2, gap="small")
+        columns = [left_col, right_col]
+        for idx, (unit_code, label_key, _factor) in enumerate(LENGTH_UNITS):
+            with columns[idx % 2]:
+                st.text_input(
+                    texts[label_key],
+                    key=f"units_length_{unit_code}",
+                )
     st.session_state.units_length_last_inputs = {
         code: st.session_state.get(f"units_length_{code}", "") for code, _k, _f in LENGTH_UNITS
     }
