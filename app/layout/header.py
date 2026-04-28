@@ -17,30 +17,33 @@ def render_header(current_view: str, current_lang: str, texts: dict[str, str]) -
         view_to_label["btc"],
         view_to_label["about"],
     ]
+    selected_view = current_view
+
     default_by_view = {"home": 0, "units": 1, "files": 2, "btc": 3, "about": 4}
     default_index = default_by_view.get(current_view, 0)
-    _left_spacer, menu_col, lang_col = st.columns([0.6, 8.2, 1.2], vertical_alignment="center")
-    with menu_col:
-        selected_label = st.segmented_control(
-            "menu",
-            options=options,
-            default=options[default_index],
-            label_visibility="collapsed",
-        )
+    with st.container(key="desktop_nav"):
+        _left_spacer, menu_col, lang_col = st.columns([0.6, 8.2, 1.2], vertical_alignment="center")
+        with menu_col:
+            selected_label = st.segmented_control(
+                "menu",
+                options=options,
+                default=options[default_index],
+                label_visibility="collapsed",
+            )
 
-    with lang_col:
-        use_english = st.toggle(
-            " ",
-            value=current_lang == "en",
-            key="lang_switch",
-            help=f'{texts["lang.ru"]} / {texts["lang.en"]}',
-        )
+        with lang_col:
+            use_english = st.toggle(
+                " ",
+                value=current_lang == "en",
+                key="lang_switch",
+                help=f'{texts["lang.ru"]} / {texts["lang.en"]}',
+            )
     selected_lang = "en" if use_english else "ru"
     if selected_lang != current_lang:
         st.session_state.lang = selected_lang
         st.rerun()
 
-    selected_view = label_to_view.get(selected_label, current_view)
+    selected_view = label_to_view.get(selected_label, selected_view)
     if selected_view != current_view:
         st.session_state.view = selected_view
         st.rerun()

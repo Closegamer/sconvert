@@ -19,8 +19,51 @@ if "view" not in st.session_state or st.session_state.view not in {"home", "unit
     st.session_state.view = "home"
 if "lang" not in st.session_state or st.session_state.lang not in {"ru", "en"}:
     st.session_state.lang = "ru"
+if "mobile_menu_open" not in st.session_state:
+    st.session_state.mobile_menu_open = False
 
 texts = RU_TEXTS if st.session_state.lang == "ru" else EN_TEXTS
+
+view_to_label = {
+    "home": texts["nav.home"],
+    "units": texts["nav.units"],
+    "files": texts["nav.files"],
+    "btc": texts["nav.btc"],
+    "about": texts["nav.about"],
+}
+label_to_view = {value: key for key, value in view_to_label.items()}
+
+with st.container(key="mobile_trigger"):
+    if st.button("✕" if st.session_state.mobile_menu_open else "☰", key="mobile_trigger_btn"):
+        st.session_state.mobile_menu_open = not st.session_state.mobile_menu_open
+        st.rerun()
+
+if st.session_state.mobile_menu_open:
+    with st.container(key="mobile_drawer_overlay"):
+        st.markdown("")
+    with st.container(key="mobile_drawer"):
+        drawer_use_english = st.toggle(
+            "ENG",
+            value=st.session_state.lang == "en",
+            key="mobile_drawer_lang",
+            help=f'{texts["lang.ru"]} / {texts["lang.en"]}',
+        )
+        selected_mobile_label = st.radio(
+            "menu",
+            options=list(view_to_label.values()),
+            index=["home", "units", "files", "btc", "about"].index(st.session_state.view),
+            key="mobile_drawer_menu",
+        )
+        selected_drawer_lang = "en" if drawer_use_english else "ru"
+        if selected_drawer_lang != st.session_state.lang:
+            st.session_state.lang = selected_drawer_lang
+            st.rerun()
+
+        selected_mobile_view = label_to_view.get(selected_mobile_label, st.session_state.view)
+        if selected_mobile_view != st.session_state.view:
+            st.session_state.view = selected_mobile_view
+            st.session_state.mobile_menu_open = False
+            st.rerun()
 
 st.session_state.view = render_header(st.session_state.view, st.session_state.lang, texts)
 

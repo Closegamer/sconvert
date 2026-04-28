@@ -22,12 +22,82 @@ header[data-testid="stHeader"] {
   background: var(--bg);
 }
 
-header[data-testid="stHeader"],
-section[data-testid="stSidebar"],
-[data-testid="collapsedControl"],
 div[data-testid="stToolbar"],
 footer {
   display: none;
+}
+
+@media (min-width: 861px) {
+  header[data-testid="stHeader"],
+  section[data-testid="stSidebar"],
+  [data-testid="collapsedControl"],
+  .st-key-mobile_trigger,
+  .st-key-mobile_drawer_overlay,
+  .st-key-mobile_drawer {
+    display: none !important;
+  }
+}
+
+@media (max-width: 860px) {
+  header[data-testid="stHeader"],
+  section[data-testid="stSidebar"],
+  [data-testid="collapsedControl"] {
+    display: none !important;
+  }
+
+  .st-key-mobile_trigger {
+    display: block !important;
+    position: fixed;
+    top: 0.55rem;
+    left: 0.55rem;
+    z-index: 1400;
+  }
+
+  .st-key-mobile_trigger div[data-testid="stButton"] > button {
+    width: 2.1rem;
+    min-width: 2.1rem;
+    height: 2.1rem;
+    min-height: 2.1rem;
+    margin-left: 3px !important;
+    padding: 0 !important;
+    border: 1px solid var(--btn-border) !important;
+    border-radius: 0.45rem !important;
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
+  .st-key-mobile_drawer_overlay,
+  .st-key-mobile_drawer_overlay > div,
+  .st-key-mobile_drawer_overlay > div > div {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 1300;
+  }
+
+  .st-key-mobile_drawer,
+  .st-key-mobile_drawer > div,
+  .st-key-mobile_drawer > div > div {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(80vw, 340px);
+    height: 100vh;
+    background: var(--bg);
+    border-right: 1px solid var(--line);
+    z-index: 1350;
+    padding: 0.9rem 0.75rem 1rem;
+    overflow-y: auto;
+  }
+
+  .st-key-mobile_drawer label,
+  .st-key-mobile_drawer p {
+    color: var(--muted) !important;
+  }
 }
 
 .main .block-container {
@@ -148,4 +218,21 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
   background: transparent;
   color: var(--text) !important;
   font-weight: 600;
+}
+
+[data-testid="stTooltipIcon"] svg {
+  margin-top: 4px !important;
+}
+
+@media (max-width: 860px) {
+  .st-key-desktop_nav,
+  .st-key-desktop_nav > div,
+  .st-key-desktop_nav > div > div {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
 }
