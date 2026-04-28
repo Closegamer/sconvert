@@ -183,6 +183,12 @@ div[data-testid="stMainBlockContainer"] > div:first-child {
   margin: 0.25rem 0 0.8rem;
 }
 
+.subsection-divider {
+  width: 80%;
+  margin: 0.25rem auto 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
 .splash {
   margin-top: 20vh;
   color: var(--text);

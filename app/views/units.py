@@ -1,9 +1,5 @@
-import streamlit as st
+from components import render_length_converter
 
 
 def render_units(texts: dict[str, str]) -> None:
-    st.markdown(f'<p class="title">{texts["units.title"]}</p>', unsafe_allow_html=True)
-    st.markdown(
-        f'<p class="subtitle">{texts["units.subtitle"]}</p>',
-        unsafe_allow_html=True,
-    )
+    render_length_converter(texts)
