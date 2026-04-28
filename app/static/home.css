@@ -9,9 +9,15 @@
   --btn-border-hover: #4bd67f;
   --btn-bg-top: #112116;
   --brand-glow: rgba(99, 255, 154, 0.15);
+  --accent-top: #1bbd58;
+  --accent-text: #04210f;
 }
 
+html,
+body,
 .stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stAppViewContainer"] > .main,
 header[data-testid="stHeader"] {
   background: var(--bg);
 }
@@ -98,18 +104,43 @@ div[data-testid="stMainBlockContainer"] > div:first-child {
 
 div[data-testid="stButton"] {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 div[data-testid="stButton"] > button {
   min-height: 2.15rem;
+  height: auto !important;
+  width: 100%;
   padding: 0 0.9rem !important;
   border-radius: 0.5rem !important;
   border: 1px solid var(--btn-border) !important;
   background: linear-gradient(180deg, var(--btn-bg-top) 0%, var(--panel) 100%) !important;
   color: var(--text) !important;
+  text-decoration: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  line-height: 1.15;
+  font-size: 0.95rem;
 }
 
 div[data-testid="stButton"] > button:hover {
   border-color: var(--btn-border-hover) !important;
+}
+
+div[data-testid="stButton"] > button[kind="primary"] {
+  border-color: var(--btn-border-hover) !important;
+  background: linear-gradient(180deg, var(--accent-top) 0%, var(--accent) 100%) !important;
+  color: var(--accent-text) !important;
+}
+
+@media (min-width: 960px) {
+  div[data-testid="stButton"] > button {
+    white-space: nowrap !important;
+  }
 }
