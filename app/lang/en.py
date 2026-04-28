@@ -14,6 +14,6 @@ TEXTS = {
     "btc.title": "Bitcoin (BTC)",
     "btc.subtitle": "Section in progress. BTC converter and tools will appear here.",
     "about.title": "About",
-    "about.subtitle": "sconvert is a conversion project focused on simplicity and scalability.",
+    "about.subtitle": "This project is an attempt to bring together scattered tools for converting data, units, files, and more in one place. Hopefully, it makes your life a little more comfortable.",
     "footer.copy": "writtenBy('Closegamer', 2026)",
 }
