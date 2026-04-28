@@ -29,4 +29,4 @@ jobs:
             git fetch origin "${{ github.ref_name }}"
             git checkout "${{ github.ref_name }}"
             git reset --hard "origin/${{ github.ref_name }}"
-            docker compose up -d --build
+            docker compose up -d --build --force-recreate
