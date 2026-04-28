@@ -1,37 +1,115 @@
-.stApp {
-    background-color: #000000;
+:root {
+  --bg: #000000;
+  --line: #1d3324;
+  --text: #d9ffe3;
+  --muted: #86b593;
+  --accent: #1fcf62;
+  --panel: #0c1610;
+  --btn-border: #2b5a39;
+  --btn-border-hover: #4bd67f;
+  --btn-bg-top: #112116;
+  --brand-glow: rgba(99, 255, 154, 0.15);
 }
 
+.stApp,
 header[data-testid="stHeader"] {
-    background-color: #000000;
+  background: var(--bg);
 }
 
-section[data-testid="stSidebar"] {
-    display: none;
-}
-
-[data-testid="collapsedControl"] {
-    display: none;
-}
-
-div[data-testid="stToolbar"] {
-    display: none;
-}
-
+header[data-testid="stHeader"],
+section[data-testid="stSidebar"],
+[data-testid="collapsedControl"],
+div[data-testid="stToolbar"],
 footer {
-    visibility: hidden;
+  display: none;
 }
 
 .main .block-container {
-    padding-top: 22vh;
-    max-width: 100%;
+  max-width: 1080px;
+  padding-top: 0 !important;
+  padding-bottom: 3rem !important;
+  margin-top: 0 !important;
+  font-family: "Segoe UI", "Consolas", "Roboto Mono", monospace;
+}
+
+[data-testid="stAppViewContainer"] > .main {
+  padding-top: 0 !important;
+}
+
+div[data-testid="stMainBlockContainer"] {
+  padding-top: 0 !important;
+}
+
+div[data-testid="stMainBlockContainer"] > div:first-child {
+  margin-top: 0 !important;
+}
+
+.brand-link {
+  color: var(--text) !important;
+  text-decoration: none !important;
+  font-weight: 700;
+  font-size: clamp(1.02rem, 1.8vw, 1.2rem);
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 10px var(--brand-glow);
+}
+
+.top-nav-divider {
+  border-bottom: 1px solid var(--line);
+  margin: 0.25rem 0 0.8rem;
 }
 
 .splash {
-    color: #ffffff;
-    font-size: clamp(1.25rem, 4vw, 1.75rem);
-    text-align: center;
-    font-family: system-ui, -apple-system, sans-serif;
-    letter-spacing: 0.04em;
-    margin: 0;
+  margin-top: 20vh;
+  color: var(--text);
+  text-align: center;
+  font-size: clamp(1.3rem, 3.2vw, 1.9rem);
+  font-weight: 600;
+}
+
+.title {
+  margin: 2.8rem 0 0.6rem;
+  color: var(--text);
+  text-align: center;
+  font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.98rem;
+}
+
+.page-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg);
+  padding-top: 0.7rem;
+  padding-bottom: 0.6rem;
+  border-top: 1px solid var(--line);
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.86rem;
+  letter-spacing: 0.01em;
+}
+
+div[data-testid="stButton"] {
+  display: flex;
+  justify-content: flex-end;
+}
+
+div[data-testid="stButton"] > button {
+  min-height: 2.15rem;
+  padding: 0 0.9rem !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid var(--btn-border) !important;
+  background: linear-gradient(180deg, var(--btn-bg-top) 0%, var(--panel) 100%) !important;
+  color: var(--text) !important;
+}
+
+div[data-testid="stButton"] > button:hover {
+  border-color: var(--btn-border-hover) !important;
 }
