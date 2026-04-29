@@ -55,6 +55,36 @@ footer {
 }
 
 @media (max-width: 860px) {
+  html,
+  body,
+  .stApp,
+  [data-testid="stAppViewContainer"],
+  [data-testid="stAppViewContainer"] > .main {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overscroll-behavior-x: none !important;
+    touch-action: pan-y !important;
+    box-sizing: border-box !important;
+  }
+
+  div[data-testid="stMainBlockContainer"],
+  .main .block-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  [data-testid="stAppViewContainer"] > .main,
+  .main .block-container {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: none !important;
+  }
+
   header[data-testid="stHeader"],
   section[data-testid="stSidebar"],
   [data-testid="collapsedControl"] {
@@ -68,7 +98,7 @@ footer {
     left: 0;
     right: 0;
     z-index: 1400;
-    width: 100vw;
+    width: 100%;
     background: var(--bg);
     border-bottom: 1px solid var(--line);
     padding: 0.55rem 0.55rem 0.5rem;
