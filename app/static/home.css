@@ -64,10 +64,15 @@ footer {
   .st-key-mobile_trigger {
     display: block !important;
     position: fixed;
-    top: 0.55rem;
-    left: 0.55rem;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 1400;
-    width: max-content;
+    width: 100vw;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 0.55rem 0.55rem 0.5rem;
+    box-sizing: border-box;
   }
 
   .st-key-mobile_trigger div[data-testid="stHorizontalBlock"] {
@@ -101,9 +106,10 @@ footer {
     white-space: nowrap;
     margin-left: 0;
     position: fixed;
-    top: 1.6rem;
+    top: 1.08rem;
     left: 3.35rem;
-    transform: translateY(-50%);
+    transform: none;
+    z-index: 1401;
   }
 
   @media (max-width: 420px) {
@@ -175,18 +181,28 @@ footer {
 @media (min-width: 861px) {
   .st-key-desktop_nav {
     position: fixed;
-    top: 2.9rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(1080px, calc(100vw - 1.5rem));
+    top: 0;
+    left: 0;
+    width: 100vw;
     z-index: 1200;
-    background: var(--bg);
+    background: var(--bg) !important;
     border-bottom: 1px solid var(--line);
-    padding-bottom: 15px;
+    min-height: 72px;
+    padding: 8px 0 15px;
+    transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .st-key-desktop_nav > div {
+    width: min(1080px, calc(100vw - 1.5rem));
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .main .block-container {
-    padding-top: 5.25rem !important;
+    padding-top: 6.3rem !important;
   }
 }
 
@@ -315,6 +331,26 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
 }
 
 .st-key-units_length_panel,
+.st-key-units_area_panel,
+.st-key-units_mass_panel,
+.st-key-units_volume_panel,
+.st-key-units_speed_panel,
+.st-key-units_time_panel,
+.st-key-units_pressure_panel,
+.st-key-units_energy_panel,
+.st-key-units_power_panel,
+.st-key-units_force_panel,
+.st-key-units_frequency_panel,
+.st-key-units_angle_panel,
+.st-key-units_density_panel,
+.st-key-units_flow_panel,
+.st-key-units_acc_panel,
+.st-key-units_current_panel,
+.st-key-units_voltage_panel,
+.st-key-units_resistance_panel,
+.st-key-units_illuminance_panel,
+.st-key-units_radiation_panel,
+.st-key-units_data_panel,
 .st-key-units_temperature_panel {
   border: 1px solid var(--btn-border);
   border-radius: 0.5rem;
@@ -324,6 +360,26 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
 }
 
 .st-key-units_length_panel div[data-testid="stButton"] > button,
+.st-key-units_area_panel div[data-testid="stButton"] > button,
+.st-key-units_mass_panel div[data-testid="stButton"] > button,
+.st-key-units_volume_panel div[data-testid="stButton"] > button,
+.st-key-units_speed_panel div[data-testid="stButton"] > button,
+.st-key-units_time_panel div[data-testid="stButton"] > button,
+.st-key-units_pressure_panel div[data-testid="stButton"] > button,
+.st-key-units_energy_panel div[data-testid="stButton"] > button,
+.st-key-units_power_panel div[data-testid="stButton"] > button,
+.st-key-units_force_panel div[data-testid="stButton"] > button,
+.st-key-units_frequency_panel div[data-testid="stButton"] > button,
+.st-key-units_angle_panel div[data-testid="stButton"] > button,
+.st-key-units_density_panel div[data-testid="stButton"] > button,
+.st-key-units_flow_panel div[data-testid="stButton"] > button,
+.st-key-units_acc_panel div[data-testid="stButton"] > button,
+.st-key-units_current_panel div[data-testid="stButton"] > button,
+.st-key-units_voltage_panel div[data-testid="stButton"] > button,
+.st-key-units_resistance_panel div[data-testid="stButton"] > button,
+.st-key-units_illuminance_panel div[data-testid="stButton"] > button,
+.st-key-units_radiation_panel div[data-testid="stButton"] > button,
+.st-key-units_data_panel div[data-testid="stButton"] > button,
 .st-key-units_temperature_panel div[data-testid="stButton"] > button {
   border: 0 !important;
   background: transparent !important;
@@ -337,8 +393,48 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
 }
 
 .st-key-units_length_panel div[data-testid="stButton"] > button > div,
+.st-key-units_area_panel div[data-testid="stButton"] > button > div,
+.st-key-units_mass_panel div[data-testid="stButton"] > button > div,
+.st-key-units_volume_panel div[data-testid="stButton"] > button > div,
+.st-key-units_speed_panel div[data-testid="stButton"] > button > div,
+.st-key-units_time_panel div[data-testid="stButton"] > button > div,
+.st-key-units_pressure_panel div[data-testid="stButton"] > button > div,
+.st-key-units_energy_panel div[data-testid="stButton"] > button > div,
+.st-key-units_power_panel div[data-testid="stButton"] > button > div,
+.st-key-units_force_panel div[data-testid="stButton"] > button > div,
+.st-key-units_frequency_panel div[data-testid="stButton"] > button > div,
+.st-key-units_angle_panel div[data-testid="stButton"] > button > div,
+.st-key-units_density_panel div[data-testid="stButton"] > button > div,
+.st-key-units_flow_panel div[data-testid="stButton"] > button > div,
+.st-key-units_acc_panel div[data-testid="stButton"] > button > div,
+.st-key-units_current_panel div[data-testid="stButton"] > button > div,
+.st-key-units_voltage_panel div[data-testid="stButton"] > button > div,
+.st-key-units_resistance_panel div[data-testid="stButton"] > button > div,
+.st-key-units_illuminance_panel div[data-testid="stButton"] > button > div,
+.st-key-units_radiation_panel div[data-testid="stButton"] > button > div,
+.st-key-units_data_panel div[data-testid="stButton"] > button > div,
 .st-key-units_temperature_panel div[data-testid="stButton"] > button > div,
 .st-key-units_length_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_area_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_mass_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_volume_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_speed_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_time_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_pressure_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_energy_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_power_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_force_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_frequency_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_angle_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_density_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_flow_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_acc_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_current_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_voltage_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_resistance_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_illuminance_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_radiation_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_data_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
 .st-key-units_temperature_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] {
   width: 100% !important;
   text-align: left !important;
@@ -346,8 +442,71 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
 }
 
 .st-key-units_length_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_area_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_mass_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_volume_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_speed_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_time_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_pressure_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_energy_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_power_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_force_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_frequency_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_angle_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_density_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_flow_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_acc_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_current_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_voltage_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_resistance_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_illuminance_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_radiation_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_data_panel div[data-testid="stButton"] > button:hover,
 .st-key-units_temperature_panel div[data-testid="stButton"] > button:hover {
   border: 0 !important;
+}
+
+/* Держим заголовок и "избранное" в одной строке */
+@media (max-width: 860px) {
+  [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] {
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding-right: 0.55rem !important;
+    gap: 0.3rem !important;
+  }
+
+  [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:first-child {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:last-child {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    padding-right: 0 !important;
+  }
+
+  [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] {
+    /* keep units row controls mobile-only */
+  }
+
+  [class*="st-key-units_"][class*="_panel"] div[data-testid="column"] div[data-testid="stCheckbox"] {
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    width: auto !important;
+    overflow: visible !important;
+  }
 }
 
 @media (max-width: 860px) {

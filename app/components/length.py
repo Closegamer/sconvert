@@ -1,5 +1,6 @@
 import streamlit as st
 import re
+from .unit_panel import render_unit_panel_header
 
 
 LENGTH_UNITS: list[tuple[str, str, float]] = [
@@ -105,19 +106,14 @@ def render_length_converter(texts: dict[str, str]) -> None:
         st.session_state[seen_token_key] = collapse_token
         st.session_state[expanded_key] = False
 
-    with st.container(key="units_length_panel"):
-        header_col, favorite_col = st.columns([8, 2], vertical_alignment="center")
-        with header_col:
-            if st.button(
-                f'{"▼" if st.session_state[expanded_key] else "▶"} {texts["units.length.title"]}',
-                key="units_length_expand_btn",
-                use_container_width=True,
-            ):
-                st.session_state[expanded_key] = not bool(st.session_state[expanded_key])
-                st.rerun()
-        with favorite_col:
-            st.toggle("★", key=favorite_toggle_key)
-            st.session_state.favorite_length = bool(st.session_state[favorite_toggle_key])
+    render_unit_panel_header(
+        panel_key="units_length_panel",
+        title=texts["units.length.title"],
+        expanded_key=expanded_key,
+        expand_button_key="units_length_expand_btn",
+        favorite_toggle_key=favorite_toggle_key,
+        favorite_state_key="favorite_length",
+    )
 
     if st.session_state[expanded_key]:
         left_col, right_col = st.columns(2, gap="small")

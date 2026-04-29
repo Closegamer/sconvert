@@ -87,15 +87,95 @@ if st.session_state.view != "privacy" and not st.session_state.favorites_local_b
         stored_favorites = _favorites_from_storage(stored_favorites_raw)
         st.session_state.favorite_length = bool(stored_favorites.get("length", False))
         st.session_state.favorite_temperature = bool(stored_favorites.get("temperature", False))
+        st.session_state.favorite_mass = bool(stored_favorites.get("mass", False))
+        st.session_state.favorite_area = bool(stored_favorites.get("area", False))
+        st.session_state.favorite_volume = bool(stored_favorites.get("volume", False))
+        st.session_state.favorite_speed = bool(stored_favorites.get("speed", False))
+        st.session_state.favorite_time = bool(stored_favorites.get("time", False))
+        st.session_state.favorite_pressure = bool(stored_favorites.get("pressure", False))
+        st.session_state.favorite_energy = bool(stored_favorites.get("energy", False))
+        st.session_state.favorite_power = bool(stored_favorites.get("power", False))
+        st.session_state.favorite_force = bool(stored_favorites.get("force", False))
+        st.session_state.favorite_frequency = bool(stored_favorites.get("frequency", False))
+        st.session_state.favorite_angle = bool(stored_favorites.get("angle", False))
+        st.session_state.favorite_density = bool(stored_favorites.get("density", False))
+        st.session_state.favorite_flow = bool(stored_favorites.get("flow", False))
+        st.session_state.favorite_acc = bool(stored_favorites.get("acc", False))
+        st.session_state.favorite_current = bool(stored_favorites.get("current", False))
+        st.session_state.favorite_voltage = bool(stored_favorites.get("voltage", False))
+        st.session_state.favorite_resistance = bool(stored_favorites.get("resistance", False))
+        st.session_state.favorite_illuminance = bool(stored_favorites.get("illuminance", False))
+        st.session_state.favorite_radiation = bool(stored_favorites.get("radiation", False))
+        st.session_state.favorite_data = bool(stored_favorites.get("data", False))
         st.session_state.units_length_expanded = bool(stored_favorites.get("length_expanded", False))
         st.session_state.units_temperature_expanded = bool(stored_favorites.get("temperature_expanded", False))
+        st.session_state.units_mass_expanded = bool(stored_favorites.get("mass_expanded", False))
+        st.session_state.units_area_expanded = bool(stored_favorites.get("area_expanded", False))
+        st.session_state.units_volume_expanded = bool(stored_favorites.get("volume_expanded", False))
+        st.session_state.units_speed_expanded = bool(stored_favorites.get("speed_expanded", False))
+        st.session_state.units_time_expanded = bool(stored_favorites.get("time_expanded", False))
+        st.session_state.units_pressure_expanded = bool(stored_favorites.get("pressure_expanded", False))
+        st.session_state.units_energy_expanded = bool(stored_favorites.get("energy_expanded", False))
+        st.session_state.units_power_expanded = bool(stored_favorites.get("power_expanded", False))
+        st.session_state.units_force_expanded = bool(stored_favorites.get("force_expanded", False))
+        st.session_state.units_frequency_expanded = bool(stored_favorites.get("frequency_expanded", False))
+        st.session_state.units_angle_expanded = bool(stored_favorites.get("angle_expanded", False))
+        st.session_state.units_density_expanded = bool(stored_favorites.get("density_expanded", False))
+        st.session_state.units_flow_expanded = bool(stored_favorites.get("flow_expanded", False))
+        st.session_state.units_acc_expanded = bool(stored_favorites.get("acc_expanded", False))
+        st.session_state.units_current_expanded = bool(stored_favorites.get("current_expanded", False))
+        st.session_state.units_voltage_expanded = bool(stored_favorites.get("voltage_expanded", False))
+        st.session_state.units_resistance_expanded = bool(stored_favorites.get("resistance_expanded", False))
+        st.session_state.units_illuminance_expanded = bool(stored_favorites.get("illuminance_expanded", False))
+        st.session_state.units_radiation_expanded = bool(stored_favorites.get("radiation_expanded", False))
+        st.session_state.units_data_expanded = bool(stored_favorites.get("data_expanded", False))
         st.session_state.favorites_local_bootstrapped = True
         st.session_state.favorites_local_last_payload = json.dumps(
             {
                 "length": bool(st.session_state.favorite_length),
                 "temperature": bool(st.session_state.favorite_temperature),
+                "mass": bool(st.session_state.favorite_mass),
+                "area": bool(st.session_state.favorite_area),
+                "volume": bool(st.session_state.favorite_volume),
+                "speed": bool(st.session_state.favorite_speed),
+                "time": bool(st.session_state.favorite_time),
+                "pressure": bool(st.session_state.favorite_pressure),
+                "energy": bool(st.session_state.favorite_energy),
+                "power": bool(st.session_state.favorite_power),
+                "force": bool(st.session_state.favorite_force),
+                "frequency": bool(st.session_state.favorite_frequency),
+                "angle": bool(st.session_state.favorite_angle),
+                "density": bool(st.session_state.favorite_density),
+                "flow": bool(st.session_state.favorite_flow),
+                "acc": bool(st.session_state.favorite_acc),
+                "current": bool(st.session_state.favorite_current),
+                "voltage": bool(st.session_state.favorite_voltage),
+                "resistance": bool(st.session_state.favorite_resistance),
+                "illuminance": bool(st.session_state.favorite_illuminance),
+                "radiation": bool(st.session_state.favorite_radiation),
+                "data": bool(st.session_state.favorite_data),
                 "length_expanded": bool(st.session_state.units_length_expanded),
                 "temperature_expanded": bool(st.session_state.units_temperature_expanded),
+                "mass_expanded": bool(st.session_state.units_mass_expanded),
+                "area_expanded": bool(st.session_state.units_area_expanded),
+                "volume_expanded": bool(st.session_state.units_volume_expanded),
+                "speed_expanded": bool(st.session_state.units_speed_expanded),
+                "time_expanded": bool(st.session_state.units_time_expanded),
+                "pressure_expanded": bool(st.session_state.units_pressure_expanded),
+                "energy_expanded": bool(st.session_state.units_energy_expanded),
+                "power_expanded": bool(st.session_state.units_power_expanded),
+                "force_expanded": bool(st.session_state.units_force_expanded),
+                "frequency_expanded": bool(st.session_state.units_frequency_expanded),
+                "angle_expanded": bool(st.session_state.units_angle_expanded),
+                "density_expanded": bool(st.session_state.units_density_expanded),
+                "flow_expanded": bool(st.session_state.units_flow_expanded),
+                "acc_expanded": bool(st.session_state.units_acc_expanded),
+                "current_expanded": bool(st.session_state.units_current_expanded),
+                "voltage_expanded": bool(st.session_state.units_voltage_expanded),
+                "resistance_expanded": bool(st.session_state.units_resistance_expanded),
+                "illuminance_expanded": bool(st.session_state.units_illuminance_expanded),
+                "radiation_expanded": bool(st.session_state.units_radiation_expanded),
+                "data_expanded": bool(st.session_state.units_data_expanded),
             },
             ensure_ascii=True,
             sort_keys=True,
@@ -105,10 +185,90 @@ if st.session_state.view != "privacy" and not st.session_state.favorites_local_b
             st.session_state.favorite_length = False
         if "favorite_temperature" not in st.session_state:
             st.session_state.favorite_temperature = False
+        if "favorite_mass" not in st.session_state:
+            st.session_state.favorite_mass = False
+        if "favorite_area" not in st.session_state:
+            st.session_state.favorite_area = False
+        if "favorite_volume" not in st.session_state:
+            st.session_state.favorite_volume = False
+        if "favorite_speed" not in st.session_state:
+            st.session_state.favorite_speed = False
+        if "favorite_time" not in st.session_state:
+            st.session_state.favorite_time = False
+        if "favorite_pressure" not in st.session_state:
+            st.session_state.favorite_pressure = False
+        if "favorite_energy" not in st.session_state:
+            st.session_state.favorite_energy = False
+        if "favorite_power" not in st.session_state:
+            st.session_state.favorite_power = False
+        if "favorite_force" not in st.session_state:
+            st.session_state.favorite_force = False
+        if "favorite_frequency" not in st.session_state:
+            st.session_state.favorite_frequency = False
+        if "favorite_angle" not in st.session_state:
+            st.session_state.favorite_angle = False
+        if "favorite_density" not in st.session_state:
+            st.session_state.favorite_density = False
+        if "favorite_flow" not in st.session_state:
+            st.session_state.favorite_flow = False
+        if "favorite_acc" not in st.session_state:
+            st.session_state.favorite_acc = False
+        if "favorite_current" not in st.session_state:
+            st.session_state.favorite_current = False
+        if "favorite_voltage" not in st.session_state:
+            st.session_state.favorite_voltage = False
+        if "favorite_resistance" not in st.session_state:
+            st.session_state.favorite_resistance = False
+        if "favorite_illuminance" not in st.session_state:
+            st.session_state.favorite_illuminance = False
+        if "favorite_radiation" not in st.session_state:
+            st.session_state.favorite_radiation = False
+        if "favorite_data" not in st.session_state:
+            st.session_state.favorite_data = False
         if "units_length_expanded" not in st.session_state:
             st.session_state.units_length_expanded = False
         if "units_temperature_expanded" not in st.session_state:
             st.session_state.units_temperature_expanded = False
+        if "units_mass_expanded" not in st.session_state:
+            st.session_state.units_mass_expanded = False
+        if "units_area_expanded" not in st.session_state:
+            st.session_state.units_area_expanded = False
+        if "units_volume_expanded" not in st.session_state:
+            st.session_state.units_volume_expanded = False
+        if "units_speed_expanded" not in st.session_state:
+            st.session_state.units_speed_expanded = False
+        if "units_time_expanded" not in st.session_state:
+            st.session_state.units_time_expanded = False
+        if "units_pressure_expanded" not in st.session_state:
+            st.session_state.units_pressure_expanded = False
+        if "units_energy_expanded" not in st.session_state:
+            st.session_state.units_energy_expanded = False
+        if "units_power_expanded" not in st.session_state:
+            st.session_state.units_power_expanded = False
+        if "units_force_expanded" not in st.session_state:
+            st.session_state.units_force_expanded = False
+        if "units_frequency_expanded" not in st.session_state:
+            st.session_state.units_frequency_expanded = False
+        if "units_angle_expanded" not in st.session_state:
+            st.session_state.units_angle_expanded = False
+        if "units_density_expanded" not in st.session_state:
+            st.session_state.units_density_expanded = False
+        if "units_flow_expanded" not in st.session_state:
+            st.session_state.units_flow_expanded = False
+        if "units_acc_expanded" not in st.session_state:
+            st.session_state.units_acc_expanded = False
+        if "units_current_expanded" not in st.session_state:
+            st.session_state.units_current_expanded = False
+        if "units_voltage_expanded" not in st.session_state:
+            st.session_state.units_voltage_expanded = False
+        if "units_resistance_expanded" not in st.session_state:
+            st.session_state.units_resistance_expanded = False
+        if "units_illuminance_expanded" not in st.session_state:
+            st.session_state.units_illuminance_expanded = False
+        if "units_radiation_expanded" not in st.session_state:
+            st.session_state.units_radiation_expanded = False
+        if "units_data_expanded" not in st.session_state:
+            st.session_state.units_data_expanded = False
         st.session_state.favorites_local_bootstrap_tries += 1
         if st.session_state.favorites_local_bootstrap_tries >= 2:
             # Storage may genuinely be empty; allow normal save flow afterwards.
@@ -188,8 +348,48 @@ favorites_payload = json.dumps(
     {
         "length": bool(st.session_state.get("favorite_length", False)),
         "temperature": bool(st.session_state.get("favorite_temperature", False)),
+        "mass": bool(st.session_state.get("favorite_mass", False)),
+        "area": bool(st.session_state.get("favorite_area", False)),
+        "volume": bool(st.session_state.get("favorite_volume", False)),
+        "speed": bool(st.session_state.get("favorite_speed", False)),
+        "time": bool(st.session_state.get("favorite_time", False)),
+        "pressure": bool(st.session_state.get("favorite_pressure", False)),
+        "energy": bool(st.session_state.get("favorite_energy", False)),
+        "power": bool(st.session_state.get("favorite_power", False)),
+        "force": bool(st.session_state.get("favorite_force", False)),
+        "frequency": bool(st.session_state.get("favorite_frequency", False)),
+        "angle": bool(st.session_state.get("favorite_angle", False)),
+        "density": bool(st.session_state.get("favorite_density", False)),
+        "flow": bool(st.session_state.get("favorite_flow", False)),
+        "acc": bool(st.session_state.get("favorite_acc", False)),
+        "current": bool(st.session_state.get("favorite_current", False)),
+        "voltage": bool(st.session_state.get("favorite_voltage", False)),
+        "resistance": bool(st.session_state.get("favorite_resistance", False)),
+        "illuminance": bool(st.session_state.get("favorite_illuminance", False)),
+        "radiation": bool(st.session_state.get("favorite_radiation", False)),
+        "data": bool(st.session_state.get("favorite_data", False)),
         "length_expanded": bool(st.session_state.get("units_length_expanded", False)),
         "temperature_expanded": bool(st.session_state.get("units_temperature_expanded", False)),
+        "mass_expanded": bool(st.session_state.get("units_mass_expanded", False)),
+        "area_expanded": bool(st.session_state.get("units_area_expanded", False)),
+        "volume_expanded": bool(st.session_state.get("units_volume_expanded", False)),
+        "speed_expanded": bool(st.session_state.get("units_speed_expanded", False)),
+        "time_expanded": bool(st.session_state.get("units_time_expanded", False)),
+        "pressure_expanded": bool(st.session_state.get("units_pressure_expanded", False)),
+        "energy_expanded": bool(st.session_state.get("units_energy_expanded", False)),
+        "power_expanded": bool(st.session_state.get("units_power_expanded", False)),
+        "force_expanded": bool(st.session_state.get("units_force_expanded", False)),
+        "frequency_expanded": bool(st.session_state.get("units_frequency_expanded", False)),
+        "angle_expanded": bool(st.session_state.get("units_angle_expanded", False)),
+        "density_expanded": bool(st.session_state.get("units_density_expanded", False)),
+        "flow_expanded": bool(st.session_state.get("units_flow_expanded", False)),
+        "acc_expanded": bool(st.session_state.get("units_acc_expanded", False)),
+        "current_expanded": bool(st.session_state.get("units_current_expanded", False)),
+        "voltage_expanded": bool(st.session_state.get("units_voltage_expanded", False)),
+        "resistance_expanded": bool(st.session_state.get("units_resistance_expanded", False)),
+        "illuminance_expanded": bool(st.session_state.get("units_illuminance_expanded", False)),
+        "radiation_expanded": bool(st.session_state.get("units_radiation_expanded", False)),
+        "data_expanded": bool(st.session_state.get("units_data_expanded", False)),
     },
     ensure_ascii=True,
     sort_keys=True,

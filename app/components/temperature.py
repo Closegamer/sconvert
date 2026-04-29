@@ -1,15 +1,16 @@
 import streamlit as st
+from .unit_panel import render_unit_panel_header
 
 
 TEMPERATURE_UNITS: list[tuple[str, str]] = [
-    ("c", "units.temperature.c"),
     ("f", "units.temperature.f"),
-    ("k", "units.temperature.k"),
     ("r", "units.temperature.r"),
-    ("re", "units.temperature.re"),
-    ("n", "units.temperature.n"),
     ("de", "units.temperature.de"),
+    ("c", "units.temperature.c"),
+    ("k", "units.temperature.k"),
+    ("re", "units.temperature.re"),
     ("ro", "units.temperature.ro"),
+    ("n", "units.temperature.n"),
 ]
 
 
@@ -124,19 +125,14 @@ def render_temperature_converter(texts: dict[str, str]) -> None:
         st.session_state[seen_token_key] = collapse_token
         st.session_state[expanded_key] = False
 
-    with st.container(key="units_temperature_panel"):
-        header_col, favorite_col = st.columns([8, 2], vertical_alignment="center")
-        with header_col:
-            if st.button(
-                f'{"▼" if st.session_state[expanded_key] else "▶"} {texts["units.temperature.title"]}',
-                key="units_temperature_expand_btn",
-                use_container_width=True,
-            ):
-                st.session_state[expanded_key] = not bool(st.session_state[expanded_key])
-                st.rerun()
-        with favorite_col:
-            st.toggle("★", key=favorite_toggle_key)
-            st.session_state.favorite_temperature = bool(st.session_state[favorite_toggle_key])
+    render_unit_panel_header(
+        panel_key="units_temperature_panel",
+        title=texts["units.temperature.title"],
+        expanded_key=expanded_key,
+        expand_button_key="units_temperature_expand_btn",
+        favorite_toggle_key=favorite_toggle_key,
+        favorite_state_key="favorite_temperature",
+    )
 
     if st.session_state[expanded_key]:
         left_col, right_col = st.columns(2, gap="small")
