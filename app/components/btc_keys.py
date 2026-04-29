@@ -6,6 +6,7 @@ from decimal import Decimal, getcontext
 
 import streamlit as st
 import requests
+import streamlit.components.v1 as components
 
 
 _B58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
@@ -234,6 +235,33 @@ def _hash160_from_p2wpkh(address: str) -> bytes:
         raise ValueError("invalid witness program length")
     return decoded
 
+def _describe_address_type_network(address: str, texts: dict[str, str]) -> str:
+    candidate = address.strip()
+    if not candidate:
+        return ""
+    lower = candidate.lower()
+    if lower.startswith("bc1"):
+        return f"{texts['btc.address_info.type']}: Bech32 (P2WPKH), {texts['btc.address_info.network']}: mainnet"
+    if lower.startswith("tb1"):
+        return f"{texts['btc.address_info.type']}: Bech32 (P2WPKH), {texts['btc.address_info.network']}: testnet"
+    try:
+        raw = _base58_decode(candidate)
+    except ValueError:
+        return texts["btc.address_info.unknown"]
+    if len(raw) < 1:
+        return texts["btc.address_info.unknown"]
+    version = raw[0]
+    mapping = {
+        0x00: ("P2PKH", "mainnet"),
+        0x05: ("P2SH", "mainnet"),
+        0x6F: ("P2PKH", "testnet"),
+        0xC4: ("P2SH", "testnet"),
+    }
+    if version not in mapping:
+        return texts["btc.address_info.unknown"]
+    addr_type, network = mapping[version]
+    return f"{texts['btc.address_info.type']}: {addr_type}, {texts['btc.address_info.network']}: {network}"
+
 def _compress_uncompressed_pubkey(uncompressed: bytes) -> bytes:
     if len(uncompressed) != 65 or uncompressed[0] != 0x04:
         raise ValueError("invalid uncompressed key")
@@ -324,6 +352,28 @@ def _lookup_balance_sats(address: str) -> int:
     spent = int(chain.get("spent_txo_sum", 0)) + int(mempool.get("spent_txo_sum", 0))
     return funded - spent
 
+def _lookup_address_summary(address: str) -> dict[str, int]:
+    url = f"https://blockstream.info/api/address/{address}"
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+    payload = response.json()
+    if not isinstance(payload, dict):
+        raise ValueError("invalid address summary payload")
+    chain = payload.get("chain_stats", {}) if isinstance(payload.get("chain_stats"), dict) else {}
+    mempool = payload.get("mempool_stats", {}) if isinstance(payload.get("mempool_stats"), dict) else {}
+    funded = int(chain.get("funded_txo_sum", 0)) + int(mempool.get("funded_txo_sum", 0))
+    spent = int(chain.get("spent_txo_sum", 0)) + int(mempool.get("spent_txo_sum", 0))
+    return {
+        "received": funded,
+        "sent": spent,
+        "balance": funded - spent,
+    }
+
+def _lookup_tip_height() -> int:
+    response = requests.get("https://blockstream.info/api/blocks/tip/height", timeout=10)
+    response.raise_for_status()
+    return int(str(response.text).strip())
+
 def _lookup_transactions(address: str) -> list[dict]:
     url = f"https://blockstream.info/api/address/{address}/txs"
     response = requests.get(url, timeout=10)
@@ -332,6 +382,38 @@ def _lookup_transactions(address: str) -> list[dict]:
     if not isinstance(payload, list):
         raise ValueError("invalid tx payload")
     return [tx for tx in payload if isinstance(tx, dict)]
+
+def _lookup_utxos(address: str) -> list[dict]:
+    url = f"https://blockstream.info/api/address/{address}/utxo"
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+    payload = response.json()
+    if not isinstance(payload, list):
+        raise ValueError("invalid utxo payload")
+    return [utxo for utxo in payload if isinstance(utxo, dict)]
+
+def _format_utxos_for_view(utxos: list[dict]) -> str:
+    lines: list[str] = []
+    for i, utxo in enumerate(utxos, start=1):
+        txid = str(utxo.get("txid", ""))
+        vout = utxo.get("vout")
+        value = utxo.get("value")
+        status = utxo.get("status", {}) if isinstance(utxo.get("status"), dict) else {}
+        confirmed = bool(status.get("confirmed", False))
+        block_height = status.get("block_height")
+        lines.append(f"{i}. txid: {txid}")
+        lines.append(f"   vout: {vout}")
+        if value is not None:
+            try:
+                value_int = int(value)
+                lines.append(f"   value: {value_int} sats ({value_int / 100_000_000:.8f} BTC)")
+            except (TypeError, ValueError):
+                lines.append(f"   value: {value}")
+        lines.append(f"   confirmed: {'yes' if confirmed else 'no'}")
+        if block_height is not None:
+            lines.append(f"   block: {block_height}")
+        lines.append("")
+    return "\n".join(lines).strip()
 
 def _render_pubkey_curve_visualization(pubkey_uncompressed_hex: str, texts: dict[str, str]) -> None:
     try:
@@ -502,7 +584,7 @@ def _tx_amounts_for_address(tx: dict, address: str) -> tuple[int, int]:
 
     return received, sent
 
-def _format_transactions_for_view(txs: list[dict], address: str) -> str:
+def _format_transactions_for_view(txs: list[dict], address: str, tip_height: int | None = None) -> str:
     lines: list[str] = []
     for i, tx in enumerate(txs, start=1):
         txid = str(tx.get("txid", ""))
@@ -510,10 +592,14 @@ def _format_transactions_for_view(txs: list[dict], address: str) -> str:
         status = tx.get("status", {}) if isinstance(tx.get("status"), dict) else {}
         confirmed = bool(status.get("confirmed", False))
         block_height = status.get("block_height")
+        confirmations = 0
+        if confirmed and isinstance(block_height, int) and isinstance(tip_height, int):
+            confirmations = max(0, tip_height - block_height + 1)
         received_sats, sent_sats = _tx_amounts_for_address(tx, address)
         net_sats = received_sats - sent_sats
         lines.append(f"{i}. txid: {txid}")
         lines.append(f"   confirmed: {'yes' if confirmed else 'no'}")
+        lines.append(f"   confirmations: {confirmations}")
         if block_height is not None:
             lines.append(f"   block: {block_height}")
         lines.append(f"   received: {received_sats} sats ({received_sats / 100_000_000:.8f} BTC)")
@@ -523,6 +609,67 @@ def _format_transactions_for_view(txs: list[dict], address: str) -> str:
             lines.append(f"   fee: {fee} sats")
         lines.append("")
     return "\n".join(lines).strip()
+
+def _is_valid_p2sh_address(address: str) -> bool:
+    raw = _base58_decode(address.strip())
+    if len(raw) != 25:
+        return False
+    payload = raw[:-4]
+    checksum = raw[-4:]
+    expected = hashlib.sha256(hashlib.sha256(payload).digest()).digest()[:4]
+    return checksum == expected and payload[0] in (0x05, 0xC4)
+
+def _address_validation_status(field_name: str, value: str, texts: dict[str, str]) -> str:
+    candidate = value.strip()
+    if not candidate:
+        return ""
+    try:
+        if field_name in {"address", "address_uncompressed"}:
+            _hash160_from_p2pkh(candidate)
+        elif field_name == "address_p2wpkh":
+            _hash160_from_p2wpkh(candidate)
+        elif field_name == "address_p2sh":
+            if not _is_valid_p2sh_address(candidate):
+                raise ValueError("invalid p2sh")
+        else:
+            return ""
+        return texts["btc.validation.valid"]
+    except ValueError:
+        return texts["btc.validation.invalid"]
+
+def _render_copy_button(texts: dict[str, str], value: str, key: str) -> None:
+    if not value:
+        return
+    safe_value = html.escape(value).replace("\\", "\\\\").replace("'", "\\'")
+    safe_label = html.escape(texts["btc.copy"].lower())
+    components.html(
+        f"""
+        <style>
+          html, body {{
+            margin: 0;
+            padding: 0;
+          }}
+        </style>
+        <a id="{key}" href="#" style="display:block;width:100%;text-align:right;color:rgb(134, 181, 147);text-decoration:none;font-size:0.875rem;line-height:1.3;font-family:'Segoe UI','Consolas','Roboto Mono',monospace;cursor:pointer;">
+          {safe_label}
+        </a>
+        <script>
+          const btn = document.getElementById('{key}');
+          btn.onclick = async (e) => {{
+            e.preventDefault();
+            try {{
+              await navigator.clipboard.writeText('{safe_value}');
+              btn.textContent = 'OK';
+              setTimeout(() => {{ btn.textContent = '{safe_label}'; }}, 900);
+            }} catch (e) {{
+              btn.textContent = 'ERR';
+              setTimeout(() => {{ btn.textContent = '{safe_label}'; }}, 900);
+            }}
+          }};
+        </script>
+        """,
+        height=32,
+    )
 
 def render_btc_keys_component(texts: dict[str, str]) -> None:
     try:
@@ -546,6 +693,9 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
         "address_p2sh": "btc_address_p2sh",
         "address_p2wpkh": "btc_address_p2wpkh",
         "balance": "btc_balance",
+        "address_summary": "btc_address_summary",
+        "address_info": "btc_address_info",
+        "utxos_view": "btc_utxos_view",
         "txs_view": "btc_txs_view",
         "private_dec_norm": "btc_private_dec_norm",
         "private_hex_norm": "btc_private_hex_norm",
@@ -613,6 +763,9 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
         st.session_state[field_keys["private_dec_norm"]] = ""
         st.session_state[field_keys["private_hex_norm"]] = ""
         st.session_state[field_keys["balance"]] = ""
+        st.session_state[field_keys["address_summary"]] = ""
+        st.session_state[field_keys["address_info"]] = ""
+        st.session_state[field_keys["utxos_view"]] = ""
         st.session_state[field_keys["txs_view"]] = ""
         st.session_state.btc_pubkey_curve_error = ""
 
@@ -765,36 +918,106 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
                 st.session_state[field_keys["balance"]] = texts["btc.balance.unavailable"]
             try:
                 txs = _lookup_transactions(target_address)
+                tip_height = _lookup_tip_height()
                 if txs:
-                    st.session_state[field_keys["txs_view"]] = _format_transactions_for_view(txs, target_address)
+                    st.session_state[field_keys["txs_view"]] = _format_transactions_for_view(txs, target_address, tip_height)
                 else:
                     st.session_state[field_keys["txs_view"]] = texts["btc.txs.empty"]
             except (requests.RequestException, ValueError):
                 st.session_state[field_keys["txs_view"]] = texts["btc.txs.unavailable"]
+            try:
+                utxos = _lookup_utxos(target_address)
+                if utxos:
+                    st.session_state[field_keys["utxos_view"]] = _format_utxos_for_view(utxos)
+                else:
+                    st.session_state[field_keys["utxos_view"]] = texts["btc.utxos.empty"]
+            except (requests.RequestException, ValueError):
+                st.session_state[field_keys["utxos_view"]] = texts["btc.utxos.unavailable"]
+            try:
+                summary = _lookup_address_summary(target_address)
+                st.session_state[field_keys["address_summary"]] = (
+                    f"{texts['btc.address_summary.received']}: {summary['received']} sats ({summary['received'] / 100_000_000:.8f} BTC) | "
+                    f"{texts['btc.address_summary.sent']}: {summary['sent']} sats ({summary['sent'] / 100_000_000:.8f} BTC) | "
+                    f"{texts['btc.address_summary.balance']}: {summary['balance']} sats ({summary['balance'] / 100_000_000:.8f} BTC)"
+                )
+            except (requests.RequestException, ValueError):
+                st.session_state[field_keys["address_summary"]] = texts["btc.address_summary.unavailable"]
         else:
             st.session_state[field_keys["balance"]] = ""
+            st.session_state[field_keys["address_summary"]] = ""
+            st.session_state[field_keys["utxos_view"]] = ""
             st.session_state[field_keys["txs_view"]] = ""
 
+    info_address = ""
+    for name in ("address", "address_uncompressed", "address_p2wpkh", "address_p2sh"):
+        value = st.session_state.get(field_keys[name], "").strip()
+        if value:
+            info_address = value
+            break
+    st.session_state[field_keys["address_info"]] = _describe_address_type_network(info_address, texts) if info_address else ""
+
     _render_input_with_count(texts["btc.private_dec"], field_keys["private_dec"])
+    _render_copy_button(texts, str(st.session_state.get(field_keys["private_dec"], "")).strip(), "copy_private_dec")
     _render_input_with_count(texts["btc.private_hex"], field_keys["private_hex"])
+    _render_copy_button(texts, str(st.session_state.get(field_keys["private_hex"], "")).strip(), "copy_private_hex")
     _render_input_with_count(texts["btc.private_hex_norm"], field_keys["private_hex_norm"], disabled=True)
+    _render_copy_button(texts, str(st.session_state.get(field_keys["private_hex_norm"], "")).strip(), "copy_private_hex_norm")
     _render_input_with_count(texts["btc.private_wif"], field_keys["private_wif"])
+    _render_copy_button(texts, str(st.session_state.get(field_keys["private_wif"], "")).strip(), "copy_private_wif")
     _render_input_with_count(texts["btc.private_wif_uncompressed"], field_keys["private_wif_uncompressed"])
+    _render_copy_button(
+        texts,
+        str(st.session_state.get(field_keys["private_wif_uncompressed"], "")).strip(),
+        "copy_private_wif_uncompressed",
+    )
     _render_textarea_with_count(texts["btc.seed_phrase"], field_keys["seed_phrase"], height=88)
     _render_input_with_count(texts["btc.public_key"], field_keys["public_key"])
+    _render_copy_button(texts, str(st.session_state.get(field_keys["public_key"], "")).strip(), "copy_public_key")
     _render_input_with_count(texts["btc.public_key_uncompressed"], field_keys["public_key_uncompressed"])
+    _render_copy_button(
+        texts,
+        str(st.session_state.get(field_keys["public_key_uncompressed"], "")).strip(),
+        "copy_public_key_uncompressed",
+    )
     _render_input_with_count(texts["btc.ripemd160"], field_keys["ripemd160"])
     _render_input_with_count(texts["btc.ripemd160_uncompressed"], field_keys["ripemd160_uncompressed"])
     _render_input_with_count(texts["btc.address"], field_keys["address"])
+    st.caption(_address_validation_status("address", str(st.session_state.get(field_keys["address"], "")), texts))
+    _render_copy_button(texts, str(st.session_state.get(field_keys["address"], "")).strip(), "copy_address")
     _render_input_with_count(texts["btc.address_uncompressed"], field_keys["address_uncompressed"])
+    st.caption(
+        _address_validation_status(
+            "address_uncompressed",
+            str(st.session_state.get(field_keys["address_uncompressed"], "")),
+            texts,
+        )
+    )
+    _render_copy_button(
+        texts,
+        str(st.session_state.get(field_keys["address_uncompressed"], "")).strip(),
+        "copy_address_uncompressed",
+    )
     _render_input_with_count(texts["btc.address_p2sh"], field_keys["address_p2sh"])
+    st.caption(_address_validation_status("address_p2sh", str(st.session_state.get(field_keys["address_p2sh"], "")), texts))
+    _render_copy_button(texts, str(st.session_state.get(field_keys["address_p2sh"], "")).strip(), "copy_address_p2sh")
     _render_input_with_count(texts["btc.address_p2wpkh"], field_keys["address_p2wpkh"])
+    st.caption(_address_validation_status("address_p2wpkh", str(st.session_state.get(field_keys["address_p2wpkh"], "")), texts))
+    _render_copy_button(texts, str(st.session_state.get(field_keys["address_p2wpkh"], "")).strip(), "copy_address_p2wpkh")
+    _render_input_with_count(texts["btc.address_info"], field_keys["address_info"], disabled=True)
     _render_input_with_count(texts["btc.balance"], field_keys["balance"], disabled=True, show_count=False)
+    _render_input_with_count(texts["btc.address_summary"], field_keys["address_summary"], disabled=True, show_count=False)
+    _render_textarea_with_count(texts["btc.utxos"], field_keys["utxos_view"], height=180, disabled=True, show_count=False)
     _render_textarea_with_count(texts["btc.txs"], field_keys["txs_view"], height=220, disabled=True, show_count=False)
     private_dec_for_visual = st.session_state.get(field_keys["private_dec"], "").strip()
     if private_dec_for_visual.isdigit():
         _render_private_key_line_visualization(int(private_dec_for_visual), SECP256k1.order, texts)
     _render_pubkey_curve_visualization(st.session_state[field_keys["public_key_uncompressed"]], texts)
+    qr_value = str(st.session_state.get(field_keys["address"], "")).strip()
+    if not qr_value:
+        qr_value = str(st.session_state.get(field_keys["address_uncompressed"], "")).strip()
+    if qr_value:
+        st.markdown(f"**{texts['btc.qr']}**")
+        st.image(f"https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={qr_value}")
     if st.session_state.btc_pubkey_curve_error:
         st.warning(st.session_state.btc_pubkey_curve_error)
 
