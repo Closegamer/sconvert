@@ -2,6 +2,7 @@ import hashlib
 import html
 import hmac
 import unicodedata
+from decimal import Decimal, getcontext
 
 import streamlit as st
 import requests
@@ -432,6 +433,44 @@ def _render_pubkey_curve_visualization(pubkey_uncompressed_hex: str, texts: dict
         unsafe_allow_html=True,
     )
 
+def _render_private_key_line_visualization(private_key_int: int, curve_order: int, texts: dict[str, str]) -> None:
+    if private_key_int <= 0 or private_key_int >= curve_order:
+        return
+    svg_w = 520
+    svg_h = 96
+    pad_x = 28
+    y = 48
+    x1 = pad_x
+    x2 = svg_w - pad_x
+    span = x2 - x1
+    # High-precision mapping keeps smooth sub-pixel movement for huge integers.
+    getcontext().prec = 80
+    ratio = Decimal(private_key_int - 1) / Decimal(curve_order - 2)
+    px = Decimal(x1) + (Decimal(span) * ratio)
+    position_percent = ratio * Decimal(100)
+    st.markdown(f"**{texts['btc.keyline.title']}**")
+    st.markdown(
+        (
+            f"{texts['btc.keyline.subtitle']}<br>"
+            f"{texts['btc.keyline.current']}: {private_key_int}<br>"
+            f"{texts['btc.keyline.position']}: {position_percent:.12f}%"
+        ),
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        f"""
+        <svg width="100%" viewBox="0 0 {svg_w} {svg_h}" preserveAspectRatio="xMidYMid meet">
+          <line x1="{x1}" y1="{y}" x2="{x2}" y2="{y}" stroke="#4e6b57" stroke-width="3"/>
+          <line x1="{x1}" y1="{y - 9}" x2="{x1}" y2="{y + 9}" stroke="#86b593" stroke-width="1.3"/>
+          <line x1="{x2}" y1="{y - 9}" x2="{x2}" y2="{y + 9}" stroke="#86b593" stroke-width="1.3"/>
+          <circle cx="{px:.3f}" cy="{y}" r="6" fill="#1fcf62" stroke="#d9ffe3" stroke-width="1.5"/>
+          <text x="{x1}" y="{y + 25}" fill="#86b593" font-size="11" text-anchor="start">1</text>
+          <text x="{x2}" y="{y + 25}" fill="#86b593" font-size="11" text-anchor="end">n-1</text>
+        </svg>
+        """,
+        unsafe_allow_html=True,
+    )
+
 def _tx_amounts_for_address(tx: dict, address: str) -> tuple[int, int]:
     received = 0
     sent = 0
@@ -744,17 +783,6 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
     _render_textarea_with_count(texts["btc.seed_phrase"], field_keys["seed_phrase"], height=88)
     _render_input_with_count(texts["btc.public_key"], field_keys["public_key"])
     _render_input_with_count(texts["btc.public_key_uncompressed"], field_keys["public_key_uncompressed"])
-    pubkey_uncompressed_value = st.session_state.get(field_keys["public_key_uncompressed"], "").strip()
-    if pubkey_uncompressed_value:
-        st.markdown(
-            (
-                "<div style='font-size:0.72rem; line-height:1.2; color:#9cb09c; "
-                "word-break:break-all; overflow-wrap:anywhere; user-select:text;'>"
-                f"{html.escape(pubkey_uncompressed_value)}"
-                "</div>"
-            ),
-            unsafe_allow_html=True,
-        )
     _render_input_with_count(texts["btc.ripemd160"], field_keys["ripemd160"])
     _render_input_with_count(texts["btc.ripemd160_uncompressed"], field_keys["ripemd160_uncompressed"])
     _render_input_with_count(texts["btc.address"], field_keys["address"])
@@ -763,6 +791,9 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
     _render_input_with_count(texts["btc.address_p2wpkh"], field_keys["address_p2wpkh"])
     _render_input_with_count(texts["btc.balance"], field_keys["balance"], disabled=True, show_count=False)
     _render_textarea_with_count(texts["btc.txs"], field_keys["txs_view"], height=220, disabled=True, show_count=False)
+    private_dec_for_visual = st.session_state.get(field_keys["private_dec"], "").strip()
+    if private_dec_for_visual.isdigit():
+        _render_private_key_line_visualization(int(private_dec_for_visual), SECP256k1.order, texts)
     _render_pubkey_curve_visualization(st.session_state[field_keys["public_key_uncompressed"]], texts)
     if st.session_state.btc_pubkey_curve_error:
         st.warning(st.session_state.btc_pubkey_curve_error)
