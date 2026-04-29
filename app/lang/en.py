@@ -53,5 +53,9 @@ TEXTS = {
     "btc.subtitle": "Section in progress. BTC converter and tools will appear here.",
     "about.title": "About",
     "about.subtitle": "This project is an attempt to bring together scattered tools for converting data, units, files, and more in one place. Hopefully, it makes your life a little more comfortable.",
+    "privacy.title": "Privacy Policy",
+    "privacy.text": "The sconvert website does not use cookies, does not collect users' personal data, and does not process any personal data.",
+    "privacy.close": "Close",
     "footer.copy": "writtenBy('Closegamer', 2026)",
+    "footer.privacy": "Privacy Policy",
 }

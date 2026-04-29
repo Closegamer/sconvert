@@ -17,8 +17,6 @@ def render_header(current_view: str, current_lang: str, texts: dict[str, str]) -
         view_to_label["btc"],
         view_to_label["about"],
     ]
-    selected_view = current_view
-
     default_by_view = {"home": 0, "units": 1, "files": 2, "btc": 3, "about": 4}
     default_index = default_by_view.get(current_view, 0)
     with st.container(key="desktop_nav"):
@@ -43,7 +41,7 @@ def render_header(current_view: str, current_lang: str, texts: dict[str, str]) -
         st.session_state.lang = selected_lang
         st.rerun()
 
-    selected_view = label_to_view.get(selected_label, selected_view)
+    selected_view = label_to_view.get(selected_label, current_view)
     if selected_view != current_view:
         st.session_state.view = selected_view
         st.rerun()

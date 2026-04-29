@@ -227,6 +227,15 @@ div[data-testid="stMainBlockContainer"] > div:first-child {
   letter-spacing: 0.01em;
 }
 
+.footer-link {
+  color: var(--muted) !important;
+  text-decoration: none !important;
+}
+
+.footer-link:hover {
+  color: var(--text) !important;
+}
+
 div[data-testid="stSegmentedControl"] {
   display: flex;
   justify-content: center;
