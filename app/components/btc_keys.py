@@ -297,8 +297,11 @@ def _render_pubkey_curve_visualization(pubkey_uncompressed_hex: str, texts: dict
     # This is used only for visual intuition.
     x_min = -4.0
     x_max = 4.0
-    y_min = -10.0
-    y_max = 10.0
+    # Keep full plotted curve visible for the selected X-range.
+    y_abs_max = ((x_max * x_max * x_max) + 7.0) ** 0.5
+    y_padding = max(0.6, y_abs_max * 0.08)
+    y_min = -(y_abs_max + y_padding)
+    y_max = y_abs_max + y_padding
 
     def _to_svg(xr: float, yr: float) -> tuple[float, float]:
         nx = (xr - x_min) / (x_max - x_min)
