@@ -1,5 +1,7 @@
 import hashlib
 import html
+import hmac
+import unicodedata
 
 import streamlit as st
 import requests
@@ -50,6 +52,66 @@ def _base58_decode(value: str) -> bytes:
     raw = num.to_bytes((num.bit_length() + 7) // 8, "big") if num > 0 else b""
     leading_ones = len(value) - len(value.lstrip("1"))
     return (b"\x00" * leading_ones) + raw
+
+def _private_int_to_wif(private_key_int: int, compressed: bool = True) -> str:
+    key_bytes = private_key_int.to_bytes(32, "big")
+    payload = b"\x80" + key_bytes + (b"\x01" if compressed else b"")
+    checksum = hashlib.sha256(hashlib.sha256(payload).digest()).digest()[:4]
+    return _base58_encode(payload + checksum)
+
+def _wif_to_private_int(wif: str) -> int:
+    raw = _base58_decode(wif.strip())
+    if len(raw) not in (37, 38):
+        raise ValueError("invalid wif length")
+    payload = raw[:-4]
+    checksum = raw[-4:]
+    expected = hashlib.sha256(hashlib.sha256(payload).digest()).digest()[:4]
+    if checksum != expected:
+        raise ValueError("invalid checksum")
+    if payload[0] != 0x80:
+        raise ValueError("unsupported network")
+    if len(payload) == 34 and payload[-1] != 0x01:
+        raise ValueError("invalid compressed marker")
+    key_bytes = payload[1:33]
+    return int.from_bytes(key_bytes, "big")
+
+def _hmac_sha512(key: bytes, data: bytes) -> bytes:
+    return hmac.new(key, data, hashlib.sha512).digest()
+
+def _ckd_priv(parent_key: bytes, parent_chain_code: bytes, index: int) -> tuple[bytes, bytes]:
+    if index >= 0x80000000:
+        data = b"\x00" + parent_key + index.to_bytes(4, "big")
+    else:
+        pubkey = _pubkey_from_private_int(int.from_bytes(parent_key, "big"), compressed=True)
+        data = pubkey + index.to_bytes(4, "big")
+    i64 = _hmac_sha512(parent_chain_code, data)
+    il, ir = i64[:32], i64[32:]
+    child_int = (int.from_bytes(il, "big") + int.from_bytes(parent_key, "big")) % int.from_bytes(
+        b"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xba\xae\xdc\xe6\xaf\x48\xa0\x3b\xbf\xd2\x5e\x8c\xd0\x36\x41\x41",
+        "big",
+    )
+    if child_int == 0:
+        raise ValueError("invalid child key")
+    return child_int.to_bytes(32, "big"), ir
+
+def _private_int_from_seed_phrase(seed_phrase: str) -> int:
+    phrase = " ".join(seed_phrase.strip().split())
+    words = phrase.split(" ")
+    if len(words) not in (12, 24):
+        raise ValueError("invalid seed phrase length")
+    normalized_phrase = unicodedata.normalize("NFKD", phrase)
+    seed = hashlib.pbkdf2_hmac(
+        "sha512",
+        normalized_phrase.encode("utf-8"),
+        b"mnemonic",
+        2048,
+        dklen=64,
+    )
+    master = _hmac_sha512(b"Bitcoin seed", seed)
+    key, chain_code = master[:32], master[32:]
+    for index in (44 + 0x80000000, 0 + 0x80000000, 0 + 0x80000000, 0, 0):
+        key, chain_code = _ckd_priv(key, chain_code, index)
+    return int.from_bytes(key, "big")
 
 def _hash160_to_p2pkh(hash160: bytes) -> str:
     versioned_payload = b"\x00" + hash160
@@ -433,6 +495,9 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
     field_keys = {
         "private_dec": "btc_private_dec",
         "private_hex": "btc_private_hex",
+        "private_wif": "btc_private_wif",
+        "private_wif_uncompressed": "btc_private_wif_uncompressed",
+        "seed_phrase": "btc_seed_phrase",
         "public_key": "btc_public_key_compressed",
         "public_key_uncompressed": "btc_public_key_uncompressed",
         "ripemd160": "btc_ripemd160",
@@ -464,9 +529,28 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
     if "btc_pubkey_curve_error" not in st.session_state:
         st.session_state.btc_pubkey_curve_error = ""
 
+    def _render_input_with_count(label: str, key: str, disabled: bool = False, show_count: bool = True) -> None:
+        value = str(st.session_state.get(key, ""))
+        display_label = f"{label} [{len(value)}]" if show_count else label
+        st.text_input(display_label, key=key, disabled=disabled)
+
+    def _render_textarea_with_count(
+        label: str,
+        key: str,
+        height: int,
+        disabled: bool = False,
+        show_count: bool = True,
+    ) -> None:
+        value = str(st.session_state.get(key, ""))
+        display_label = f"{label} [{len(value)}]" if show_count else label
+        st.text_area(display_label, key=key, height=height, disabled=disabled)
+
     current_inputs = {
         "private_dec": st.session_state[field_keys["private_dec"]],
         "private_hex": st.session_state[field_keys["private_hex"]],
+        "private_wif": st.session_state[field_keys["private_wif"]],
+        "private_wif_uncompressed": st.session_state[field_keys["private_wif_uncompressed"]],
+        "seed_phrase": st.session_state[field_keys["seed_phrase"]],
         "public_key": st.session_state[field_keys["public_key"]],
         "public_key_uncompressed": st.session_state[field_keys["public_key_uncompressed"]],
         "ripemd160": st.session_state[field_keys["ripemd160"]],
@@ -509,6 +593,12 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
                     private_key_int = int(raw_value, 10)
                 elif changed_field == "private_hex":
                     private_key_int = int(raw_value.lower().removeprefix("0x"), 16)
+                elif changed_field == "private_wif":
+                    private_key_int = _wif_to_private_int(raw_value)
+                elif changed_field == "private_wif_uncompressed":
+                    private_key_int = _wif_to_private_int(raw_value)
+                elif changed_field == "seed_phrase":
+                    private_key_int = _private_int_from_seed_phrase(raw_value)
                 elif changed_field == "public_key":
                     pubkey_compressed = bytes.fromhex(raw_value.lower().removeprefix("0x"))
                     pubkey_uncompressed = _decompress_compressed_pubkey(pubkey_compressed)
@@ -552,6 +642,8 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
             except ValueError:
                 if changed_field in {"public_key", "public_key_uncompressed"}:
                     st.session_state.btc_pubkey_curve_error = texts["btc.error.pubkey_not_on_curve"]
+                elif changed_field == "seed_phrase":
+                    st.error(texts["btc.error.seed_phrase"])
                 # Keep current values and wait for valid input.
                 pass
 
@@ -585,6 +677,8 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
         compact_hex = normalized_hex.lstrip("0") or "0"
         st.session_state[field_keys["private_dec"]] = str(private_key_int)
         st.session_state[field_keys["private_hex"]] = compact_hex
+        st.session_state[field_keys["private_wif"]] = _private_int_to_wif(private_key_int, compressed=True)
+        st.session_state[field_keys["private_wif_uncompressed"]] = _private_int_to_wif(private_key_int, compressed=False)
         st.session_state[field_keys["private_dec_norm"]] = str(private_key_int)
         st.session_state[field_keys["private_hex_norm"]] = normalized_hex
     else:
@@ -642,12 +736,14 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
             st.session_state[field_keys["balance"]] = ""
             st.session_state[field_keys["txs_view"]] = ""
 
-    st.text_input(texts["btc.private_dec"], key=field_keys["private_dec"])
-    st.text_input(texts["btc.private_hex"], key=field_keys["private_hex"])
-    st.text_input(texts["btc.private_dec_norm"], key=field_keys["private_dec_norm"], disabled=True)
-    st.text_input(texts["btc.private_hex_norm"], key=field_keys["private_hex_norm"], disabled=True)
-    st.text_input(texts["btc.public_key"], key=field_keys["public_key"])
-    st.text_input(texts["btc.public_key_uncompressed"], key=field_keys["public_key_uncompressed"])
+    _render_input_with_count(texts["btc.private_dec"], field_keys["private_dec"])
+    _render_input_with_count(texts["btc.private_hex"], field_keys["private_hex"])
+    _render_input_with_count(texts["btc.private_hex_norm"], field_keys["private_hex_norm"], disabled=True)
+    _render_input_with_count(texts["btc.private_wif"], field_keys["private_wif"])
+    _render_input_with_count(texts["btc.private_wif_uncompressed"], field_keys["private_wif_uncompressed"])
+    _render_textarea_with_count(texts["btc.seed_phrase"], field_keys["seed_phrase"], height=88)
+    _render_input_with_count(texts["btc.public_key"], field_keys["public_key"])
+    _render_input_with_count(texts["btc.public_key_uncompressed"], field_keys["public_key_uncompressed"])
     pubkey_uncompressed_value = st.session_state.get(field_keys["public_key_uncompressed"], "").strip()
     if pubkey_uncompressed_value:
         st.markdown(
@@ -659,14 +755,14 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
             ),
             unsafe_allow_html=True,
         )
-    st.text_input(texts["btc.ripemd160"], key=field_keys["ripemd160"])
-    st.text_input(texts["btc.ripemd160_uncompressed"], key=field_keys["ripemd160_uncompressed"])
-    st.text_input(texts["btc.address"], key=field_keys["address"])
-    st.text_input(texts["btc.address_uncompressed"], key=field_keys["address_uncompressed"])
-    st.text_input(texts["btc.address_p2sh"], key=field_keys["address_p2sh"])
-    st.text_input(texts["btc.address_p2wpkh"], key=field_keys["address_p2wpkh"])
-    st.text_input(texts["btc.balance"], key=field_keys["balance"], disabled=True)
-    st.text_area(texts["btc.txs"], key=field_keys["txs_view"], height=220, disabled=True)
+    _render_input_with_count(texts["btc.ripemd160"], field_keys["ripemd160"])
+    _render_input_with_count(texts["btc.ripemd160_uncompressed"], field_keys["ripemd160_uncompressed"])
+    _render_input_with_count(texts["btc.address"], field_keys["address"])
+    _render_input_with_count(texts["btc.address_uncompressed"], field_keys["address_uncompressed"])
+    _render_input_with_count(texts["btc.address_p2sh"], field_keys["address_p2sh"])
+    _render_input_with_count(texts["btc.address_p2wpkh"], field_keys["address_p2wpkh"])
+    _render_input_with_count(texts["btc.balance"], field_keys["balance"], disabled=True, show_count=False)
+    _render_textarea_with_count(texts["btc.txs"], field_keys["txs_view"], height=220, disabled=True, show_count=False)
     _render_pubkey_curve_visualization(st.session_state[field_keys["public_key_uncompressed"]], texts)
     if st.session_state.btc_pubkey_curve_error:
         st.warning(st.session_state.btc_pubkey_curve_error)
@@ -674,6 +770,9 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
     st.session_state.btc_last_inputs = {
         "private_dec": st.session_state[field_keys["private_dec"]],
         "private_hex": st.session_state[field_keys["private_hex"]],
+        "private_wif": st.session_state[field_keys["private_wif"]],
+        "private_wif_uncompressed": st.session_state[field_keys["private_wif_uncompressed"]],
+        "seed_phrase": st.session_state[field_keys["seed_phrase"]],
         "public_key": st.session_state[field_keys["public_key"]],
         "public_key_uncompressed": st.session_state[field_keys["public_key_uncompressed"]],
         "ripemd160": st.session_state[field_keys["ripemd160"]],
