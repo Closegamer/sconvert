@@ -20,6 +20,15 @@ body,
 [data-testid="stAppViewContainer"] > .main,
 header[data-testid="stHeader"] {
   background: var(--bg);
+  overflow-anchor: none;
+}
+
+/* Убираем системный верхний контейнер Streamlit, чтобы шапка не "прыгала" на первом рендере */
+header[data-testid="stHeader"],
+[data-testid="stDecoration"] {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
 }
 
 div[data-testid="stToolbar"],
@@ -28,13 +37,20 @@ footer {
 }
 
 @media (min-width: 861px) {
-  header[data-testid="stHeader"],
   section[data-testid="stSidebar"],
   [data-testid="collapsedControl"],
   .st-key-mobile_trigger,
+  .st-key-mobile_trigger > div,
+  .st-key-mobile_trigger > div > div,
   .st-key-mobile_drawer_overlay,
   .st-key-mobile_drawer {
     display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
   }
 }
 
@@ -150,23 +166,28 @@ footer {
 }
 
 .main .block-container {
-  max-width: 1080px;
-  padding-top: 0 !important;
+  width: min(1080px, calc(100vw - 1.5rem));
+  max-width: min(1080px, calc(100vw - 1.5rem));
   padding-bottom: 3rem !important;
-  margin-top: 0 !important;
   font-family: "Segoe UI", "Consolas", "Roboto Mono", monospace;
 }
 
-[data-testid="stAppViewContainer"] > .main {
-  padding-top: 0 !important;
-}
+@media (min-width: 861px) {
+  .st-key-desktop_nav {
+    position: fixed;
+    top: 2.9rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 1.5rem));
+    z-index: 1200;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 15px;
+  }
 
-div[data-testid="stMainBlockContainer"] {
-  padding-top: 0 !important;
-}
-
-div[data-testid="stMainBlockContainer"] > div:first-child {
-  margin-top: 0 !important;
+  .main .block-container {
+    padding-top: 5.25rem !important;
+  }
 }
 
 .brand-link {
@@ -179,8 +200,7 @@ div[data-testid="stMainBlockContainer"] > div:first-child {
 }
 
 .top-nav-divider {
-  border-bottom: 1px solid var(--line);
-  margin: 0.25rem 0 0.8rem;
+  display: none;
 }
 
 .subsection-divider {

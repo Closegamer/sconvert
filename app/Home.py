@@ -127,6 +127,8 @@ view_to_label = {
 }
 label_to_view = {value: key for key, value in view_to_label.items()}
 
+st.session_state.view = render_header(st.session_state.view, st.session_state.lang, texts)
+
 with st.container(key="mobile_trigger"):
     burger_col, logo_col = st.columns([0.55, 4.45], vertical_alignment="center")
     with burger_col:
@@ -164,8 +166,6 @@ if st.session_state.mobile_menu_open:
         if selected_drawer_lang != st.session_state.lang:
             st.session_state.lang = selected_drawer_lang
             st.rerun()
-
-st.session_state.view = render_header(st.session_state.view, st.session_state.lang, texts)
 
 if st.session_state.show_privacy and st.session_state.view != st.session_state.privacy_origin_view:
     st.session_state.show_privacy = False
