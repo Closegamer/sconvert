@@ -285,6 +285,42 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
   max-width: max-content !important;
 }
 
+.st-key-units_length_panel,
+.st-key-units_temperature_panel {
+  border: 1px solid var(--btn-border);
+  border-radius: 0.5rem;
+  background: linear-gradient(180deg, var(--btn-bg-top) 0%, var(--panel) 100%);
+  padding: 0.06rem 0.35rem;
+  margin-bottom: 0.45rem;
+}
+
+.st-key-units_length_panel div[data-testid="stButton"] > button,
+.st-key-units_temperature_panel div[data-testid="stButton"] > button {
+  border: 0 !important;
+  background: transparent !important;
+  min-height: 2.15rem;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  font-size: 1.08rem !important;
+  font-weight: 600 !important;
+  padding-left: 0.55rem !important;
+}
+
+.st-key-units_length_panel div[data-testid="stButton"] > button > div,
+.st-key-units_temperature_panel div[data-testid="stButton"] > button > div,
+.st-key-units_length_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-units_temperature_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] {
+  width: 100% !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+}
+
+.st-key-units_length_panel div[data-testid="stButton"] > button:hover,
+.st-key-units_temperature_panel div[data-testid="stButton"] > button:hover {
+  border: 0 !important;
+}
+
 @media (max-width: 860px) {
   .st-key-desktop_nav,
   .st-key-desktop_nav > div,

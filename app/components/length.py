@@ -88,7 +88,38 @@ def render_length_converter(texts: dict[str, str]) -> None:
     if needs_sync:
         _sync_length_inputs_from_base()
 
-    with st.expander(texts["units.length.title"], expanded=True):
+    if "favorite_length" not in st.session_state:
+        st.session_state.favorite_length = False
+    favorite_toggle_key = "favorite_length_toggle"
+    if favorite_toggle_key not in st.session_state:
+        st.session_state[favorite_toggle_key] = bool(st.session_state.favorite_length)
+
+    collapse_token = int(st.session_state.get("units_collapse_all_token", 0))
+    seen_token_key = "units_length_seen_collapse_token"
+    expanded_key = "units_length_expanded"
+    if seen_token_key not in st.session_state:
+        st.session_state[seen_token_key] = collapse_token
+    if expanded_key not in st.session_state:
+        st.session_state[expanded_key] = False
+    if collapse_token != int(st.session_state[seen_token_key]):
+        st.session_state[seen_token_key] = collapse_token
+        st.session_state[expanded_key] = False
+
+    with st.container(key="units_length_panel"):
+        header_col, favorite_col = st.columns([8, 2], vertical_alignment="center")
+        with header_col:
+            if st.button(
+                f'{"▼" if st.session_state[expanded_key] else "▶"} {texts["units.length.title"]}',
+                key="units_length_expand_btn",
+                use_container_width=True,
+            ):
+                st.session_state[expanded_key] = not bool(st.session_state[expanded_key])
+                st.rerun()
+        with favorite_col:
+            st.toggle("★", key=favorite_toggle_key)
+            st.session_state.favorite_length = bool(st.session_state[favorite_toggle_key])
+
+    if st.session_state[expanded_key]:
         left_col, right_col = st.columns(2, gap="small")
         columns = [left_col, right_col]
         for idx, (unit_code, label_key, _factor) in enumerate(LENGTH_UNITS):
