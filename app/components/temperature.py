@@ -17,7 +17,6 @@ TEMPERATURE_UNITS: list[tuple[str, str]] = [
 def _format_number(value: float) -> str:
     return f"{value:.10g}"
 
-
 def _parse_number(raw_value: str) -> float | None:
     normalized = raw_value.strip().replace(",", ".")
     if not normalized:
@@ -26,7 +25,6 @@ def _parse_number(raw_value: str) -> float | None:
         return float(normalized)
     except ValueError:
         return None
-
 
 def _to_kelvin(unit_code: str, value: float) -> float:
     if unit_code == "c":
@@ -47,7 +45,6 @@ def _to_kelvin(unit_code: str, value: float) -> float:
         return (value - 7.5) * 40.0 / 21.0 + 273.15
     return value
 
-
 def _from_kelvin(unit_code: str, kelvin: float) -> float:
     if unit_code == "c":
         return kelvin - 273.15
@@ -67,14 +64,12 @@ def _from_kelvin(unit_code: str, kelvin: float) -> float:
         return (kelvin - 273.15) * 21.0 / 40.0 + 7.5
     return kelvin
 
-
 def _sync_temperature_inputs_from_base() -> None:
     base_k = float(st.session_state.units_temperature_base_k)
     for unit_code, _label_key in TEMPERATURE_UNITS:
         st.session_state[f"units_temperature_{unit_code}"] = _format_number(
             _from_kelvin(unit_code, base_k)
         )
-
 
 def render_temperature_converter(texts: dict[str, str]) -> None:
     if "units_temperature_base_k" not in st.session_state:
@@ -91,19 +86,18 @@ def render_temperature_converter(texts: dict[str, str]) -> None:
             code: st.session_state.get(f"units_temperature_{code}", "")
             for code, _label in TEMPERATURE_UNITS
         }
-        changed_unit = next(
-            (
-                code
-                for code, _label in TEMPERATURE_UNITS
-                if current_inputs.get(code) != last_inputs.get(code)
-            ),
-            None,
-        )
-        if changed_unit is not None:
-            parsed_value = _parse_number(current_inputs[changed_unit])
-            if parsed_value is not None:
-                st.session_state.units_temperature_base_k = _to_kelvin(changed_unit, parsed_value)
-                needs_sync = True
+        changed_units = [
+            code
+            for code, _label in TEMPERATURE_UNITS
+            if current_inputs.get(code) != last_inputs.get(code, "")
+        ]
+        for changed_unit in changed_units:
+            parsed_value = _parse_number(current_inputs.get(changed_unit, ""))
+            if parsed_value is None:
+                continue
+            st.session_state.units_temperature_base_k = _to_kelvin(changed_unit, parsed_value)
+            needs_sync = True
+            break
 
     if needs_sync:
         _sync_temperature_inputs_from_base()

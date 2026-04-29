@@ -269,12 +269,10 @@ if st.session_state.view != "privacy" and not st.session_state.favorites_local_b
             st.session_state.units_radiation_expanded = False
         if "units_data_expanded" not in st.session_state:
             st.session_state.units_data_expanded = False
+        # Storage may genuinely be empty on first visit; avoid extra rerun
+        # so the first Enter in converter inputs is not lost.
         st.session_state.favorites_local_bootstrap_tries += 1
-        if st.session_state.favorites_local_bootstrap_tries >= 2:
-            # Storage may genuinely be empty; allow normal save flow afterwards.
-            st.session_state.favorites_local_bootstrapped = True
-        else:
-            st.rerun()
+        st.session_state.favorites_local_bootstrapped = True
 
 texts = RU_TEXTS if st.session_state.lang == "ru" else EN_TEXTS
 

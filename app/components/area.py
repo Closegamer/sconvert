@@ -33,7 +33,6 @@ def _format_number(value: float) -> str:
     exponent_pretty = str(exponent).translate(SUPERSCRIPT_DIGITS)
     return f"{mantissa:.10g} × 10{exponent_pretty}"
 
-
 def _parse_number(raw_value: str) -> float | None:
     normalized = raw_value.strip().replace(",", ".")
     if not normalized:
@@ -46,12 +45,10 @@ def _parse_number(raw_value: str) -> float | None:
     except ValueError:
         return None
 
-
 def _sync_area_inputs_from_base() -> None:
     base_m2 = float(st.session_state.units_area_base_m2)
     for unit_code, _label_key, factor_to_m2 in AREA_UNITS:
         st.session_state[f"units_area_{unit_code}"] = _format_number(base_m2 / factor_to_m2)
-
 
 def render_area_converter(texts: dict[str, str]) -> None:
     if "units_area_base_m2" not in st.session_state:
@@ -65,16 +62,17 @@ def render_area_converter(texts: dict[str, str]) -> None:
     if not needs_sync:
         last_inputs: dict[str, str] = st.session_state.units_area_last_inputs
         current_inputs = {code: st.session_state.get(f"units_area_{code}", "") for code, _k, _f in AREA_UNITS}
-        changed_unit = next(
-            (code for code, _k, _f in AREA_UNITS if current_inputs.get(code) != last_inputs.get(code)),
-            None,
-        )
-        if changed_unit is not None:
-            parsed_value = _parse_number(current_inputs[changed_unit])
-            if parsed_value is not None:
-                factor_to_m2 = next(f for code, _k, f in AREA_UNITS if code == changed_unit)
-                st.session_state.units_area_base_m2 = parsed_value * factor_to_m2
-                needs_sync = True
+        changed_units = [
+            code for code, _k, _f in AREA_UNITS if current_inputs.get(code) != last_inputs.get(code, "")
+        ]
+        for changed_unit in changed_units:
+            parsed_value = _parse_number(current_inputs.get(changed_unit, ""))
+            if parsed_value is None:
+                continue
+            factor_to_m2 = next(f for code, _k, f in AREA_UNITS if code == changed_unit)
+            st.session_state.units_area_base_m2 = parsed_value * factor_to_m2
+            needs_sync = True
+            break
 
     if needs_sync:
         _sync_area_inputs_from_base()

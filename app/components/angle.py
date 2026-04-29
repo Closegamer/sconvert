@@ -17,6 +17,7 @@ def _format_number(value: float) -> str:
     if -4 <= exponent <= 6:
         return f"{value:.10g}"
     return f"{float(mantissa_str):.10g} × 10{str(exponent).translate(SUPERSCRIPT_DIGITS)}"
+
 def _parse_number(raw_value: str) -> float | None:
     normalized = raw_value.strip().replace(",", ".")
     if not normalized:
@@ -28,10 +29,12 @@ def _parse_number(raw_value: str) -> float | None:
         return float(normalized)
     except ValueError:
         return None
+
 def _sync_inputs() -> None:
     base = float(st.session_state.units_angle_base_rad)
     for code, _k, factor in ANGLE_UNITS:
         st.session_state[f"units_angle_{code}"] = _format_number(base / factor)
+
 def render_angle_converter(texts: dict[str, str]) -> None:
     if "units_angle_base_rad" not in st.session_state:
         st.session_state.units_angle_base_rad = 1.0
@@ -42,13 +45,15 @@ def render_angle_converter(texts: dict[str, str]) -> None:
     if not needs_sync:
         last = st.session_state.units_angle_last_inputs
         current = {c: st.session_state.get(f"units_angle_{c}", "") for c, _k, _f in ANGLE_UNITS}
-        changed = next((c for c, _k, _f in ANGLE_UNITS if current.get(c) != last.get(c)), None)
-        if changed is not None:
-            parsed = _parse_number(current[changed])
-            if parsed is not None:
-                factor = next(f for c, _k, f in ANGLE_UNITS if c == changed)
-                st.session_state.units_angle_base_rad = parsed * factor
-                needs_sync = True
+        changed_codes = [c for c, _k, _f in ANGLE_UNITS if current.get(c) != last.get(c, "")]
+        for changed in changed_codes:
+            parsed = _parse_number(current.get(changed, ""))
+            if parsed is None:
+                continue
+            factor = next(f for c, _k, f in ANGLE_UNITS if c == changed)
+            st.session_state.units_angle_base_rad = parsed * factor
+            needs_sync = True
+            break
     if needs_sync:
         _sync_inputs()
     if "favorite_angle" not in st.session_state:

@@ -14,6 +14,7 @@ SUPERSCRIPT_DIGITS=str.maketrans("0123456789-","⁰¹²³⁴⁵⁶⁷⁸⁹⁻")
 def _fmt(v:float)->str:
     s=f"{v:.10e}";m,e=s.split("e");ei=int(e)
     return f"{v:.10g}" if -4<=ei<=6 else f"{float(m):.10g} × 10{str(ei).translate(SUPERSCRIPT_DIGITS)}"
+
 def _parse(raw:str)->float|None:
     n=raw.strip().replace(",",".")
     if not n:return None
@@ -21,19 +22,24 @@ def _parse(raw:str)->float|None:
     if m:return float(m.group(1))*(10**int(m.group(2)))
     try:return float(n)
     except ValueError:return None
+
 def _sync()->None:
     b=float(st.session_state.units_flow_base)
     for c,_k,f in FLOW_UNITS: st.session_state[f"units_flow_{c}"]=_fmt(b/f)
+
 def render_flow_converter(texts:dict[str,str])->None:
     if "units_flow_base" not in st.session_state: st.session_state.units_flow_base=1e-3
     if "units_flow_last_inputs" not in st.session_state: st.session_state.units_flow_last_inputs={}
     needs=any(f"units_flow_{c}" not in st.session_state for c,_k,_f in FLOW_UNITS)
     if not needs:
         last=st.session_state.units_flow_last_inputs;cur={c:st.session_state.get(f"units_flow_{c}","") for c,_k,_f in FLOW_UNITS}
-        ch=next((c for c,_k,_f in FLOW_UNITS if cur.get(c)!=last.get(c)),None)
-        if ch is not None:
-            p=_parse(cur[ch])
-            if p is not None: st.session_state.units_flow_base=p*next(f for c,_k,f in FLOW_UNITS if c==ch);needs=True
+        changed=[c for c,_k,_f in FLOW_UNITS if cur.get(c)!=last.get(c,"")]
+        for ch in changed:
+            p=_parse(cur.get(ch,""))
+            if p is None:
+                continue
+            st.session_state.units_flow_base=p*next(f for c,_k,f in FLOW_UNITS if c==ch);needs=True
+            break
     if needs:_sync()
     if "favorite_flow" not in st.session_state: st.session_state.favorite_flow=False
     t="favorite_flow_toggle"; st.session_state.setdefault(t,bool(st.session_state.favorite_flow))

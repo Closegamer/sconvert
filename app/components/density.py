@@ -11,6 +11,7 @@ SUPERSCRIPT_DIGITS = str.maketrans("0123456789-", "⁰¹²³⁴⁵⁶⁷⁸⁹�
 def _format_number(v: float) -> str:
     s=f"{v:.10e}";m,e=s.split("e");ei=int(e)
     return f"{v:.10g}" if -4<=ei<=6 else f"{float(m):.10g} × 10{str(ei).translate(SUPERSCRIPT_DIGITS)}"
+
 def _parse_number(raw: str) -> float | None:
     n=raw.strip().replace(",", ".")
     if not n:return None
@@ -18,19 +19,24 @@ def _parse_number(raw: str) -> float | None:
     if m:return float(m.group(1))*(10**int(m.group(2)))
     try:return float(n)
     except ValueError:return None
+
 def _sync()->None:
     b=float(st.session_state.units_density_base)
     for c,_k,f in DENSITY_UNITS:st.session_state[f"units_density_{c}"]=_format_number(b/f)
+
 def render_density_converter(texts: dict[str,str])->None:
     if "units_density_base" not in st.session_state: st.session_state.units_density_base=1000.0
     if "units_density_last_inputs" not in st.session_state: st.session_state.units_density_last_inputs={}
     keys=[f"units_density_{c}" for c,_k,_f in DENSITY_UNITS];needs=any(k not in st.session_state for k in keys)
     if not needs:
         last=st.session_state.units_density_last_inputs;cur={c:st.session_state.get(f"units_density_{c}","") for c,_k,_f in DENSITY_UNITS}
-        ch=next((c for c,_k,_f in DENSITY_UNITS if cur.get(c)!=last.get(c)),None)
-        if ch is not None:
-            p=_parse_number(cur[ch])
-            if p is not None: st.session_state.units_density_base=p*next(f for c,_k,f in DENSITY_UNITS if c==ch);needs=True
+        changed=[c for c,_k,_f in DENSITY_UNITS if cur.get(c)!=last.get(c,"")]
+        for ch in changed:
+            p=_parse_number(cur.get(ch,""))
+            if p is None:
+                continue
+            st.session_state.units_density_base=p*next(f for c,_k,f in DENSITY_UNITS if c==ch);needs=True
+            break
     if needs:_sync()
     if "favorite_density" not in st.session_state: st.session_state.favorite_density=False
     t="favorite_density_toggle"
