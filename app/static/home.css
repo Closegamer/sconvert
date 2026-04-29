@@ -11,6 +11,7 @@
   --brand-glow: rgba(99, 255, 154, 0.15);
   --accent-top: #1bbd58;
   --accent-text: #04210f;
+  --value-text: #f2fff6;
 }
 
 html,
@@ -208,6 +209,13 @@ footer {
   font-family: "Segoe UI", "Consolas", "Roboto Mono", monospace;
 }
 
+div[data-baseweb="input"] input,
+div[data-baseweb="textarea"] textarea,
+textarea {
+  color: var(--value-text) !important;
+  -webkit-text-fill-color: var(--value-text) !important;
+}
+
 @media (min-width: 861px) {
   .st-key-desktop_nav {
     position: fixed;
@@ -276,6 +284,10 @@ footer {
   color: var(--muted);
   text-align: center;
   font-size: 0.98rem;
+}
+
+.btc-disclaimer {
+  color: #c98f8f !important;
 }
 
 .page-footer {
