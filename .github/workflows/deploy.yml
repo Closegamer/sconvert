@@ -32,3 +32,4 @@ jobs:
             git checkout "${{ github.ref_name }}"
             git reset --hard "origin/${{ github.ref_name }}"
             docker compose up -d --build --force-recreate
+            docker compose exec -T db psql -U "${POSTGRES_USER:-sconvert}" -d "${POSTGRES_DB:-sconvert}" < db/sql/001_create_btc_conversion_log.sql

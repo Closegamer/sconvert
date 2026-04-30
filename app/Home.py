@@ -279,7 +279,7 @@ texts = RU_TEXTS if st.session_state.lang == "ru" else EN_TEXTS
 view_to_label = {
     "home": texts["nav.home"],
     "units": texts["nav.units"],
-    "files": texts["nav.files"],
+    # "files": texts["nav.files"],  # Temporarily hidden from menu
     "btc": texts["nav.btc"],
     "about": texts["nav.about"],
 }
@@ -303,8 +303,8 @@ if st.session_state.mobile_menu_open:
         selected_mobile_label = st.radio(
             "menu",
             options=list(view_to_label.values()),
-            index=["home", "units", "files", "btc", "about"].index(
-                st.session_state.view if st.session_state.view in {"home", "units", "files", "btc", "about"} else "home"
+            index=["home", "units", "btc", "about"].index(
+                st.session_state.view if st.session_state.view in {"home", "units", "btc", "about"} else "home"
             ),
             key="mobile_drawer_menu",
         )
