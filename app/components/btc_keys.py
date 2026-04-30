@@ -1,8 +1,12 @@
 import hashlib
 import html
 import hmac
+import importlib
+import json
+import os
 import unicodedata
 from decimal import Decimal, getcontext
+from typing import Any
 
 import streamlit as st
 import requests
@@ -671,6 +675,180 @@ def _render_copy_button(texts: dict[str, str], value: str, key: str) -> None:
         height=32,
     )
 
+def _normalize_signature_value(field_name: str, value: str) -> str:
+    normalized = value.strip()
+    if not normalized:
+        return ""
+    if field_name in {
+        "private_hex",
+        "public_key",
+        "public_key_uncompressed",
+        "ripemd160",
+        "ripemd160_uncompressed",
+    }:
+        return normalized.lower().removeprefix("0x")
+    return normalized
+
+def _build_request_signature(entry_point_field: str, entry_value: str) -> str:
+    normalized_value = _normalize_signature_value(entry_point_field, entry_value)
+    payload = {
+        "entry_point_field": entry_point_field,
+        "entry_value": normalized_value,
+        "cache_version": 1,
+    }
+    body = json.dumps(payload, sort_keys=True, ensure_ascii=True)
+    return hashlib.sha256(body.encode("utf-8")).hexdigest()
+
+@st.cache_resource
+def _get_redis_client():
+    try:
+        redis_module = importlib.import_module("redis")
+    except ModuleNotFoundError:
+        return None
+    redis_url = os.getenv("REDIS_URL", "redis://redis:6379/0")
+    try:
+        return redis_module.Redis.from_url(redis_url, decode_responses=True)
+    except Exception:
+        return None
+
+def _db_dsn() -> str:
+    return os.getenv(
+        "DATABASE_URL",
+        "postgresql://sconvert:dev_only_change_me@db:5432/sconvert",
+    )
+
+def _load_conversion_record_by_signature(request_signature: str) -> dict[str, Any] | None:
+    try:
+        psycopg_module = importlib.import_module("psycopg")
+    except ModuleNotFoundError:
+        return None
+    query = """
+        SELECT
+            request_signature,
+            entry_point_field,
+            in_private_dec,
+            in_private_hex,
+            in_private_wif,
+            in_private_wif_u,
+            in_seed_phrase,
+            in_public_key_c,
+            in_public_key_u,
+            in_ripemd160_c,
+            in_ripemd160_u,
+            in_address_c,
+            in_address_u,
+            in_address_p2sh,
+            in_address_p2wpkh,
+            out_private_dec,
+            out_private_hex,
+            out_private_hex_normalized,
+            out_private_wif,
+            out_private_wif_u,
+            out_public_key_c,
+            out_public_key_u,
+            out_ripemd160_c,
+            out_ripemd160_u,
+            out_address_c,
+            out_address_u,
+            out_address_p2sh,
+            out_address_p2wpkh,
+            out_address_info,
+            out_balance_text,
+            out_address_summary_text,
+            out_utxos_text,
+            out_txs_text,
+            out_private_key_position_percent,
+            out_pubkey_on_curve,
+            out_pubkey_curve_error
+        FROM btc_conversion_log
+        WHERE request_signature = %s
+        LIMIT 1
+    """
+    try:
+        with psycopg_module.connect(_db_dsn()) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query, (request_signature,))
+                row = cur.fetchone()
+                if not row:
+                    return None
+                columns = [desc.name for desc in cur.description]
+                return dict(zip(columns, row))
+    except Exception:
+        return None
+
+def _insert_conversion_record(record: dict[str, Any]) -> None:
+    try:
+        psycopg_module = importlib.import_module("psycopg")
+    except ModuleNotFoundError:
+        return
+    columns = list(record.keys())
+    placeholders = ", ".join(["%s"] * len(columns))
+    query = f"""
+        INSERT INTO btc_conversion_log ({", ".join(columns)})
+        VALUES ({placeholders})
+        ON CONFLICT (request_signature) DO UPDATE
+        SET updated_at = NOW()
+    """
+    values = [record[col] for col in columns]
+    try:
+        with psycopg_module.connect(_db_dsn()) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query, values)
+            conn.commit()
+    except Exception:
+        return
+
+def _cache_get(redis_client, request_signature: str) -> dict[str, Any] | None:
+    if redis_client is None:
+        return None
+    redis_key = f"btc:conv:v1:{request_signature}"
+    try:
+        payload = redis_client.get(redis_key)
+        if not payload:
+            return None
+        data = json.loads(payload)
+        return data if isinstance(data, dict) else None
+    except Exception:
+        return None
+
+def _cache_set(redis_client, request_signature: str, payload: dict[str, Any], ttl_seconds: int = 120) -> None:
+    if redis_client is None:
+        return
+    redis_key = f"btc:conv:v1:{request_signature}"
+    try:
+        redis_client.setex(redis_key, ttl_seconds, json.dumps(payload, ensure_ascii=True))
+    except Exception:
+        return
+
+def _apply_record_to_session(record: dict[str, Any], field_keys: dict[str, str]) -> None:
+    mapping = {
+        "private_dec": "out_private_dec",
+        "private_hex": "out_private_hex",
+        "private_wif": "out_private_wif",
+        "private_wif_uncompressed": "out_private_wif_u",
+        "seed_phrase": "in_seed_phrase",
+        "public_key": "out_public_key_c",
+        "public_key_uncompressed": "out_public_key_u",
+        "ripemd160": "out_ripemd160_c",
+        "ripemd160_uncompressed": "out_ripemd160_u",
+        "address": "out_address_c",
+        "address_uncompressed": "out_address_u",
+        "address_p2sh": "out_address_p2sh",
+        "address_p2wpkh": "out_address_p2wpkh",
+        "private_dec_norm": "out_private_dec",
+        "private_hex_norm": "out_private_hex_normalized",
+        "balance": "out_balance_text",
+        "address_summary": "out_address_summary_text",
+        "address_info": "out_address_info",
+        "utxos_view": "out_utxos_text",
+        "txs_view": "out_txs_text",
+    }
+    for session_name, record_name in mapping.items():
+        value = record.get(record_name)
+        st.session_state[field_keys[session_name]] = "" if value is None else str(value)
+    curve_error = record.get("out_pubkey_curve_error")
+    st.session_state.btc_pubkey_curve_error = "" if curve_error is None else str(curve_error)
+
 def render_btc_keys_component(texts: dict[str, str]) -> None:
     try:
         from ecdsa import SECP256k1, VerifyingKey
@@ -754,6 +932,33 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
         (k for k in current_inputs.keys() if current_inputs[k] != last_inputs.get(k, "")),
         None,
     )
+    redis_client = _get_redis_client()
+    request_signature: str | None = None
+    entry_point_map = {
+        "private_wif_uncompressed": "private_wif_u",
+        "public_key": "public_key_c",
+        "public_key_uncompressed": "public_key_u",
+        "ripemd160": "ripemd160_c",
+        "ripemd160_uncompressed": "ripemd160_u",
+        "address": "address_c",
+        "address_uncompressed": "address_u",
+    }
+    changed_field_for_log: str | None = entry_point_map.get(changed_field, changed_field)
+    loaded_from_cache = False
+
+    if changed_field is not None:
+        candidate_value = str(current_inputs.get(changed_field, "")).strip()
+        if candidate_value:
+            request_signature = _build_request_signature(changed_field, candidate_value)
+            cached_record = _cache_get(redis_client, request_signature)
+            if cached_record is None:
+                cached_record = _load_conversion_record_by_signature(request_signature)
+                if cached_record is not None:
+                    _cache_set(redis_client, request_signature, cached_record, ttl_seconds=120)
+            if cached_record is not None:
+                _apply_record_to_session(cached_record, field_keys)
+                loaded_from_cache = True
+                changed_field = None
 
     if changed_field is not None:
         for field_name in current_inputs.keys():
@@ -955,6 +1160,90 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
             info_address = value
             break
     st.session_state[field_keys["address_info"]] = _describe_address_type_network(info_address, texts) if info_address else ""
+
+    if request_signature and changed_field_for_log and not loaded_from_cache:
+        input_snapshot = {
+            "private_dec": "",
+            "private_hex": "",
+            "private_wif": "",
+            "private_wif_uncompressed": "",
+            "seed_phrase": "",
+            "public_key": "",
+            "public_key_uncompressed": "",
+            "ripemd160": "",
+            "ripemd160_uncompressed": "",
+            "address": "",
+            "address_uncompressed": "",
+            "address_p2sh": "",
+            "address_p2wpkh": "",
+        }
+        if changed_field and changed_field in input_snapshot:
+            input_snapshot[changed_field] = str(current_inputs.get(changed_field, "")).strip()
+        private_dec_value = str(st.session_state.get(field_keys["private_dec"], "")).strip()
+        position_percent: Decimal | None = None
+        if private_dec_value.isdigit():
+            try:
+                private_int = int(private_dec_value, 10)
+                if 0 < private_int < SECP256k1.order:
+                    getcontext().prec = 80
+                    position_percent = (Decimal(private_int - 1) / Decimal(SECP256k1.order - 2)) * Decimal(100)
+            except ValueError:
+                position_percent = None
+        pubkey_u_value = str(st.session_state.get(field_keys["public_key_uncompressed"], "")).strip()
+        pubkey_on_curve: bool | None = None
+        if pubkey_u_value:
+            try:
+                raw_pub = bytes.fromhex(pubkey_u_value.lower().removeprefix("0x"))
+                if len(raw_pub) == 65 and raw_pub[0] == 0x04:
+                    x_int = int.from_bytes(raw_pub[1:33], "big")
+                    y_int = int.from_bytes(raw_pub[33:], "big")
+                    p_int = SECP256k1.curve.p()
+                    pubkey_on_curve = (pow(y_int, 2, p_int) - (pow(x_int, 3, p_int) + 7)) % p_int == 0
+            except ValueError:
+                pubkey_on_curve = None
+        record = {
+            "request_signature": request_signature,
+            "entry_point_field": changed_field_for_log,
+            "in_private_dec": input_snapshot["private_dec"],
+            "in_private_hex": input_snapshot["private_hex"],
+            "in_private_wif": input_snapshot["private_wif"],
+            "in_private_wif_u": input_snapshot["private_wif_uncompressed"],
+            "in_seed_phrase": input_snapshot["seed_phrase"],
+            "in_public_key_c": input_snapshot["public_key"],
+            "in_public_key_u": input_snapshot["public_key_uncompressed"],
+            "in_ripemd160_c": input_snapshot["ripemd160"],
+            "in_ripemd160_u": input_snapshot["ripemd160_uncompressed"],
+            "in_address_c": input_snapshot["address"],
+            "in_address_u": input_snapshot["address_uncompressed"],
+            "in_address_p2sh": input_snapshot["address_p2sh"],
+            "in_address_p2wpkh": input_snapshot["address_p2wpkh"],
+            "out_private_dec": str(st.session_state.get(field_keys["private_dec"], "")).strip(),
+            "out_private_hex": str(st.session_state.get(field_keys["private_hex"], "")).strip(),
+            "out_private_hex_normalized": str(st.session_state.get(field_keys["private_hex_norm"], "")).strip(),
+            "out_private_wif": str(st.session_state.get(field_keys["private_wif"], "")).strip(),
+            "out_private_wif_u": str(st.session_state.get(field_keys["private_wif_uncompressed"], "")).strip(),
+            "out_public_key_c": str(st.session_state.get(field_keys["public_key"], "")).strip(),
+            "out_public_key_u": str(st.session_state.get(field_keys["public_key_uncompressed"], "")).strip(),
+            "out_ripemd160_c": str(st.session_state.get(field_keys["ripemd160"], "")).strip(),
+            "out_ripemd160_u": str(st.session_state.get(field_keys["ripemd160_uncompressed"], "")).strip(),
+            "out_address_c": str(st.session_state.get(field_keys["address"], "")).strip(),
+            "out_address_u": str(st.session_state.get(field_keys["address_uncompressed"], "")).strip(),
+            "out_address_p2sh": str(st.session_state.get(field_keys["address_p2sh"], "")).strip(),
+            "out_address_p2wpkh": str(st.session_state.get(field_keys["address_p2wpkh"], "")).strip(),
+            "out_address_info": str(st.session_state.get(field_keys["address_info"], "")).strip(),
+            "out_balance_text": str(st.session_state.get(field_keys["balance"], "")).strip(),
+            "out_address_summary_text": str(st.session_state.get(field_keys["address_summary"], "")).strip(),
+            "out_utxos_text": str(st.session_state.get(field_keys["utxos_view"], "")).strip(),
+            "out_txs_text": str(st.session_state.get(field_keys["txs_view"], "")).strip(),
+            "out_private_key_position_percent": float(position_percent) if position_percent is not None else None,
+            "out_pubkey_on_curve": pubkey_on_curve,
+            "out_pubkey_curve_error": str(st.session_state.get("btc_pubkey_curve_error", "")).strip(),
+            "redis_cache_key": f"btc:conv:v1:{request_signature}",
+            "redis_ttl_seconds": 120,
+            "cache_version": 1,
+        }
+        _insert_conversion_record(record)
+        _cache_set(redis_client, request_signature, record, ttl_seconds=120)
 
     _render_input_with_count(texts["btc.private_dec"], field_keys["private_dec"])
     _render_copy_button(texts, str(st.session_state.get(field_keys["private_dec"], "")).strip(), "copy_private_dec")

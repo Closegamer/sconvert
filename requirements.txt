@@ -1,3 +1,5 @@
 streamlit>=1.31,<2
 streamlit-local-storage
 ecdsa
+psycopg[binary]
+redis
