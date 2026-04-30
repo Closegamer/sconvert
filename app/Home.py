@@ -507,9 +507,10 @@ if st.session_state.mobile_menu_open:
             st.session_state.mobile_menu_open = False
             st.rerun()
 
+        if "mobile_drawer_lang" not in st.session_state:
+            st.session_state.mobile_drawer_lang = st.session_state.lang == "en"
         drawer_use_english = st.toggle(
             " ",
-            value=st.session_state.lang == "en",
             key="mobile_drawer_lang",
             help=f'{texts["lang.ru"]}/{texts["lang.en"]}',
         )

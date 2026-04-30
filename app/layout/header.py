@@ -32,7 +32,6 @@ def render_header(current_view: str, current_lang: str, texts: dict[str, str]) -
             use_english = st.toggle(
                 " ",
                 value=current_lang == "en",
-                key="lang_switch",
                 help=f'{texts["lang.ru"]} / {texts["lang.en"]}',
             )
     selected_lang = "en" if use_english else "ru"
