@@ -1247,22 +1247,22 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
 
     _render_input_with_count(texts["btc.private_dec"], field_keys["private_dec"])
     _render_copy_button(texts, str(st.session_state.get(field_keys["private_dec"], "")).strip(), "copy_private_dec")
-    _render_input_with_count(texts["btc.private_hex"], field_keys["private_hex"])
+    _render_textarea_with_count(texts["btc.private_hex"], field_keys["private_hex"], height=78)
     _render_copy_button(texts, str(st.session_state.get(field_keys["private_hex"], "")).strip(), "copy_private_hex")
-    _render_input_with_count(texts["btc.private_hex_norm"], field_keys["private_hex_norm"], disabled=True)
+    _render_textarea_with_count(texts["btc.private_hex_norm"], field_keys["private_hex_norm"], height=78, disabled=True)
     _render_copy_button(texts, str(st.session_state.get(field_keys["private_hex_norm"], "")).strip(), "copy_private_hex_norm")
-    _render_input_with_count(texts["btc.private_wif"], field_keys["private_wif"])
+    _render_textarea_with_count(texts["btc.private_wif"], field_keys["private_wif"], height=78)
     _render_copy_button(texts, str(st.session_state.get(field_keys["private_wif"], "")).strip(), "copy_private_wif")
-    _render_input_with_count(texts["btc.private_wif_uncompressed"], field_keys["private_wif_uncompressed"])
+    _render_textarea_with_count(texts["btc.private_wif_uncompressed"], field_keys["private_wif_uncompressed"], height=78)
     _render_copy_button(
         texts,
         str(st.session_state.get(field_keys["private_wif_uncompressed"], "")).strip(),
         "copy_private_wif_uncompressed",
     )
     _render_textarea_with_count(texts["btc.seed_phrase"], field_keys["seed_phrase"], height=88)
-    _render_input_with_count(texts["btc.public_key"], field_keys["public_key"])
+    _render_textarea_with_count(texts["btc.public_key"], field_keys["public_key"], height=78)
     _render_copy_button(texts, str(st.session_state.get(field_keys["public_key"], "")).strip(), "copy_public_key")
-    _render_input_with_count(texts["btc.public_key_uncompressed"], field_keys["public_key_uncompressed"])
+    _render_textarea_with_count(texts["btc.public_key_uncompressed"], field_keys["public_key_uncompressed"], height=98)
     _render_copy_button(
         texts,
         str(st.session_state.get(field_keys["public_key_uncompressed"], "")).strip(),

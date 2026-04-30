@@ -123,6 +123,7 @@ if str(requested_policy) == "1":
 
 local_storage = LocalStorage()
 favorites_storage_key = "sconvert_favorites"
+view_storage_key = "sconvert_last_view"
 
 
 def _favorites_from_storage(raw_value: str | dict[str, bool] | None) -> dict[str, bool]:
@@ -143,9 +144,26 @@ if "favorites_local_bootstrapped" not in st.session_state:
     st.session_state.favorites_local_bootstrapped = False
 if "favorites_local_bootstrap_tries" not in st.session_state:
     st.session_state.favorites_local_bootstrap_tries = 0
+if "view_local_bootstrapped" not in st.session_state:
+    st.session_state.view_local_bootstrapped = False
+if "view_local_last_saved" not in st.session_state:
+    st.session_state.view_local_last_saved = None
+if "local_storage_refreshed_once" not in st.session_state:
+    st.session_state.local_storage_refreshed_once = False
+
+if not st.session_state.view_local_bootstrapped and requested_view not in allowed_views:
+    if not st.session_state.local_storage_refreshed_once:
+        local_storage.refreshItems()
+        st.session_state.local_storage_refreshed_once = True
+    stored_view = local_storage.getItem(view_storage_key)
+    if isinstance(stored_view, str) and stored_view in allowed_views:
+        st.session_state.view = stored_view
+    st.session_state.view_local_bootstrapped = True
 
 if st.session_state.view != "privacy" and not st.session_state.favorites_local_bootstrapped:
-    local_storage.refreshItems()
+    if not st.session_state.local_storage_refreshed_once:
+        local_storage.refreshItems()
+        st.session_state.local_storage_refreshed_once = True
     stored_favorites_raw = local_storage.getItem(favorites_storage_key)
     if stored_favorites_raw is not None:
         stored_favorites = _favorites_from_storage(stored_favorites_raw)
@@ -593,5 +611,12 @@ if (
     set_key = f"favorites_set_{abs(hash(favorites_payload))}"
     local_storage.setItem(favorites_storage_key, favorites_payload, key=set_key)
     st.session_state.favorites_local_last_payload = favorites_payload
+
+if st.session_state.get("view_local_bootstrapped", False):
+    current_view_for_storage = st.session_state.view if st.session_state.view in allowed_views else "home"
+    if st.session_state.get("view_local_last_saved") != current_view_for_storage:
+        view_set_key = f"view_set_{abs(hash(current_view_for_storage))}"
+        local_storage.setItem(view_storage_key, current_view_for_storage, key=view_set_key)
+        st.session_state.view_local_last_saved = current_view_for_storage
 
 render_footer(texts)
