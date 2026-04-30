@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 
 import streamlit as st
+import streamlit.components.v1 as components
 from lang import EN_TEXTS, RU_TEXTS
 from layout import render_footer, render_header
 from views import render_about, render_btc, render_files, render_home, render_units
@@ -22,6 +23,69 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="collapsed",
     menu_items={"Get help": None, "Report a bug": None, "About": None},
+)
+
+st.markdown(
+    """
+    <meta name="description" content="sconvert: online converters for units, data formats, and Bitcoin tools.">
+    <meta name="robots" content="index,follow,max-image-preview:large">
+    <link rel="canonical" href="https://sconvert.ru/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="sconvert">
+    <meta property="og:title" content="sconvert - converters and BTC tools">
+    <meta property="og:description" content="Convert units, work with BTC keys/addresses, and use practical online tools.">
+    <meta property="og:url" content="https://sconvert.ru/">
+    <meta property="og:image" content="https://sconvert.ru/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="sconvert - converters and BTC tools">
+    <meta name="twitter:description" content="Convert units, work with BTC keys/addresses, and use practical online tools.">
+    <meta name="twitter:image" content="https://sconvert.ru/og-image.png">
+    """,
+    unsafe_allow_html=True,
+)
+
+components.html(
+    """
+    <script>
+    (() => {
+      const head = window.parent?.document?.head;
+      if (!head) return;
+      const ensureMeta = (attr, key, content) => {
+        let el = head.querySelector(`meta[${attr}="${key}"]`);
+        if (!el) {
+          el = window.parent.document.createElement("meta");
+          el.setAttribute(attr, key);
+          head.appendChild(el);
+        }
+        el.setAttribute("content", content);
+      };
+      const ensureLink = (rel, href) => {
+        let el = head.querySelector(`link[rel="${rel}"][data-sconvert-seo="1"]`);
+        if (!el) {
+          el = window.parent.document.createElement("link");
+          el.setAttribute("rel", rel);
+          el.setAttribute("data-sconvert-seo", "1");
+          head.appendChild(el);
+        }
+        el.setAttribute("href", href);
+      };
+      ensureMeta("name", "description", "sconvert: online converters for units, data formats, and Bitcoin tools.");
+      ensureMeta("name", "robots", "index,follow,max-image-preview:large");
+      ensureMeta("property", "og:type", "website");
+      ensureMeta("property", "og:site_name", "sconvert");
+      ensureMeta("property", "og:title", "sconvert - converters and BTC tools");
+      ensureMeta("property", "og:description", "Convert units, work with BTC keys/addresses, and use practical online tools.");
+      ensureMeta("property", "og:url", "https://sconvert.ru/");
+      ensureMeta("property", "og:image", "https://sconvert.ru/og-image.png");
+      ensureMeta("name", "twitter:card", "summary_large_image");
+      ensureMeta("name", "twitter:title", "sconvert - converters and BTC tools");
+      ensureMeta("name", "twitter:description", "Convert units, work with BTC keys/addresses, and use practical online tools.");
+      ensureMeta("name", "twitter:image", "https://sconvert.ru/og-image.png");
+      ensureLink("canonical", "https://sconvert.ru/");
+    })();
+    </script>
+    """,
+    height=0,
 )
 
 _css_path = Path(__file__).resolve().parent / "static" / "home.css"
@@ -287,7 +351,7 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
     }
     title_by_view = {
         "ru": {
-            "home": "sconvert - онлайн конвертер величин, данных и BTC инструментов",
+            "home": "sconvert - онлайн конвертер величин, данных и BTC-инструментов",
             "units": "Конвертер единиц измерения - sconvert",
             "btc": "Bitcoin (BTC) инструменты: ключи, адреса, проверки - sconvert",
             "about": "О проекте sconvert",
