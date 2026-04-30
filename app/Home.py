@@ -276,6 +276,135 @@ if st.session_state.view != "privacy" and not st.session_state.favorites_local_b
 
 texts = RU_TEXTS if st.session_state.lang == "ru" else EN_TEXTS
 
+
+def _inject_seo_meta(current_view: str, current_lang: str) -> None:
+    base_url = "https://sconvert.ru"
+    path_by_view = {
+        "home": "/",
+        "units": "/?view=units",
+        "btc": "/?view=btc",
+        "about": "/?view=about",
+    }
+    title_by_view = {
+        "ru": {
+            "home": "sconvert - онлайн конвертер величин, данных и BTC инструментов",
+            "units": "Конвертер единиц измерения - sconvert",
+            "btc": "Bitcoin (BTC) инструменты: ключи, адреса, проверки - sconvert",
+            "about": "О проекте sconvert",
+        },
+        "en": {
+            "home": "sconvert - online converters for units, data, and BTC tools",
+            "units": "Unit converter - sconvert",
+            "btc": "Bitcoin (BTC) tools: keys, addresses, checks - sconvert",
+            "about": "About sconvert",
+        },
+    }
+    description_by_view = {
+        "ru": {
+            "home": "sconvert: конвертер единиц измерения, форматов данных и инструменты для Bitcoin.",
+            "units": "Быстрый конвертер единиц: длина, масса, время, энергия, давление и другие категории.",
+            "btc": "Инструменты Bitcoin: преобразование ключей и адресов, формат WIF, RIPEMD160, UTXO и транзакции.",
+            "about": "Информация о проекте sconvert и назначении сервиса.",
+        },
+        "en": {
+            "home": "sconvert: converters for measurement units, data formats, and Bitcoin tools.",
+            "units": "Fast unit converter: length, mass, time, energy, pressure, and more categories.",
+            "btc": "Bitcoin tools: key/address conversion, WIF format, RIPEMD160, UTXO, and transactions.",
+            "about": "Information about the sconvert project and service goals.",
+        },
+    }
+    resolved_lang = "en" if current_lang == "en" else "ru"
+    resolved_view = current_view if current_view in {"home", "units", "btc", "about"} else "home"
+    page_title = title_by_view[resolved_lang][resolved_view]
+    page_description = description_by_view[resolved_lang][resolved_view]
+    canonical_url = f"{base_url}{path_by_view[resolved_view]}"
+    og_locale = "en_US" if resolved_lang == "en" else "ru_RU"
+    og_image = f"{base_url}/og-image.png"
+
+    script_payload = json.dumps(
+        {
+            "title": page_title,
+            "description": page_description,
+            "canonical": canonical_url,
+            "og_locale": og_locale,
+            "og_image": og_image,
+            "lang": resolved_lang,
+            "x_default": base_url,
+        },
+        ensure_ascii=False,
+    )
+    json_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "sconvert",
+            "url": base_url,
+            "inLanguage": ["ru", "en"],
+            "description": page_description,
+        },
+        ensure_ascii=False,
+    )
+    st.markdown(
+        f"""
+        <script>
+        (() => {{
+          const data = {script_payload};
+          const setMeta = (attr, key, value) => {{
+            let el = document.head.querySelector(`meta[${{attr}}="${{key}}"]`);
+            if (!el) {{
+              el = document.createElement('meta');
+              el.setAttribute(attr, key);
+              document.head.appendChild(el);
+            }}
+            el.setAttribute('content', value);
+          }};
+          const setLink = (rel, href, hreflang = null) => {{
+            const selector = hreflang ? `link[rel="${{rel}}"][hreflang="${{hreflang}}"]` : `link[rel="${{rel}}"]`;
+            let el = document.head.querySelector(selector);
+            if (!el) {{
+              el = document.createElement('link');
+              el.setAttribute('rel', rel);
+              if (hreflang) el.setAttribute('hreflang', hreflang);
+              document.head.appendChild(el);
+            }}
+            el.setAttribute('href', href);
+          }};
+          document.title = data.title;
+          document.documentElement.setAttribute('lang', data.lang);
+          setMeta('name', 'description', data.description);
+          setMeta('name', 'robots', 'index,follow,max-image-preview:large');
+          setMeta('property', 'og:type', 'website');
+          setMeta('property', 'og:site_name', 'sconvert');
+          setMeta('property', 'og:title', data.title);
+          setMeta('property', 'og:description', data.description);
+          setMeta('property', 'og:url', data.canonical);
+          setMeta('property', 'og:locale', data.og_locale);
+          setMeta('property', 'og:image', data.og_image);
+          setMeta('name', 'twitter:card', 'summary_large_image');
+          setMeta('name', 'twitter:title', data.title);
+          setMeta('name', 'twitter:description', data.description);
+          setMeta('name', 'twitter:image', data.og_image);
+          setLink('canonical', data.canonical);
+          setLink('alternate', data.x_default, 'x-default');
+          setLink('alternate', data.x_default, 'ru');
+          setLink('alternate', data.x_default, 'en');
+          let jsonLdTag = document.head.querySelector('script[type="application/ld+json"][data-sconvert="website"]');
+          if (!jsonLdTag) {{
+            jsonLdTag = document.createElement('script');
+            jsonLdTag.type = 'application/ld+json';
+            jsonLdTag.setAttribute('data-sconvert', 'website');
+            document.head.appendChild(jsonLdTag);
+          }}
+          jsonLdTag.textContent = {json.dumps(json_ld, ensure_ascii=False)};
+        }})();
+        </script>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+_inject_seo_meta(st.session_state.view, st.session_state.lang)
+
 view_to_label = {
     "home": texts["nav.home"],
     "units": texts["nav.units"],
