@@ -8,7 +8,6 @@ from layout import render_footer, render_header
 from views import (
     render_about,
     render_btc,
-    render_files,
     render_home,
     render_latex,
     render_latex_guide,
@@ -61,7 +60,7 @@ components.html(
 _css_path = Path(__file__).resolve().parent / "static" / "home.css"
 st.markdown(f"<style>{_css_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
 
-allowed_views = {"home", "units", "files", "btc", "latex", "latex_guide", "about"}
+allowed_views = {"home", "units", "btc", "latex", "latex_guide", "about"}
 if "view" not in st.session_state or st.session_state.view not in allowed_views:
     st.session_state.view = "home"
 if "lang" not in st.session_state or st.session_state.lang not in {"ru", "en"}:
@@ -476,7 +475,6 @@ _inject_seo_meta(st.session_state.view, st.session_state.lang)
 view_to_label = {
     "home": texts["nav.home"],
     "units": texts["nav.units"],
-    # "files": texts["nav.files"],  # Temporarily hidden from menu
     "latex": texts["nav.latex"],
     "btc": texts["nav.btc"],
     "about": texts["nav.about"],
@@ -536,8 +534,6 @@ else:
         render_home(texts)
     elif st.session_state.view == "units":
         render_units(texts)
-    elif st.session_state.view == "files":
-        render_files(texts)
     elif st.session_state.view == "latex":
         render_latex(texts)
     elif st.session_state.view == "latex_guide":

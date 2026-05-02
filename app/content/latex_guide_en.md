@@ -137,3 +137,29 @@ Try:
 ```
 
 If it previews correctly, you’re within typical KaTeX usage for this app.
+
+---
+
+## Inverse path: visual editors → LaTeX
+
+Above you mostly typed TeX **directly**. In practice people often build formulas in an **editor with buttons, palettes, or CAS**, then copy the resulting **LaTeX string** into the **Source formula** field here.
+
+### Typical sources of LaTeX after non-plain-text entry
+
+| Tool | Notes |
+|------|------|
+| **Word / LibreOffice equation editor** | Built-in math UI; you may get linear/MathML/UnicodeMath — often needs **conversion to LaTeX** via another tool or copy-from-plugin. |
+| **MathType** and similar | Frequently offers **Copy as LaTeX** or export to LaTeX snippets. |
+| **LyX**, notebooks | WYSIWYG-like editing with LaTeX underneath — copy the math source when possible. |
+| **GeoGebra**, **CAS** (Maple, Mathematica, …) | Look for **Copy as LaTeX** / export formula as TeX. |
+| **Browser equation editors** | After clicking symbols they usually show a **LaTeX field** — paste that here. |
+| **Markdown editors** (Typora, Obsidian, VS Code preview) | You often still type `$...$` — that is already TeX. |
+
+### After export
+
+1. **Wrappers** — you might get `\begin{equation}...\end{equation}`; our preview often needs only the **inner** expression.
+2. **Macros** — strip or replace commands KaTeX does not know (see [supported functions](https://katex.org/docs/supported.html)).
+3. **Delimiters** — paste with `$...$` / `$$...$$` if the tool outputs them; this app normalizes as documented above.
+
+So **inverse transformation** means: **design in a specialized editor → obtain LaTeX → paste here for KaTeX preview**. There is no `.tex` file upload — text field only.
+
