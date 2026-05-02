@@ -1,6 +1,10 @@
 [server]
 headless = true
 
+[client]
+# Убираем лишний хром: Deploy, системное ⋮ (оставляем только то, что нужно для сайдбара).
+toolbarMode = "minimal"
+
 [browser]
 gatherUsageStats = false
 

@@ -23,11 +23,11 @@
     }
     el.setAttribute("href", href);
   };
-  ensureMeta("name", "description", "sconvert: online converters for units, data formats, and Bitcoin tools.");
+  ensureMeta("name", "description", "sConvert: online converters for units, data formats, and Bitcoin tools.");
   ensureMeta("name", "robots", "index,follow,max-image-preview:large");
   ensureMeta("property", "og:type", "website");
-  ensureMeta("property", "og:site_name", "sconvert");
-  ensureMeta("property", "og:title", "sconvert - converters and BTC tools");
+  ensureMeta("property", "og:site_name", "sConvert");
+  ensureMeta("property", "og:title", "sConvert - converters and BTC tools");
   ensureMeta(
     "property",
     "og:description",
@@ -36,7 +36,7 @@
   ensureMeta("property", "og:url", "https://sconvert.ru/");
   ensureMeta("property", "og:image", "https://sconvert.ru/og-image.png");
   ensureMeta("name", "twitter:card", "summary_large_image");
-  ensureMeta("name", "twitter:title", "sconvert - converters and BTC tools");
+  ensureMeta("name", "twitter:title", "sConvert - converters and BTC tools");
   ensureMeta(
     "name",
     "twitter:description",

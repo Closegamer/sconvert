@@ -51,9 +51,13 @@ def _latex_to_png_bytes(tex: str, *, dpi: int = 200) -> bytes | None:
 
 
 def _preview_heading_and_copy(texts: dict[str, str], raw_source: str) -> None:
+    st.markdown(f"**{texts['latex.preview_label']}**")
+
+
+def _source_heading_and_copy(texts: dict[str, str], raw_source: str) -> None:
     title_col, btn_col = st.columns([4, 1])
     with title_col:
-        st.markdown(f"**{texts['latex.preview_label']}**")
+        st.markdown(f"**{texts['latex.input_label']}**")
     with btn_col:
         render_clipboard_iframe_button(
             label=texts["latex.copy_source_button"].lower(),
@@ -91,12 +95,16 @@ def render_latex_preview(texts: dict[str, str]) -> None:
     if "latex_input" not in st.session_state:
         st.session_state.latex_input = texts["latex.example"]
 
-    st.caption(texts["latex.lead"])
+    st.markdown(
+        f'<p style="text-align:left; margin:0 0 0.2rem 0; color:var(--muted);">{texts["latex.lead"]} <a class="footer-link" href="/?view=latex_guide" target="_self">{texts["footer.latex_guide"]}</a>.</p><br><br>',
+        unsafe_allow_html=True,
+    )
+    _source_heading_and_copy(texts, str(st.session_state.get("latex_input", "")))
     st.text_area(
         texts["latex.input_label"],
         key="latex_input",
         height=160,
-        label_visibility="visible",
+        label_visibility="collapsed",
     )
 
     raw_input = str(st.session_state.get("latex_input", ""))

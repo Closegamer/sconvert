@@ -415,7 +415,7 @@ def _lookup_utxos(address: str) -> list[dict]:
         raise ValueError("invalid utxo payload")
     return [utxo for utxo in payload if isinstance(utxo, dict)]
 
-def _format_utxos_for_view(utxos: list[dict]) -> str:
+def _format_utxos_for_view(utxos: list[dict], texts: dict[str, str]) -> str:
     lines: list[str] = []
     for i, utxo in enumerate(utxos, start=1):
         txid = str(utxo.get("txid", ""))
@@ -432,7 +432,7 @@ def _format_utxos_for_view(utxos: list[dict]) -> str:
                 lines.append(f"   value: {value_int} sats ({value_int / 100_000_000:.8f} BTC)")
             except (TypeError, ValueError):
                 lines.append(f"   value: {value}")
-        lines.append(f"   confirmed: {'yes' if confirmed else 'no'}")
+        lines.append(f"   confirmed: {texts['universal_yes_word'] if confirmed else texts['universal_no_word']}")
         if block_height is not None:
             lines.append(f"   block: {block_height}")
         lines.append("")
@@ -516,7 +516,7 @@ def _render_pubkey_curve_visualization(pubkey_uncompressed_hex: str, texts: dict
                 texts["btc.curve.subtitle"],
                 f"{texts['btc.curve.x']}: 0x{raw[1:33].hex()}",
                 f"{texts['btc.curve.y']}: 0x{raw[33:].hex()}",
-                f"{texts['btc.curve.on_curve']}: {'yes' if on_curve else 'no'}",
+                f"{texts['btc.curve.on_curve']}: {texts['universal_yes_word'] if on_curve else texts['universal_no_word']}",
             ]
         ),
         unsafe_allow_html=True,
@@ -1150,7 +1150,7 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
             try:
                 utxos = _lookup_utxos(target_address)
                 if utxos:
-                    st.session_state[field_keys["utxos_view"]] = _format_utxos_for_view(utxos)
+                    st.session_state[field_keys["utxos_view"]] = _format_utxos_for_view(utxos, texts)
                 else:
                     st.session_state[field_keys["utxos_view"]] = texts["btc.utxos.empty"]
             except (requests.RequestException, ValueError):

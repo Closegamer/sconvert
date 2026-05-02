@@ -26,25 +26,25 @@ except ModuleNotFoundError:
             return None
 
 st.set_page_config(
-    page_title="sconvert",
-    layout="centered",
-    initial_sidebar_state="collapsed",
+    page_title="sConvert",
+    layout="wide",
+    initial_sidebar_state="expanded",
     menu_items={"Get help": None, "Report a bug": None, "About": None},
 )
 
 st.markdown(
     """
-    <meta name="description" content="sconvert: online converters for units, data formats, and Bitcoin tools.">
+    <meta name="description" content="sConvert: online converters for units, data formats, and Bitcoin tools.">
     <meta name="robots" content="index,follow,max-image-preview:large">
     <link rel="canonical" href="https://sconvert.ru/">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="sconvert">
-    <meta property="og:title" content="sconvert - converters and BTC tools">
+    <meta property="og:site_name" content="sConvert">
+    <meta property="og:title" content="sConvert - converters and BTC tools">
     <meta property="og:description" content="Convert units, work with BTC keys/addresses, and use practical online tools.">
     <meta property="og:url" content="https://sconvert.ru/">
     <meta property="og:image" content="https://sconvert.ru/og-image.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="sconvert - converters and BTC tools">
+    <meta name="twitter:title" content="sConvert - converters and BTC tools">
     <meta name="twitter:description" content="Convert units, work with BTC keys/addresses, and use practical online tools.">
     <meta name="twitter:image" content="https://sconvert.ru/og-image.png">
     """,
@@ -65,9 +65,6 @@ if "view" not in st.session_state or st.session_state.view not in allowed_views:
     st.session_state.view = "home"
 if "lang" not in st.session_state or st.session_state.lang not in {"ru", "en"}:
     st.session_state.lang = "ru"
-if "mobile_menu_open" not in st.session_state:
-    st.session_state.mobile_menu_open = False
-
 requested_view = st.query_params.get("view")
 if isinstance(requested_view, list):
     requested_view = requested_view[0] if requested_view else None
@@ -342,38 +339,38 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
     }
     title_by_view = {
         "ru": {
-            "home": "sconvert - онлайн конвертер величин, данных и BTC-инструментов",
-            "units": "Конвертер единиц измерения - sconvert",
-            "btc": "Bitcoin (BTC) инструменты: ключи, адреса, проверки - sconvert",
-            "latex": "Формулы LaTeX: предпросмотр KaTeX - sconvert",
-            "latex_guide": "Памятка по LaTeX и математическому набору - sconvert",
-            "about": "О проекте sconvert",
+            "home": "sConvert - онлайн конвертер величин, данных и BTC-инструментов",
+            "units": "Конвертер единиц измерения - sConvert",
+            "btc": "Bitcoin (BTC) инструменты: ключи, адреса, проверки - sConvert",
+            "latex": "Формулы LaTeX: предпросмотр KaTeX - sConvert",
+            "latex_guide": "Памятка по LaTeX и математическому набору - sConvert",
+            "about": "О проекте sConvert",
         },
         "en": {
-            "home": "sconvert - online converters for units, data, and BTC tools",
-            "units": "Unit converter - sconvert",
-            "btc": "Bitcoin (BTC) tools: keys, addresses, checks - sconvert",
-            "latex": "LaTeX formulas: KaTeX preview - sconvert",
-            "latex_guide": "LaTeX math cheat sheet - sconvert",
-            "about": "About sconvert",
+            "home": "sConvert - online converters for units, data, and BTC tools",
+            "units": "Unit converter - sConvert",
+            "btc": "Bitcoin (BTC) tools: keys, addresses, checks - sConvert",
+            "latex": "LaTeX formulas: KaTeX preview - sConvert",
+            "latex_guide": "LaTeX math cheat sheet - sConvert",
+            "about": "About sConvert",
         },
     }
     description_by_view = {
         "ru": {
-            "home": "sconvert: конвертер единиц измерения, форматов данных и инструменты для Bitcoin.",
+            "home": "sConvert: конвертер единиц измерения, форматов данных и инструменты для Bitcoin.",
             "units": "Быстрый конвертер единиц: длина, масса, время, энергия, давление и другие категории.",
             "btc": "Инструменты Bitcoin: преобразование ключей и адресов, формат WIF, RIPEMD160, UTXO и транзакции.",
             "latex": "Предпросмотр формул TeX/LaTeX встроенным рендером Streamlit (KaTeX).",
             "latex_guide": "Справочник: разделители, дроби, интегралы, матрицы, греческие буквы и ограничения KaTeX.",
-            "about": "Информация о проекте sconvert и назначении сервиса.",
+            "about": "Информация о проекте sConvert и назначении сервиса.",
         },
         "en": {
-            "home": "sconvert: converters for measurement units, data formats, and Bitcoin tools.",
+            "home": "sConvert: converters for measurement units, data formats, and Bitcoin tools.",
             "units": "Fast unit converter: length, mass, time, energy, pressure, and more categories.",
             "btc": "Bitcoin tools: key/address conversion, WIF format, RIPEMD160, UTXO, and transactions.",
             "latex": "Preview TeX/LaTeX formulas with Streamlit’s built-in KaTeX renderer.",
             "latex_guide": "Cheat sheet: delimiters, fractions, integrals, matrices, Greek letters, KaTeX limits.",
-            "about": "Information about the sconvert project and service goals.",
+            "about": "Information about the sConvert project and service goals.",
         },
     }
     resolved_lang = "en" if current_lang == "en" else "ru"
@@ -404,7 +401,7 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
         {
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": "sconvert",
+            "name": "sConvert",
             "url": base_url,
             "inLanguage": ["ru", "en"],
             "description": page_description,
@@ -441,7 +438,7 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
           setMeta('name', 'description', data.description);
           setMeta('name', 'robots', 'index,follow,max-image-preview:large');
           setMeta('property', 'og:type', 'website');
-          setMeta('property', 'og:site_name', 'sconvert');
+          setMeta('property', 'og:site_name', 'sConvert');
           setMeta('property', 'og:title', data.title);
           setMeta('property', 'og:description', data.description);
           setMeta('property', 'og:url', data.canonical);
@@ -470,59 +467,8 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
     )
 
 
+st.session_state.view = render_header(st.session_state.lang, texts)
 _inject_seo_meta(st.session_state.view, st.session_state.lang)
-
-view_to_label = {
-    "home": texts["nav.home"],
-    "units": texts["nav.units"],
-    "latex": texts["nav.latex"],
-    "btc": texts["nav.btc"],
-    "about": texts["nav.about"],
-}
-label_to_view = {value: key for key, value in view_to_label.items()}
-
-st.session_state.view = render_header(st.session_state.view, st.session_state.lang, texts)
-
-with st.container(key="mobile_trigger"):
-    burger_col, logo_col = st.columns([0.55, 4.45], vertical_alignment="center")
-    with burger_col:
-        if st.button("✕" if st.session_state.mobile_menu_open else "☰", key="mobile_trigger_btn"):
-            st.session_state.mobile_menu_open = not st.session_state.mobile_menu_open
-            st.rerun()
-    with logo_col:
-        st.markdown('<span class="mobile-trigger-logo">sconvert</span>', unsafe_allow_html=True)
-
-if st.session_state.mobile_menu_open:
-    with st.container(key="mobile_drawer_overlay"):
-        st.markdown("")
-    with st.container(key="mobile_drawer"):
-        selected_mobile_label = st.radio(
-            "menu",
-            options=list(view_to_label.values()),
-            index=["home", "units", "latex", "btc", "about"].index(
-                st.session_state.view
-                if st.session_state.view in {"home", "units", "latex", "btc", "about"}
-                else "home"
-            ),
-            key="mobile_drawer_menu",
-        )
-        selected_mobile_view = label_to_view.get(selected_mobile_label, st.session_state.view)
-        if selected_mobile_view != st.session_state.view:
-            st.session_state.view = selected_mobile_view
-            st.session_state.mobile_menu_open = False
-            st.rerun()
-
-        if "mobile_drawer_lang" not in st.session_state:
-            st.session_state.mobile_drawer_lang = st.session_state.lang == "en"
-        drawer_use_english = st.toggle(
-            " ",
-            key="mobile_drawer_lang",
-            help=f'{texts["lang.ru"]}/{texts["lang.en"]}',
-        )
-        selected_drawer_lang = "en" if drawer_use_english else "ru"
-        if selected_drawer_lang != st.session_state.lang:
-            st.session_state.lang = selected_drawer_lang
-            st.rerun()
 
 if st.session_state.show_privacy and st.session_state.view != st.session_state.privacy_origin_view:
     st.session_state.show_privacy = False
