@@ -5,7 +5,15 @@ import streamlit as st
 import streamlit.components.v1 as components
 from lang import EN_TEXTS, RU_TEXTS
 from layout import render_footer, render_header
-from views import render_about, render_btc, render_files, render_home, render_units
+from views import (
+    render_about,
+    render_btc,
+    render_files,
+    render_home,
+    render_latex,
+    render_latex_guide,
+    render_units,
+)
 from components import render_privacy_component
 
 try:
@@ -44,54 +52,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+_parent_head_seo_js = Path(__file__).resolve().parent / "static" / "js" / "parent_head_seo_defaults.js"
 components.html(
-    """
-    <script>
-    (() => {
-      const head = window.parent?.document?.head;
-      if (!head) return;
-      const ensureMeta = (attr, key, content) => {
-        let el = head.querySelector(`meta[${attr}="${key}"]`);
-        if (!el) {
-          el = window.parent.document.createElement("meta");
-          el.setAttribute(attr, key);
-          head.appendChild(el);
-        }
-        el.setAttribute("content", content);
-      };
-      const ensureLink = (rel, href) => {
-        let el = head.querySelector(`link[rel="${rel}"][data-sconvert-seo="1"]`);
-        if (!el) {
-          el = window.parent.document.createElement("link");
-          el.setAttribute("rel", rel);
-          el.setAttribute("data-sconvert-seo", "1");
-          head.appendChild(el);
-        }
-        el.setAttribute("href", href);
-      };
-      ensureMeta("name", "description", "sconvert: online converters for units, data formats, and Bitcoin tools.");
-      ensureMeta("name", "robots", "index,follow,max-image-preview:large");
-      ensureMeta("property", "og:type", "website");
-      ensureMeta("property", "og:site_name", "sconvert");
-      ensureMeta("property", "og:title", "sconvert - converters and BTC tools");
-      ensureMeta("property", "og:description", "Convert units, work with BTC keys/addresses, and use practical online tools.");
-      ensureMeta("property", "og:url", "https://sconvert.ru/");
-      ensureMeta("property", "og:image", "https://sconvert.ru/og-image.png");
-      ensureMeta("name", "twitter:card", "summary_large_image");
-      ensureMeta("name", "twitter:title", "sconvert - converters and BTC tools");
-      ensureMeta("name", "twitter:description", "Convert units, work with BTC keys/addresses, and use practical online tools.");
-      ensureMeta("name", "twitter:image", "https://sconvert.ru/og-image.png");
-      ensureLink("canonical", "https://sconvert.ru/");
-    })();
-    </script>
-    """,
+    f"<script>{_parent_head_seo_js.read_text(encoding='utf-8')}</script>",
     height=0,
 )
 
 _css_path = Path(__file__).resolve().parent / "static" / "home.css"
 st.markdown(f"<style>{_css_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
 
-allowed_views = {"home", "units", "files", "btc", "about"}
+allowed_views = {"home", "units", "files", "btc", "latex", "latex_guide", "about"}
 if "view" not in st.session_state or st.session_state.view not in allowed_views:
     st.session_state.view = "home"
 if "lang" not in st.session_state or st.session_state.lang not in {"ru", "en"}:
@@ -104,6 +74,8 @@ if isinstance(requested_view, list):
     requested_view = requested_view[0] if requested_view else None
 if requested_view in allowed_views:
     st.session_state.view = requested_view
+    # Иначе после rerun блок ниже подставит view из localStorage и затрёт URL (?view=latex_guide → latex).
+    st.session_state.view_local_bootstrapped = True
     st.query_params.clear()
     st.rerun()
 
@@ -365,6 +337,8 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
         "home": "/",
         "units": "/?view=units",
         "btc": "/?view=btc",
+        "latex": "/?view=latex",
+        "latex_guide": "/?view=latex_guide",
         "about": "/?view=about",
     }
     title_by_view = {
@@ -372,12 +346,16 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
             "home": "sconvert - онлайн конвертер величин, данных и BTC-инструментов",
             "units": "Конвертер единиц измерения - sconvert",
             "btc": "Bitcoin (BTC) инструменты: ключи, адреса, проверки - sconvert",
+            "latex": "Формулы LaTeX: предпросмотр KaTeX - sconvert",
+            "latex_guide": "Памятка по LaTeX и математическому набору - sconvert",
             "about": "О проекте sconvert",
         },
         "en": {
             "home": "sconvert - online converters for units, data, and BTC tools",
             "units": "Unit converter - sconvert",
             "btc": "Bitcoin (BTC) tools: keys, addresses, checks - sconvert",
+            "latex": "LaTeX formulas: KaTeX preview - sconvert",
+            "latex_guide": "LaTeX math cheat sheet - sconvert",
             "about": "About sconvert",
         },
     }
@@ -386,17 +364,25 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
             "home": "sconvert: конвертер единиц измерения, форматов данных и инструменты для Bitcoin.",
             "units": "Быстрый конвертер единиц: длина, масса, время, энергия, давление и другие категории.",
             "btc": "Инструменты Bitcoin: преобразование ключей и адресов, формат WIF, RIPEMD160, UTXO и транзакции.",
+            "latex": "Предпросмотр формул TeX/LaTeX встроенным рендером Streamlit (KaTeX).",
+            "latex_guide": "Справочник: разделители, дроби, интегралы, матрицы, греческие буквы и ограничения KaTeX.",
             "about": "Информация о проекте sconvert и назначении сервиса.",
         },
         "en": {
             "home": "sconvert: converters for measurement units, data formats, and Bitcoin tools.",
             "units": "Fast unit converter: length, mass, time, energy, pressure, and more categories.",
             "btc": "Bitcoin tools: key/address conversion, WIF format, RIPEMD160, UTXO, and transactions.",
+            "latex": "Preview TeX/LaTeX formulas with Streamlit’s built-in KaTeX renderer.",
+            "latex_guide": "Cheat sheet: delimiters, fractions, integrals, matrices, Greek letters, KaTeX limits.",
             "about": "Information about the sconvert project and service goals.",
         },
     }
     resolved_lang = "en" if current_lang == "en" else "ru"
-    resolved_view = current_view if current_view in {"home", "units", "btc", "about"} else "home"
+    resolved_view = (
+        current_view
+        if current_view in {"home", "units", "btc", "latex", "latex_guide", "about"}
+        else "home"
+    )
     page_title = title_by_view[resolved_lang][resolved_view]
     page_description = description_by_view[resolved_lang][resolved_view]
     canonical_url = f"{base_url}{path_by_view[resolved_view]}"
@@ -491,6 +477,7 @@ view_to_label = {
     "home": texts["nav.home"],
     "units": texts["nav.units"],
     # "files": texts["nav.files"],  # Temporarily hidden from menu
+    "latex": texts["nav.latex"],
     "btc": texts["nav.btc"],
     "about": texts["nav.about"],
 }
@@ -514,8 +501,10 @@ if st.session_state.mobile_menu_open:
         selected_mobile_label = st.radio(
             "menu",
             options=list(view_to_label.values()),
-            index=["home", "units", "btc", "about"].index(
-                st.session_state.view if st.session_state.view in {"home", "units", "btc", "about"} else "home"
+            index=["home", "units", "latex", "btc", "about"].index(
+                st.session_state.view
+                if st.session_state.view in {"home", "units", "latex", "btc", "about"}
+                else "home"
             ),
             key="mobile_drawer_menu",
         )
@@ -549,6 +538,10 @@ else:
         render_units(texts)
     elif st.session_state.view == "files":
         render_files(texts)
+    elif st.session_state.view == "latex":
+        render_latex(texts)
+    elif st.session_state.view == "latex_guide":
+        render_latex_guide(texts)
     elif st.session_state.view == "btc":
         render_btc(texts)
     else:

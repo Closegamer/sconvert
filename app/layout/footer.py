@@ -6,6 +6,8 @@ def render_footer(texts: dict[str, str]) -> None:
         <div class="page-footer">
             <span>{texts["footer.copy"]}</span>
             <span> · </span>
+            <a class="footer-link" href="/?view=latex_guide" target="_self">{texts["footer.latex_guide"]}</a>
+            <span> · </span>
             <a class="footer-link" href="/?policy=1" target="_self">{texts["footer.privacy"]}</a>
         """,
         unsafe_allow_html=True,

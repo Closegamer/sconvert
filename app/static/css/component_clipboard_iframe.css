@@ -1,0 +1,19 @@
+/* iframe components.html: кнопка «копировать» (BTC и др.) */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+a.sconvert-clipboard-link {
+  display: block;
+  width: 100%;
+  text-align: right;
+  color: rgb(134, 181, 147);
+  text-decoration: none;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  font-family: "Segoe UI", "Consolas", "Roboto Mono", monospace;
+  cursor: pointer;
+  white-space: nowrap;
+}

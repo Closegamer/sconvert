@@ -563,3 +563,10 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
     padding: 0 !important;
   }
 }
+
+.st-key-latex_formula_png [data-testid="stImage"],
+.st-key-latex_formula_png [data-testid="stImage"] img,
+.st-key-latex_formula_png [data-testid="stImage"] picture,
+.st-key-latex_formula_png [data-testid="stImage"] picture img {
+  border-radius: 0 !important;
+}

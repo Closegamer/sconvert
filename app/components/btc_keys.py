@@ -12,6 +12,8 @@ import streamlit as st
 import requests
 import streamlit.components.v1 as components
 
+from .clipboard_iframe import render_clipboard_iframe_button
+
 
 _B58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 _BECH32_CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
@@ -659,36 +661,10 @@ def _address_validation_status(field_name: str, value: str, texts: dict[str, str
         return texts["btc.validation.invalid"]
 
 def _render_copy_button(texts: dict[str, str], value: str, key: str) -> None:
-    if not value:
-        return
-    safe_value = html.escape(value).replace("\\", "\\\\").replace("'", "\\'")
-    safe_label = html.escape(texts["btc.copy"].lower())
-    components.html(
-        f"""
-        <style>
-          html, body {{
-            margin: 0;
-            padding: 0;
-          }}
-        </style>
-        <a id="{key}" href="#" style="display:block;width:100%;text-align:right;color:rgb(134, 181, 147);text-decoration:none;font-size:0.875rem;line-height:1.3;font-family:'Segoe UI','Consolas','Roboto Mono',monospace;cursor:pointer;">
-          {safe_label}
-        </a>
-        <script>
-          const btn = document.getElementById('{key}');
-          btn.onclick = async (e) => {{
-            e.preventDefault();
-            try {{
-              await navigator.clipboard.writeText('{safe_value}');
-              btn.textContent = 'OK';
-              setTimeout(() => {{ btn.textContent = '{safe_label}'; }}, 900);
-            }} catch (e) {{
-              btn.textContent = 'ERR';
-              setTimeout(() => {{ btn.textContent = '{safe_label}'; }}, 900);
-            }}
-          }};
-        </script>
-        """,
+    render_clipboard_iframe_button(
+        label=texts["btc.copy"].lower(),
+        value=value,
+        element_key=key,
         height=32,
     )
 
