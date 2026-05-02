@@ -319,6 +319,23 @@ def _extract_pubkey_from_vin(vin: dict) -> str | None:
                 return token
     return None
 
+def _pubkey_pair_from_hex(found_pubkey_hex: str) -> tuple[bytes, bytes]:
+    from ecdsa import SECP256k1, VerifyingKey
+
+    found_pubkey = bytes.fromhex(found_pubkey_hex.strip().lower())
+    if len(found_pubkey) == 33 and found_pubkey[0] in (2, 3):
+        pubkey_compressed = found_pubkey
+        # ecdsa expects full compressed encoding (33 bytes), not raw X-only (32 bytes).
+        VerifyingKey.from_string(pubkey_compressed, curve=SECP256k1)
+        pubkey_uncompressed = _decompress_compressed_pubkey(found_pubkey)
+        return pubkey_compressed, pubkey_uncompressed
+    if len(found_pubkey) == 65 and found_pubkey[0] == 0x04:
+        VerifyingKey.from_string(found_pubkey[1:], curve=SECP256k1)
+        pubkey_uncompressed = found_pubkey
+        pubkey_compressed = _compress_uncompressed_pubkey(found_pubkey)
+        return pubkey_compressed, pubkey_uncompressed
+    raise ValueError("unexpected pubkey length")
+
 def _lookup_pubkey_by_address(address: str) -> str | None:
     url = f"https://blockstream.info/api/address/{address}/txs"
     response = requests.get(url, timeout=10)
@@ -1014,26 +1031,50 @@ def render_btc_keys_component(texts: dict[str, str]) -> None:
                     if len(hash160_uncompressed) != 20:
                         raise ValueError("invalid hash160 length")
                 elif changed_field in {"address", "address_uncompressed"}:
+                    addr_s = raw_value.strip()
                     if changed_field == "address":
-                        hash160 = _hash160_from_p2pkh(raw_value)
+                        try:
+                            hash160 = _hash160_from_p2pkh(addr_s)
+                        except ValueError:
+                            try:
+                                hash160 = _hash160_from_p2wpkh(addr_s)
+                            except ValueError:
+                                if not _is_valid_p2sh_address(addr_s):
+                                    raise ValueError("unsupported address format")
                     else:
-                        hash160_uncompressed = _hash160_from_p2pkh(raw_value)
+                        hash160_uncompressed = _hash160_from_p2pkh(addr_s)
                     try:
-                        found_pubkey_hex = _lookup_pubkey_by_address(raw_value)
+                        found_pubkey_hex = _lookup_pubkey_by_address(addr_s)
                     except requests.RequestException:
                         found_pubkey_hex = None
                     if found_pubkey_hex:
-                        found_pubkey = bytes.fromhex(found_pubkey_hex)
-                        if len(found_pubkey) == 33 and found_pubkey[0] in (2, 3):
-                            pubkey_compressed = found_pubkey
-                            pubkey_uncompressed = _decompress_compressed_pubkey(found_pubkey)
-                        elif len(found_pubkey) == 65 and found_pubkey[0] == 4:
-                            pubkey_uncompressed = found_pubkey
-                            pubkey_compressed = _compress_uncompressed_pubkey(found_pubkey)
+                        try:
+                            pubkey_compressed, pubkey_uncompressed = _pubkey_pair_from_hex(found_pubkey_hex)
+                        except ValueError:
+                            pass
                 elif changed_field == "address_p2wpkh":
                     hash160 = _hash160_from_p2wpkh(raw_value)
+                    try:
+                        found_pubkey_hex = _lookup_pubkey_by_address(raw_value.strip())
+                    except requests.RequestException:
+                        found_pubkey_hex = None
+                    if found_pubkey_hex:
+                        try:
+                            pubkey_compressed, pubkey_uncompressed = _pubkey_pair_from_hex(found_pubkey_hex)
+                        except ValueError:
+                            pass
                 elif changed_field == "address_p2sh":
-                    _ = _hash160_from_p2sh_p2wpkh(raw_value)
+                    if not _is_valid_p2sh_address(raw_value):
+                        raise ValueError("invalid p2sh address")
+                    try:
+                        found_pubkey_hex = _lookup_pubkey_by_address(raw_value.strip())
+                    except requests.RequestException:
+                        found_pubkey_hex = None
+                    if found_pubkey_hex:
+                        try:
+                            pubkey_compressed, pubkey_uncompressed = _pubkey_pair_from_hex(found_pubkey_hex)
+                        except ValueError:
+                            pass
                 else:
                     raise ValueError("unsupported field")
             except ValueError:
