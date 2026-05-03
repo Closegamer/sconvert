@@ -1,4 +1,4 @@
-A concise reference for **TeX/LaTeX math** you can paste into the **LaTeX formulas** section on this site. Preview uses **KaTeX** (a subset of LaTeX): many full-LaTeX packages and macros are **not** available here.
+A concise reference for TeX/LaTeX math you can paste into the LaTeX formulas section on this site. Preview uses KaTeX (a subset of LaTeX): many full-LaTeX packages and macros are not available here.
 
 ---
 
@@ -11,13 +11,13 @@ A concise reference for **TeX/LaTeX math** you can paste into the **LaTeX formul
 | `\(...\)` | inline (alternative) |
 | `\[...\]` | display (alternative) |
 
-This app **strips outer delimiters** before feeding KaTeX. You can keep or omit wrappers when copying—the normalized preview stays consistent.
+This app strips outer delimiters before feeding KaTeX. You can keep or omit wrappers when copying—the normalized preview stays consistent.
 
 ---
 
 ### 2. Letters, digits, text
 
-Letters and digits are set in math italics. For **words** inside math use `\text{...}`:
+Letters and digits are set in math italics. For words inside math use `\text{...}`:
 
 ```tex
 \text{if } x>0\text{ then }y=x^2
@@ -142,7 +142,7 @@ If it previews correctly, you’re within typical KaTeX usage for this app.
 
 ## Inverse path: visual editors → LaTeX
 
-Above you mostly typed TeX **directly**. In practice people often build formulas in an **editor with buttons, palettes, or CAS**, then copy the resulting **LaTeX string** into the **Source formula** field here.
+Above you mostly typed TeX directly. In practice people often build formulas in an editor with buttons, palettes, or CAS, then copy the resulting LaTeX string into the Source formula field here.
 
 ### Typical sources of LaTeX after non-plain-text entry
 
@@ -157,9 +157,9 @@ Above you mostly typed TeX **directly**. In practice people often build formulas
 
 ### After export
 
-1. **Wrappers** — you might get `\begin{equation}...\end{equation}`; our preview often needs only the **inner** expression.
+1. **Wrappers** — you might get `\begin{equation}...\end{equation}`; our preview often needs only the inner expression.
 2. **Macros** — strip or replace commands KaTeX does not know (see [supported functions](https://katex.org/docs/supported.html)).
 3. **Delimiters** — paste with `$...$` / `$$...$$` if the tool outputs them; this app normalizes as documented above.
 
-So **inverse transformation** means: **design in a specialized editor → obtain LaTeX → paste here for KaTeX preview**. There is no `.tex` file upload — text field only.
+So inverse transformation means: design in a specialized editor → obtain LaTeX → paste here for KaTeX preview. There is no `.tex` file upload — text field only.
 

@@ -15,7 +15,7 @@ def render_header(current_lang: str, texts: dict[str, str]) -> str:
         "units": texts["nav.units"],
         "latex": texts["nav.latex"],
         "btc": texts["nav.btc"],
-        "about": texts["nav.about"],
+        "about": texts["nav.about"]
     }
     label_to_view = {value: key for key, value in view_to_label.items()}
     options = [view_to_label[v] for v in _VIEW_ORDER]
@@ -24,7 +24,7 @@ def render_header(current_lang: str, texts: dict[str, str]) -> str:
         "units": 1,
         "latex": 2,
         "btc": 3,
-        "about": 4,
+        "about": 4
     }
 
     with st.sidebar:
@@ -83,8 +83,6 @@ def render_header(current_lang: str, texts: dict[str, str]) -> str:
             st.session_state.view = selected_view
             need_rerun = True
     else:
-        # Для страниц вне меню (например, latex_guide): первый рендер не должен
-        # автоматически уводить в первый пункт сегмент-контрола.
         if st.session_state.get("_nav_seg_aux_page") != current_view:
             st.session_state._nav_seg_aux_page = current_view
             st.session_state._nav_seg_baseline = selected_label

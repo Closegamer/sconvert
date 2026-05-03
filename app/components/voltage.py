@@ -1,22 +1,25 @@
 import re
 import streamlit as st
 from .unit_panel import render_unit_panel_header
+
 UNITS=[("mv","units.voltage.mv",0.001),("v","units.voltage.v",1.0),("kv","units.voltage.kv",1000.0)]
 SUP=str.maketrans("0123456789-","⁰¹²³⁴⁵⁶⁷⁸⁹⁻")
+
+
 def f(v:float)->str:
- s=f"{v:.10e}";m,e=s.split("e");i=int(e);return f"{v:.10g}" if -4<=i<=6 else f"{float(m):.10g} × 10{str(i).translate(SUP)}"
+    s=f"{v:.10e}";m,e=s.split("e");i=int(e);return f"{v:.10g}" if -4<=i<=6 else f"{float(m):.10g} × 10{str(i).translate(SUP)}"
 
 def p(r:str)->float|None:
- n=r.strip().replace(",",".")
- if not n:return None
- m=re.match(r"^\s*([+-]?\d*\.?\d+)\s*\*\s*10\^\(\s*([+-]?\d+)\s*\)\s*$",n)
- if m:return float(m.group(1))*(10**int(m.group(2)))
- try:return float(n)
- except ValueError:return None
+    n=r.strip().replace(",",".")
+    if not n:return None
+    m=re.match(r"^\s*([+-]?\d*\.?\d+)\s*\*\s*10\^\(\s*([+-]?\d+)\s*\)\s*$",n)
+    if m:return float(m.group(1))*(10**int(m.group(2)))
+    try:return float(n)
+    except ValueError:return None
 
 def s()->None:
- b=float(st.session_state.units_voltage_base)
- for c,_k,k in UNITS: st.session_state[f"units_voltage_{c}"]=f(b/k)
+    b=float(st.session_state.units_voltage_base)
+    for c,_k,k in UNITS: st.session_state[f"units_voltage_{c}"]=f(b/k)
 
 def render_voltage_converter(texts:dict[str,str])->None:
  st.session_state.setdefault("units_voltage_base",1.0);st.session_state.setdefault("units_voltage_last_inputs",{})

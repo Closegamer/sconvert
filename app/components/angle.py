@@ -10,6 +10,7 @@ ANGLE_UNITS: list[tuple[str, str, float]] = [
     ("turn", "units.angle.turn", 2.0 * math.pi),
 ]
 SUPERSCRIPT_DIGITS = str.maketrans("0123456789-", "⁰¹²³⁴⁵⁶⁷⁸⁹⁻")
+
 def _format_number(value: float) -> str:
     scientific = f"{value:.10e}"
     mantissa_str, exponent_str = scientific.split("e")

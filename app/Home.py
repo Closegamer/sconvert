@@ -70,7 +70,6 @@ if isinstance(requested_view, list):
     requested_view = requested_view[0] if requested_view else None
 if requested_view in allowed_views:
     st.session_state.view = requested_view
-    # Иначе после rerun блок ниже подставит view из localStorage и затрёт URL (?view=latex_guide → latex).
     st.session_state.view_local_bootstrapped = True
     st.query_params.clear()
     st.rerun()
@@ -319,8 +318,7 @@ if st.session_state.view != "privacy" and not st.session_state.favorites_local_b
             st.session_state.units_radiation_expanded = False
         if "units_data_expanded" not in st.session_state:
             st.session_state.units_data_expanded = False
-        # Storage may genuinely be empty on first visit; avoid extra rerun
-        # so the first Enter in converter inputs is not lost.
+
         st.session_state.favorites_local_bootstrap_tries += 1
         st.session_state.favorites_local_bootstrapped = True
 
@@ -466,7 +464,6 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
         unsafe_allow_html=True,
     )
 
-
 st.session_state.view = render_header(st.session_state.lang, texts)
 _inject_seo_meta(st.session_state.view, st.session_state.lang)
 
@@ -539,6 +536,7 @@ favorites_payload = json.dumps(
     ensure_ascii=True,
     sort_keys=True,
 )
+
 if (
     st.session_state.get("favorites_local_bootstrapped", False)
     and st.session_state.get("favorites_local_last_payload") != favorites_payload

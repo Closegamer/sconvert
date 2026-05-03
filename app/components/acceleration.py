@@ -4,6 +4,7 @@ from .unit_panel import render_unit_panel_header
 
 ACC_UNITS=[("gal","units.acc.gal",0.01),("ft_s2","units.acc.ft_s2",0.3048),("m_s2","units.acc.m_s2",1.0),("g","units.acc.g",9.80665)]
 SUPERSCRIPT_DIGITS=str.maketrans("0123456789-","⁰¹²³⁴⁵⁶⁷⁸⁹⁻")
+
 def _fmt(v:float)->str:
     s=f"{v:.10e}";m,e=s.split("e");ei=int(e);return f"{v:.10g}" if -4<=ei<=6 else f"{float(m):.10g} × 10{str(ei).translate(SUPERSCRIPT_DIGITS)}"
 
@@ -20,7 +21,8 @@ def _sync()->None:
     for c,_k,f in ACC_UNITS: st.session_state[f"units_acc_{c}"]=_fmt(b/f)
 
 def render_acceleration_converter(texts:dict[str,str])->None:
-    st.session_state.setdefault("units_acc_base",1.0); st.session_state.setdefault("units_acc_last_inputs",{})
+    st.session_state.setdefault("units_acc_base",1.0);
+    st.session_state.setdefault("units_acc_last_inputs",{})
     needs=any(f"units_acc_{c}" not in st.session_state for c,_k,_f in ACC_UNITS)
     if not needs:
         last=st.session_state.units_acc_last_inputs;cur={c:st.session_state.get(f"units_acc_{c}","") for c,_k,_f in ACC_UNITS}

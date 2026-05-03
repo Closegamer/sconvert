@@ -1,17 +1,17 @@
 :root {
-  --bg: #000000;
-  --line: #1d3324;
-  --text: #d9ffe3;
-  --muted: #86b593;
-  --accent: #1fcf62;
-  --panel: #0c1610;
-  --btn-border: #2b5a39;
-  --btn-border-hover: #4bd67f;
-  --btn-bg-top: #112116;
-  --brand-glow: rgba(99, 255, 154, 0.15);
-  --accent-top: #1bbd58;
-  --accent-text: #04210f;
-  --value-text: #f2fff6;
+    --bg: #000000;
+    --line: #1d3324;
+    --text: #d9ffe3;
+    --muted: #86b593;
+    --accent: #1fcf62;
+    --panel: #0c1610;
+    --btn-border: #2b5a39;
+    --btn-border-hover: #4bd67f;
+    --btn-bg-top: #112116;
+    --brand-glow: rgba(99, 255, 154, 0.15);
+    --accent-top: #1bbd58;
+    --accent-text: #04210f;
+    --value-text: #f2fff6;
 }
 
 html,
@@ -20,367 +20,359 @@ body,
 [data-testid="stAppViewContainer"],
 [data-testid="stAppViewContainer"] > .main,
 header[data-testid="stHeader"] {
-  background: var(--bg);
-  overflow-anchor: none;
+    background: var(--bg);
+    overflow-anchor: none;
 }
 
-/* Декоративная полоса Streamlit. Шапку не скрываем — в ней кнопка меню (☰), без неё при свёрнутом
-   сайдбаре нечем развернуть панель (header и потомки с display:none). */
 [data-testid="stDecoration"] {
-  display: none !important;
-  height: 0 !important;
-  min-height: 0 !important;
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
 }
 
 header[data-testid="stHeader"] {
-  background: var(--bg) !important;
-  border-bottom: 1px solid var(--line);
-  z-index: 1002;
+    background: var(--bg) !important;
+    border-bottom: 1px solid var(--line);
+    z-index: 1002;
 }
 
 footer {
-  display: none;
+    display: none;
 }
 
-/* Только Deploy; не скрываем весь stToolbar — в части сборок в нём же и кнопка сайдбара. */
 .stAppDeployButton {
-  display: none !important;
+    display: none !important;
 }
 
-/* Узкий экран: верхняя полоса с сегментами скрыта, навигация в стандартном сайдбаре + ☰ в шапке. */
-/* Широкий экран: фиксированное горизонтальное меню, нативный сайдбар Streamlit скрыт (как раньше). */
 @media (min-width: 861px) {
-  section[data-testid="stSidebar"],
-  [data-testid="collapsedControl"] {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-  }
+    section[data-testid="stSidebar"],
+    [data-testid="collapsedControl"] {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
 
-  header[data-testid="stHeader"] {
-    display: none !important;
-    height: 0 !important;
-    min-height: 0 !important;
-  }
+    header[data-testid="stHeader"] {
+        display: none !important;
+        height: 0 !important;
+        min-height: 0 !important;
+    }
 
-  .st-key-desktop_nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    z-index: 1200;
-    background: var(--bg) !important;
-    border-bottom: 1px solid var(--line);
-    min-height: 72px;
-    padding: 8px 0 15px;
-    transform: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    .st-key-desktop_nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        z-index: 1200;
+        background: var(--bg) !important;
+        border-bottom: 1px solid var(--line);
+        min-height: 72px;
+        padding: 8px 0 15px;
+        transform: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-  .st-key-desktop_nav > div {
-    width: min(1080px, calc(100vw - 1.5rem));
-    margin-left: auto;
-    margin-right: auto;
-  }
+    .st-key-desktop_nav > div {
+        width: min(1080px, calc(100vw - 1.5rem));
+        margin-left: auto;
+        margin-right: auto;
+    }
 
-  .main .block-container {
-    padding-top: 6.3rem !important;
-  }
+    .main .block-container {
+        padding-top: 6.3rem !important;
+    }
 
-  .st-key-mobile_header_brand {
-    display: none !important;
-    height: 0 !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    visibility: hidden !important;
-  }
+    .st-key-mobile_header_brand {
+        display: none !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        visibility: hidden !important;
+    }
 }
 
 @media (max-width: 860px) {
-  html,
-  body,
-  .stApp,
-  [data-testid="stAppViewContainer"],
-  [data-testid="stAppViewContainer"] > .main {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    overscroll-behavior-x: none !important;
-    touch-action: pan-y !important;
-    box-sizing: border-box !important;
-  }
+    html,
+    body,
+    .stApp,
+    [data-testid="stAppViewContainer"],
+    [data-testid="stAppViewContainer"] > .main {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overscroll-behavior-x: none !important;
+        touch-action: pan-y !important;
+        box-sizing: border-box !important;
+    }
 
-  div[data-testid="stMainBlockContainer"],
-  .main .block-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-    overflow-x: hidden !important;
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-  }
+    div[data-testid="stMainBlockContainer"],
+    .main .block-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
 
-  [data-testid="stAppViewContainer"] > .main,
-  .main .block-container {
-    margin-left: auto !important;
-    margin-right: auto !important;
-    transform: none !important;
-  }
+    [data-testid="stAppViewContainer"] > .main,
+    .main .block-container {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        transform: none !important;
+    }
 
-  [data-testid="stDecoration"] {
-    display: none !important;
-    height: 0 !important;
-    min-height: 0 !important;
-  }
+    [data-testid="stDecoration"] {
+        display: none !important;
+        height: 0 !important;
+        min-height: 0 !important;
+    }
 
-  .st-key-desktop_nav,
-  .st-key-desktop_nav > div,
-  .st-key-desktop_nav > div > div {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
+    .st-key-desktop_nav,
+    .st-key-desktop_nav > div,
+    .st-key-desktop_nav > div > div {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
 
-  /* Шапка Streamlit: стрелка сайдбара — как у приложения; логотип — отдельным слоем справа от стрелки. */
-  header[data-testid="stHeader"] {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    min-height: 3.25rem !important;
-    height: auto !important;
-    visibility: visible !important;
-    padding-left: 0.35rem !important;
-  }
+    header[data-testid="stHeader"] {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        min-height: 3.25rem !important;
+        height: auto !important;
+        visibility: visible !important;
+        padding-left: 0.35rem !important;
+    }
 
-  [data-testid="collapsedControl"] {
-    flex: 0 0 auto;
-    z-index: 1004;
-  }
+    [data-testid="collapsedControl"] {
+        flex: 0 0 auto;
+        z-index: 1004;
+    }
 
-  [data-testid="stToolbar"] {
-    display: flex !important;
-    align-items: center !important;
-    flex: 1 1 auto;
-    justify-content: flex-end;
-    min-height: 0 !important;
-  }
+    [data-testid="stToolbar"] {
+        display: flex !important;
+        align-items: center !important;
+        flex: 1 1 auto;
+        justify-content: flex-end;
+        min-height: 0 !important;
+    }
 
-  /* Текст «sConvert» в одной горизонтали со стрелкой (фикс. позиция от левого края под типичную ширину кнопки). */
-  .st-key-mobile_header_brand {
-    position: fixed !important;
-    top: calc(0.55rem + 4px);
-    left: calc(3rem + 10px);
-    z-index: 1005;
-    pointer-events: none;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 0 !important;
-    min-height: 0 !important;
-    overflow: visible !important;
-    background: transparent !important;
-  }
+    .st-key-mobile_header_brand {
+        position: fixed !important;
+        top: calc(0.55rem + 4px);
+        left: calc(3rem + 10px);
+        z-index: 1005;
+        pointer-events: none;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        background: transparent !important;
+    }
 
-  .st-key-mobile_header_brand [data-testid="stVerticalBlock"] {
-    gap: 0 !important;
-  }
+    .st-key-mobile_header_brand [data-testid="stVerticalBlock"] {
+        gap: 0 !important;
+    }
 
-  .mobile-header-brand-text {
-    color: var(--text);
-    font-weight: 700;
-    font-size: 1.05rem;
-    letter-spacing: 0.02em;
-    text-shadow: 0 0 10px var(--brand-glow);
-    white-space: nowrap;
-    line-height: 1.2;
-  }
+    .mobile-header-brand-text {
+        color: var(--text);
+        font-weight: 700;
+        font-size: 1.05rem;
+        letter-spacing: 0.02em;
+        text-shadow: 0 0 10px var(--brand-glow);
+        white-space: nowrap;
+        line-height: 1.2;
+    }
 
-  .main .block-container {
-    padding-top: 0.85rem !important;
-  }
+    .main .block-container {
+        padding-top: 0.85rem !important;
+    }
 }
 
 .main .block-container {
-  width: min(1080px, calc(100vw - 1.5rem));
-  max-width: min(1080px, calc(100vw - 1.5rem));
-  padding-top: 1.25rem !important;
-  padding-bottom: 3rem !important;
-  font-family: "Segoe UI", "Consolas", "Roboto Mono", monospace;
+    width: min(1080px, calc(100vw - 1.5rem));
+    max-width: min(1080px, calc(100vw - 1.5rem));
+    padding-top: 1.25rem !important;
+    padding-bottom: 3rem !important;
+    font-family: "Segoe UI", "Consolas", "Roboto Mono", monospace;
 }
 
 div[data-baseweb="input"] input,
 div[data-baseweb="textarea"] textarea,
 textarea {
-  color: var(--value-text) !important;
-  -webkit-text-fill-color: var(--value-text) !important;
+    color: var(--value-text) !important;
+    -webkit-text-fill-color: var(--value-text) !important;
 }
 
 section[data-testid="stSidebar"] {
-  background: var(--panel) !important;
-  border-right: 1px solid var(--line);
+    background: var(--panel) !important;
+    border-right: 1px solid var(--line);
 }
 
 section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-  background: var(--panel);
+    background: var(--panel);
 }
 
 .sidebar-brand {
-  margin: 0 0 0.75rem;
-  padding: 0;
-  color: var(--text);
-  font-weight: 700;
-  font-size: 1.05rem;
-  letter-spacing: 0.02em;
-  text-shadow: 0 0 10px var(--brand-glow);
+    margin: 0 0 0.75rem;
+    padding: 0;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 10px var(--brand-glow);
 }
 
 .brand-link {
-  color: var(--text) !important;
-  text-decoration: none !important;
-  font-weight: 700;
-  font-size: clamp(1.02rem, 1.8vw, 1.2rem);
-  letter-spacing: 0.02em;
-  text-shadow: 0 0 10px var(--brand-glow);
+    color: var(--text) !important;
+    text-decoration: none !important;
+    font-weight: 700;
+    font-size: clamp(1.02rem, 1.8vw, 1.2rem);
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 10px var(--brand-glow);
 }
 
 .top-nav-divider {
-  display: none;
+    display: none;
 }
 
 .subsection-divider {
-  width: 80%;
-  margin: 0.25rem auto 0.9rem;
-  border-bottom: 1px solid var(--line);
+    width: 80%;
+    margin: 0.25rem auto 0.9rem;
+    border-bottom: 1px solid var(--line);
 }
 
 .splash {
-  margin-top: 20vh;
-  color: var(--text);
-  text-align: center;
-  font-size: clamp(1.3rem, 3.2vw, 1.9rem);
-  font-weight: 600;
+    margin-top: 20vh;
+    color: var(--text);
+    text-align: center;
+    font-size: clamp(1.3rem, 3.2vw, 1.9rem);
+    font-weight: 600;
 }
 
 .title {
-  margin: 2.8rem 0 0.6rem;
-  color: var(--text);
-  text-align: center;
-  font-size: clamp(1.2rem, 2.6vw, 1.7rem);
-  font-weight: 600;
+    margin: 2.8rem 0 0.6rem;
+    color: var(--text);
+    text-align: center;
+    font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+    font-weight: 600;
 }
 
 .subtitle {
-  margin: 0;
-  color: var(--muted);
-  text-align: center;
-  font-size: 0.98rem;
+    margin: 0;
+    color: var(--muted);
+    text-align: center;
+    font-size: 0.98rem;
 }
 
 .btc-disclaimer {
-  color: #c98f8f !important;
+    color: #c98f8f !important;
 }
 
 .page-footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--bg);
-  padding-top: 0.7rem;
-  padding-bottom: 0.6rem;
-  border-top: 1px solid var(--line);
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.86rem;
-  letter-spacing: 0.01em;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    padding-top: 0.7rem;
+    padding-bottom: 0.6rem;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.86rem;
+    letter-spacing: 0.01em;
 }
 
 .footer-link {
-  color: var(--muted) !important;
-  text-decoration: none !important;
+    color: var(--muted) !important;
+    text-decoration: none !important;
 }
 
 .footer-link:hover {
-  color: var(--text) !important;
+    color: var(--text) !important;
 }
 
-/* Глобальная метка ссылки (кнопки не затрагиваем). */
 a[href]:not(.sconvert-clipboard-link)::after {
-  content: " 🔗";
-  font-size: 0.88em;
-  opacity: 0.9;
+    content: " 🔗";
+    font-size: 0.88em;
+    opacity: 0.9;
 }
 
 a[href]:not(.sconvert-clipboard-link):hover::after {
-  opacity: 1;
+    opacity: 1;
 }
 
 div[data-testid="stSegmentedControl"] {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin: 0.15rem 0 0.25rem;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0.15rem 0 0.25rem;
 }
 
 div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] {
-  display: flex;
-  gap: 0.45rem !important;
-  flex-wrap: nowrap !important;
-  justify-content: center !important;
-  width: max-content;
-  margin-left: auto !important;
-  margin-right: auto !important;
+    display: flex;
+    gap: 0.45rem !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    width: max-content;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button {
-  min-height: 2rem;
-  padding: 0.28rem 0.75rem;
-  border-radius: 0.48rem;
-  border: 1px solid transparent;
-  color: var(--text) !important;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  font-size: 0.9rem;
-  font-weight: 500;
-  line-height: 1.1;
-  background: transparent;
-  transition: border-color 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
+    min-height: 2rem;
+    padding: 0.28rem 0.75rem;
+    border-radius: 0.48rem;
+    border: 1px solid transparent;
+    color: var(--text) !important;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.1;
+    background: transparent;
+    transition: border-color 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
 }
 
 div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button:hover {
-  border-color: var(--btn-border-hover);
-  color: var(--text) !important;
-  text-shadow: 0 0 8px var(--brand-glow);
+    border-color: var(--btn-border-hover);
+    color: var(--text) !important;
+    text-shadow: 0 0 8px var(--brand-glow);
 }
 
 div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-pressed="true"] {
-  border-color: var(--btn-border-hover);
-  background: transparent;
-  color: var(--text) !important;
-  font-weight: 600;
+    border-color: var(--btn-border-hover);
+    background: transparent;
+    color: var(--text) !important;
+    font-weight: 600;
 }
 
 [data-testid="stTooltipIcon"] svg {
-  margin-top: 4px !important;
+    margin-top: 4px !important;
 }
 
 [role="tooltip"],
 [data-testid="stTooltipContent"] {
-  white-space: nowrap !important;
-  max-width: max-content !important;
+    white-space: nowrap !important;
+    max-width: max-content !important;
 }
 
 .st-key-units_length_panel,
@@ -405,11 +397,11 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
 .st-key-units_radiation_panel,
 .st-key-units_data_panel,
 .st-key-units_temperature_panel {
-  border: 1px solid var(--btn-border);
-  border-radius: 0.5rem;
-  background: linear-gradient(180deg, var(--btn-bg-top) 0%, var(--panel) 100%);
-  padding: 0.06rem 0.35rem;
-  margin-bottom: 0.45rem;
+    border: 1px solid var(--btn-border);
+    border-radius: 0.5rem;
+    background: linear-gradient(180deg, var(--btn-bg-top) 0%, var(--panel) 100%);
+    padding: 0.06rem 0.35rem;
+    margin-bottom: 0.45rem;
 }
 
 .st-key-units_length_panel div[data-testid="stButton"] > button,
@@ -434,15 +426,15 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
 .st-key-units_radiation_panel div[data-testid="stButton"] > button,
 .st-key-units_data_panel div[data-testid="stButton"] > button,
 .st-key-units_temperature_panel div[data-testid="stButton"] > button {
-  border: 0 !important;
-  background: transparent !important;
-  min-height: 2.15rem;
-  text-align: left !important;
-  justify-content: flex-start !important;
-  align-items: center !important;
-  font-size: 1.08rem !important;
-  font-weight: 600 !important;
-  padding-left: 0.55rem !important;
+    border: 0 !important;
+    background: transparent !important;
+    min-height: 2.15rem;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    font-size: 1.08rem !important;
+    font-weight: 600 !important;
+    padding-left: 0.55rem !important;
 }
 
 .st-key-units_length_panel div[data-testid="stButton"] > button > div,
@@ -489,9 +481,9 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
 .st-key-units_radiation_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
 .st-key-units_data_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
 .st-key-units_temperature_panel div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] {
-  width: 100% !important;
-  text-align: left !important;
-  justify-content: flex-start !important;
+    width: 100% !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
 }
 
 .st-key-units_length_panel div[data-testid="stButton"] > button:hover,
@@ -516,60 +508,59 @@ div[data-testid="stSegmentedControl"] [data-baseweb="button-group"] button[aria-
 .st-key-units_radiation_panel div[data-testid="stButton"] > button:hover,
 .st-key-units_data_panel div[data-testid="stButton"] > button:hover,
 .st-key-units_temperature_panel div[data-testid="stButton"] > button:hover {
-  border: 0 !important;
+    border: 0 !important;
 }
 
-/* Держим заголовок и "избранное" в одной строке */
 @media (max-width: 860px) {
-  [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] {
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    padding-right: 0.55rem !important;
-    gap: 0.3rem !important;
-  }
+    [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] {
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding-right: 0.55rem !important;
+        gap: 0.3rem !important;
+    }
 
-  [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:first-child {
-    flex: 1 1 auto !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-  }
+    [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:first-child {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+    }
 
-  [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:last-child {
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: auto !important;
-    max-width: none !important;
-    margin-left: auto !important;
-    display: flex !important;
-    justify-content: flex-end !important;
-    align-items: center !important;
-    padding-right: 0 !important;
-  }
+    [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:last-child {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: auto !important;
+        max-width: none !important;
+        margin-left: auto !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        padding-right: 0 !important;
+    }
 
-  [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] {
-    /* keep units row controls mobile-only */
-  }
+    [class*="st-key-units_"][class*="_panel"] div[data-testid="stHorizontalBlock"] {
+        /* keep units row controls mobile-only */
+    }
 
-  [class*="st-key-units_"][class*="_panel"] div[data-testid="column"] div[data-testid="stCheckbox"] {
-    margin: 0 !important;
-    display: flex !important;
-    justify-content: flex-end !important;
-    width: auto !important;
-    overflow: visible !important;
-  }
+    [class*="st-key-units_"][class*="_panel"] div[data-testid="column"] div[data-testid="stCheckbox"] {
+        margin: 0 !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        width: auto !important;
+        overflow: visible !important;
+    }
 }
 
 .st-key-latex_formula_png [data-testid="stImage"],
 .st-key-latex_formula_png [data-testid="stImage"] img,
 .st-key-latex_formula_png [data-testid="stImage"] picture,
 .st-key-latex_formula_png [data-testid="stImage"] picture img {
-  border-radius: 0 !important;
+    border-radius: 0 !important;
 }
 
 .btcaddress {
-  font-size=18 !important;
-  align='center'!important;
+    font-size=18 !important;
+    align='center'!important;
 }
