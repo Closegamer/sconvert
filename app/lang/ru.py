@@ -267,7 +267,7 @@ TEXTS = {
     "privacy.title": "Политика конфиденциальности",
     "privacy.text": "Сайт sConvert (sconvert.ru) <b>НЕ</b> использует cookie-файлы, <b>НЕ</b> собирает какие-либо персональные данные пользователей и <b>НЕ</b> осуществляет какую-либо обработку персональных данных.",
     "privacy.close": "Закрыть",
-    "footer.copy": "writtenBy('Closegamer', 2026)",
+    "footer.copy": "2026",
     "footer.privacy": "Политика конфиденциальности",
     "footer.latex_guide": "Памятка LaTeX",
     "latex_guide.title": "Памятка по LaTeX (математический набор)",

@@ -267,7 +267,7 @@ TEXTS = {
     "privacy.title": "Privacy Policy",
     "privacy.text": "The sConvert (sconvert.ru) website does not use cookies, does not collect users' personal data, and does not process any personal data.",
     "privacy.close": "Close",
-    "footer.copy": "writtenBy('Closegamer', 2026)",
+    "footer.copy": "2026",
     "footer.privacy": "Privacy Policy",
     "footer.latex_guide": "LaTeX cheat sheet",
     "latex_guide.title": "LaTeX cheat sheet (math typesetting)",
