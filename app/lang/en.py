@@ -270,7 +270,30 @@ TEXTS = {
     "about.title": "About",
     "about.subtitle": "This project is an attempt to bring together scattered tools for converting data, units, and other everyday tasks in one place. Hopefully, it makes your life a little more comfortable. Presented tools can be very usefull for you that's why we don't mind if you transfer all your bitcoins or just some of them to our address - <b>bc1q6tk9rhtthkgfk662c5jvm4jf33dt7tn78lps4l</b>. Thank you in advance!",
     "privacy.title": "Privacy Policy",
-    "privacy.text": "The sConvert (sconvert.ru) website does not use cookies, does not collect users' personal data, and does not process any personal data.",
+    "privacy.text": (
+        "<b>sConvert (sconvert.ru)</b> uses the <b>Yandex Metrica</b> analytics counter to understand site traffic and improve the service."
+        "<br><br>"
+        "<b>What is collected</b><br>"
+        "Yandex Metrica automatically records technical data: IP address (anonymised), browser and device type, pages and sections you visit, time and duration of the visit. "
+        "This data is used exclusively in aggregate form for statistics."
+        "<br><br>"
+        "<b>What is not collected</b><br>"
+        "The site does not request or store personal details: name, email, phone number, payment information, or any other personally identifiable data."
+        "<br><br>"
+        "<b>Cookies</b><br>"
+        "Yandex Metrica sets cookies to recognise returning visitors. "
+        "You can disable cookies in your browser settings or install a tracker-blocking extension — the site's functionality is unaffected."
+        "<br><br>"
+        "<b>Data processing by Yandex</b><br>"
+        "Collected data is processed by Yandex LLC in accordance with the "
+        "<a href='https://yandex.com/legal/confidential/' target='_blank' rel='noopener noreferrer'>Yandex Privacy Policy</a>."
+        "<br><br>"
+        "<b>Bitcoin section</b><br>"
+        "When using the Bitcoin tools, entered data (keys, addresses) may be cached server-side in anonymised form to speed up repeated lookups. "
+        "It is strongly advised not to enter real private keys on this or any other website."
+    ),
+    "privacy.contact_button": "Contact",
+    "privacy.contact_copied": "Copied",
     "privacy.close": "Close",
     "footer.copy": "2026",
     "footer.privacy": "Privacy Policy",

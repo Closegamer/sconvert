@@ -45,4 +45,16 @@
   );
   ensureMeta("name", "twitter:image", "https://sconvert.ru/og-image.png");
   ensureLink("canonical", "https://sconvert.ru/");
+
+  // Yandex Metrika — injected once, guarded by window.parent.ym check
+  const parentWin = window.parent;
+  if (parentWin && !parentWin.ym) {
+    const s = parentWin.document.createElement("script");
+    s.type = "text/javascript";
+    s.textContent = "(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,\"script\",\"https://mc.yandex.ru/metrika/tag.js?id=109708961\",\"ym\");ym(109708961,\"init\",{ssr:true,webvisor:true,clickmap:true,ecommerce:\"dataLayer\",referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});";
+    parentWin.document.head.appendChild(s);
+    const ns = parentWin.document.createElement("noscript");
+    ns.innerHTML = "<div><img src=\"https://mc.yandex.ru/watch/109708961\" style=\"position:absolute;left:-9999px;\" alt=\"\"></div>";
+    parentWin.document.body && parentWin.document.body.appendChild(ns);
+  }
 })();
