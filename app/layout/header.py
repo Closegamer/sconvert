@@ -42,6 +42,7 @@ def render_header(current_lang: str, texts: dict[str, str]) -> str:
                 type="primary" if active else "secondary",
             ):
                 st.session_state.view = view
+                st.session_state.show_privacy = False
 
         st.divider()
         use_english_sb = st.toggle(

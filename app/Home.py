@@ -85,6 +85,7 @@ if isinstance(requested_policy, list):
 if str(requested_policy) == "1":
     st.session_state.show_privacy = True
     st.session_state.privacy_origin_view = st.session_state.view
+    st.session_state._privacy_needs_view_sync = True
     st.query_params.clear()
     st.rerun()
 
@@ -126,6 +127,10 @@ if not st.session_state.view_local_bootstrapped and requested_view not in allowe
     if isinstance(stored_view, str) and stored_view in allowed_views:
         st.session_state.view = stored_view
     st.session_state.view_local_bootstrapped = True
+
+if st.session_state.get("_privacy_needs_view_sync"):
+    st.session_state.privacy_origin_view = st.session_state.view
+    st.session_state._privacy_needs_view_sync = False
 
 if st.session_state.view != "privacy" and not st.session_state.favorites_local_bootstrapped:
     if not st.session_state.local_storage_refreshed_once:
