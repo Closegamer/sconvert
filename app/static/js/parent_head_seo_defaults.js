@@ -23,6 +23,7 @@
     }
     el.setAttribute("href", href);
   };
+  ensureMeta("name", "yandex-verification", "3c93613f1bcf5ed3");
   ensureMeta("name", "description", "sConvert: online converters for units, data formats, and Bitcoin tools.");
   ensureMeta("name", "robots", "index,follow,max-image-preview:large");
   ensureMeta("property", "og:type", "website");

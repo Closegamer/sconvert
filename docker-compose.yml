@@ -27,6 +27,15 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  api:
+    build: ./api
+    environment:
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
   db:
     image: postgres:16-alpine
     ports:

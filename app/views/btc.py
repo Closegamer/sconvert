@@ -1,6 +1,6 @@
 import streamlit as st
 
-from components import render_btc_keys_component
+from components import render_btc_keys_component, render_btc_price_component
 
 def render_btc(texts: dict[str, str]) -> None:
     st.markdown(
@@ -11,5 +11,7 @@ def render_btc(texts: dict[str, str]) -> None:
         ),
         unsafe_allow_html=True,
     )
+
+    render_btc_price_component(texts)
 
     render_btc_keys_component(texts)
