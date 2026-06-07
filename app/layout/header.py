@@ -1,6 +1,6 @@
 import streamlit as st
 
-_VIEW_ORDER = ("home", "units", "latex", "btc", "about")
+_VIEW_ORDER = ("home", "units", "currency", "latex", "btc", "about")
 _MENU_VIEWS = frozenset(_VIEW_ORDER)
 
 
@@ -13,6 +13,7 @@ def render_header(current_lang: str, texts: dict[str, str]) -> str:
     view_to_label = {
         "home": texts["nav.favorites"],
         "units": texts["nav.units"],
+        "currency": texts["nav.currency"],
         "latex": texts["nav.latex"],
         "btc": texts["nav.btc"],
         "about": texts["nav.about"]
@@ -22,9 +23,10 @@ def render_header(current_lang: str, texts: dict[str, str]) -> str:
     default_by_view = {
         "home": 0,
         "units": 1,
-        "latex": 2,
-        "btc": 3,
-        "about": 4
+        "currency": 2,
+        "latex": 3,
+        "btc": 4,
+        "about": 5,
     }
 
     with st.sidebar:

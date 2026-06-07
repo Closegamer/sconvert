@@ -10,10 +10,6 @@ def render_privacy_component(texts: dict[str, str]) -> None:
     st.markdown(f'<p class="title">{texts["privacy.title"]}</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="subtitle">{texts["privacy.text"]}</p>', unsafe_allow_html=True)
 
-    if st.button(texts.get("privacy.close", "Закрыть"), key="privacy_close_btn"):
-        st.session_state.show_privacy = False
-        st.rerun()
-
     btn_label = texts.get("privacy.contact_button", "Связаться")
     copied_label = texts.get("privacy.contact_copied", "Скопировано")
 

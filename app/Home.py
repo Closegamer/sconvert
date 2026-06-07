@@ -8,6 +8,7 @@ from layout import render_footer, render_header
 from views import (
     render_about,
     render_btc,
+    render_currency,
     render_home,
     render_latex,
     render_latex_guide,
@@ -60,7 +61,7 @@ components.html(
 _css_path = Path(__file__).resolve().parent / "static" / "home.css"
 st.markdown(f"<style>{_css_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
 
-allowed_views = {"home", "units", "btc", "latex", "latex_guide", "about"}
+allowed_views = {"home", "units", "currency", "btc", "latex", "latex_guide", "about"}
 if "view" not in st.session_state or st.session_state.view not in allowed_views:
     st.session_state.view = "home"
 if "lang" not in st.session_state or st.session_state.lang not in {"ru", "en"}:
@@ -335,6 +336,7 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
     path_by_view = {
         "home": "/",
         "units": "/?view=units",
+        "currency": "/?view=currency",
         "btc": "/?view=btc",
         "latex": "/?view=latex",
         "latex_guide": "/?view=latex_guide",
@@ -344,6 +346,7 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
         "ru": {
             "home": "sConvert - онлайн конвертер величин, данных и BTC-инструментов",
             "units": "Конвертер единиц измерения - sConvert",
+            "currency": "Конвертер валют онлайн - sConvert",
             "btc": "Bitcoin (BTC) инструменты: ключи, адреса, проверки - sConvert",
             "latex": "Формулы LaTeX: предпросмотр KaTeX - sConvert",
             "latex_guide": "Памятка по LaTeX и математическому набору - sConvert",
@@ -352,6 +355,7 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
         "en": {
             "home": "sConvert - online converters for units, data, and BTC tools",
             "units": "Unit converter - sConvert",
+            "currency": "Online currency converter - sConvert",
             "btc": "Bitcoin (BTC) tools: keys, addresses, checks - sConvert",
             "latex": "LaTeX formulas: KaTeX preview - sConvert",
             "latex_guide": "LaTeX math cheat sheet - sConvert",
@@ -362,6 +366,7 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
         "ru": {
             "home": "sConvert: конвертер единиц измерения, форматов данных и инструменты для Bitcoin.",
             "units": "Быстрый конвертер единиц: длина, масса, время, энергия, давление и другие категории.",
+            "currency": "Онлайн конвертер валют с актуальным курсом: USD, EUR, RUB, GBP, CNY, JPY и другие.",
             "btc": "Инструменты Bitcoin: преобразование ключей и адресов, формат WIF, RIPEMD160, UTXO и транзакции.",
             "latex": "Предпросмотр формул TeX/LaTeX встроенным рендером Streamlit (KaTeX).",
             "latex_guide": "Справочник: разделители, дроби, интегралы, матрицы, греческие буквы и ограничения KaTeX.",
@@ -370,6 +375,7 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
         "en": {
             "home": "sConvert: converters for measurement units, data formats, and Bitcoin tools.",
             "units": "Fast unit converter: length, mass, time, energy, pressure, and more categories.",
+            "currency": "Online currency converter with live rates: USD, EUR, RUB, GBP, CNY, JPY and more.",
             "btc": "Bitcoin tools: key/address conversion, WIF format, RIPEMD160, UTXO, and transactions.",
             "latex": "Preview TeX/LaTeX formulas with Streamlit’s built-in KaTeX renderer.",
             "latex_guide": "Cheat sheet: delimiters, fractions, integrals, matrices, Greek letters, KaTeX limits.",
@@ -379,7 +385,7 @@ def _inject_seo_meta(current_view: str, current_lang: str) -> None:
     resolved_lang = "en" if current_lang == "en" else "ru"
     resolved_view = (
         current_view
-        if current_view in {"home", "units", "btc", "latex", "latex_guide", "about"}
+        if current_view in {"home", "units", "currency", "btc", "latex", "latex_guide", "about"}
         else "home"
     )
     page_title = title_by_view[resolved_lang][resolved_view]
@@ -482,6 +488,8 @@ else:
         render_home(texts)
     elif st.session_state.view == "units":
         render_units(texts)
+    elif st.session_state.view == "currency":
+        render_currency(texts)
     elif st.session_state.view == "latex":
         render_latex(texts)
     elif st.session_state.view == "latex_guide":
