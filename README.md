@@ -157,3 +157,7 @@ docker compose exec db psql -U sconvert -d sconvert < db/sql/001_create_btc_conv
 | `nginx/default.conf` | Продакшн HTTPS + редирект HTTP→HTTPS |
 
 Активный конфиг задаётся переменной `NGINX_CONF` в `.env` (по умолчанию `./nginx/default.local.conf`).
+
+### Продление SSL-сертификата
+
+Сервис `certbot` в `docker-compose.yml` каждые 12 часов вызывает `certbot renew` (webroot-режим через `/var/www/certbot`). Nginx перечитывает конфигурацию каждые 6 часов (`nginx -s reload` в цикле), чтобы подхватить обновлённый сертификат без простоя.
