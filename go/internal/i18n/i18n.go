@@ -12,6 +12,7 @@ var RU = Dict{
 	"nav.currency":   "Валюты",
 	"nav.btc":        "Биткоин (BTC)",
 	"nav.latex":      "Формулы (LaTeX)",
+	"nav.calculators": "Калькуляторы",
 	"nav.about":      "О проекте",
 	"footer.privacy": "Политика конфиденциальности",
 	"home.splash":    "проект sConvert",
@@ -56,6 +57,7 @@ var EN = Dict{
 	"nav.currency":   "Currency",
 	"nav.btc":        "Bitcoin (BTC)",
 	"nav.latex":      "LaTeX formulas",
+	"nav.calculators": "Calculators",
 	"nav.about":      "About",
 	"footer.privacy": "Privacy policy",
 	"home.splash":    "project sConvert",
@@ -130,6 +132,12 @@ func init() {
 		RU[k] = v
 	}
 	for k, v := range seoEN {
+		EN[k] = v
+	}
+	for k, v := range calculatorsRU {
+		RU[k] = v
+	}
+	for k, v := range calculatorsEN {
 		EN[k] = v
 	}
 }

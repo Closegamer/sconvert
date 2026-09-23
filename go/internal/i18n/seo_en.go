@@ -16,6 +16,8 @@ var seoEN = Dict{
 	"seo.description.latex_guide": "Cheat sheet: delimiters, fractions, integrals, matrices, Greek letters, KaTeX limits.",
 	"seo.title.about":           "About sConvert",
 	"seo.description.about":     "Information about the sConvert project and service goals.",
+	"seo.title.calculators":     "Calculators: price per kilogram, betting arbitrage - sConvert",
+	"seo.description.calculators": "Practical calculators: price per kilogram and sports-betting arbitrage (2 and 3 outcomes).",
 	"seo.title.privacy":         "Privacy Policy - sConvert",
 	"seo.description.privacy":   "What data sConvert collects via Yandex Metrica and how it is processed.",
 }

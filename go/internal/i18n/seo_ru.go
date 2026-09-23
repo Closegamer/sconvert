@@ -20,6 +20,8 @@ var seoRU = Dict{
 	"seo.description.latex_guide": "Справочник: разделители, дроби, интегралы, матрицы, греческие буквы и ограничения KaTeX.",
 	"seo.title.about":           "О проекте sConvert",
 	"seo.description.about":     "Информация о проекте sConvert и назначении сервиса.",
+	"seo.title.calculators":     "Калькуляторы: цена за килограмм, вилки в ставках - sConvert",
+	"seo.description.calculators": "Практические калькуляторы: цена товара за килограмм и вилки в ставках на спорт (2 и 3 исхода).",
 	"seo.title.privacy":         "Политика конфиденциальности - sConvert",
 	"seo.description.privacy":   "Какие данные собирает sConvert через Яндекс.Метрику и как они обрабатываются.",
 }

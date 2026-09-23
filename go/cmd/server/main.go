@@ -49,6 +49,7 @@ func main() {
 	mux.HandleFunc("GET /btc", web.BTCHandler())
 	mux.HandleFunc("GET /latex", web.LatexHandler())
 	mux.HandleFunc("GET /latex_guide", web.LatexGuideHandler())
+	mux.HandleFunc("GET /calculators", web.CalculatorsHandler())
 	mux.HandleFunc("GET /about", web.AboutHandler())
 	mux.HandleFunc("GET /privacy", web.PrivacyHandler())
 	mux.HandleFunc("POST /btc/convert", web.ConvertHandler(btcStore))

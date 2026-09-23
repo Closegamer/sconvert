@@ -8,7 +8,7 @@ import (
 // walletAddress is the donation address ported verbatim from
 // app/lang/*.py's about.subtitle. Split out from the surrounding i18n
 // prose so the template can drop a copy button right next to it.
-const walletAddress = "bc1q6tk9rhtthkgfk662c5jvm4jf33dt7tn78lps4l"
+const walletAddress = "bc1qh9crcvmfvx2qrg8lwm5leg05ytx87uctd9l3lp"
 
 type AboutPageData struct {
 	PageData

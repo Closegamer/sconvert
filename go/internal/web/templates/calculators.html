@@ -1,0 +1,97 @@
+{{define "page:calculators"}}
+<p class="title">{{index .T "calculators.title"}}</p>
+<p class="subtitle">{{index .T "calculators.subtitle"}}</p>
+
+<div class="sc-calc-section">
+  <p class="title sc-calc-section-title">{{index .T "calculators.kg.title"}}</p>
+  <p class="subtitle">{{index .T "calculators.kg.subtitle"}}</p>
+
+  <div class="sc-btc-field">
+    <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.kg.price"}}</span></div>
+    <div class="sc-btc-input-row"><input type="text" inputmode="decimal" id="sc-calc-kg-price" autocomplete="off"></div>
+  </div>
+
+  <div class="sc-btc-field">
+    <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.kg.grams"}}</span></div>
+    <div class="sc-btc-input-row"><input type="text" inputmode="decimal" id="sc-calc-kg-grams" value="100" autocomplete="off"></div>
+  </div>
+
+  <div class="sc-btc-field">
+    <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.kg.result"}}</span></div>
+    <div class="sc-btc-input-row"><input type="text" id="sc-calc-kg-result" disabled></div>
+  </div>
+</div>
+
+<div class="sc-calc-section">
+  <p class="title sc-calc-section-title">{{index .T "calculators.surebet.title"}}</p>
+  <p class="subtitle">{{index .T "calculators.surebet.subtitle"}}</p>
+
+  <div class="sc-btc-toolbar sc-calc-toolbar">
+    <button type="button" id="sc-surebet-mode-2" class="sc-collapse-all-btn sc-surebet-mode-btn" data-outcomes="2">{{index .T "calculators.surebet.two_outcomes"}}</button>
+    <button type="button" id="sc-surebet-mode-3" class="sc-collapse-all-btn sc-surebet-mode-btn" data-outcomes="3">{{index .T "calculators.surebet.three_outcomes"}}</button>
+  </div>
+
+  <div class="sc-btc-field">
+    <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.surebet.total_stake"}}</span></div>
+    <div class="sc-btc-input-row"><input type="text" inputmode="decimal" id="sc-surebet-total" value="1000" autocomplete="off"></div>
+  </div>
+
+  <div class="sc-calc-outcomes-grid">
+    <div class="sc-surebet-outcome" data-outcome-index="0">
+      <div class="sc-btc-field">
+        <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.surebet.outcome"}} 1: {{index .T "calculators.surebet.odds"}}</span></div>
+        <div class="sc-btc-input-row"><input type="text" inputmode="decimal" class="sc-surebet-odds" autocomplete="off"></div>
+      </div>
+      <div class="sc-btc-field">
+        <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.surebet.outcome"}} 1: {{index .T "calculators.surebet.stake"}}</span></div>
+        <div class="sc-btc-input-row"><input type="text" class="sc-surebet-stake" disabled></div>
+      </div>
+    </div>
+
+    <div class="sc-surebet-outcome" data-outcome-index="1">
+      <div class="sc-btc-field">
+        <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.surebet.outcome"}} 2: {{index .T "calculators.surebet.odds"}}</span></div>
+        <div class="sc-btc-input-row"><input type="text" inputmode="decimal" class="sc-surebet-odds" autocomplete="off"></div>
+      </div>
+      <div class="sc-btc-field">
+        <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.surebet.outcome"}} 2: {{index .T "calculators.surebet.stake"}}</span></div>
+        <div class="sc-btc-input-row"><input type="text" class="sc-surebet-stake" disabled></div>
+      </div>
+    </div>
+
+    <div class="sc-surebet-outcome" data-outcome-index="2" id="sc-surebet-outcome-3" hidden>
+      <div class="sc-btc-field">
+        <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.surebet.outcome"}} 3: {{index .T "calculators.surebet.odds"}}</span></div>
+        <div class="sc-btc-input-row"><input type="text" inputmode="decimal" class="sc-surebet-odds" autocomplete="off"></div>
+      </div>
+      <div class="sc-btc-field">
+        <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.surebet.outcome"}} 3: {{index .T "calculators.surebet.stake"}}</span></div>
+        <div class="sc-btc-input-row"><input type="text" class="sc-surebet-stake" disabled></div>
+      </div>
+    </div>
+  </div>
+
+  <p id="sc-surebet-status" class="sc-btc-caption sc-calc-status"></p>
+
+  <div class="sc-btc-field">
+    <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.surebet.margin"}}</span></div>
+    <div class="sc-btc-input-row"><input type="text" id="sc-surebet-margin" disabled></div>
+  </div>
+  <div class="sc-btc-field">
+    <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.surebet.payout"}}</span></div>
+    <div class="sc-btc-input-row"><input type="text" id="sc-surebet-payout" disabled></div>
+  </div>
+  <div class="sc-btc-field">
+    <div class="sc-btc-field-header"><span class="sc-btc-label">{{index .T "calculators.surebet.profit"}}</span></div>
+    <div class="sc-btc-input-row"><input type="text" id="sc-surebet-profit" disabled></div>
+  </div>
+</div>
+
+<script>
+  window.SCONVERT_CALC_I18N = {
+    arbFound: {{index .T "calculators.surebet.arb_found"}},
+    arbNotFound: {{index .T "calculators.surebet.arb_not_found"}}
+  };
+</script>
+<script src="/static/js/calculators.js"></script>
+{{end}}

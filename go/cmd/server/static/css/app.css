@@ -529,6 +529,51 @@ body {
   color: var(--accent);
 }
 
+/* ---- Calculators page ---- */
+.sc-calc-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.sc-calc-section:last-of-type {
+  border-bottom: none;
+}
+
+.sc-calc-section-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.sc-calc-toolbar {
+  justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+.sc-surebet-mode-btn.sc-calc-mode-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sc-calc-outcomes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.sc-calc-status {
+  font-weight: 600;
+}
+
+.sc-calc-status-ok {
+  color: var(--accent);
+}
+
+.sc-calc-status-bad {
+  color: #f05a5a;
+}
+
 /* ---- Privacy page email widget ---- */
 .sc-privacy-email-wrap {
   display: flex;
