@@ -51,3 +51,4 @@ htmlcov/
 # Docker (local overrides)
 docker-compose.override.yml
 
+scratchpad_sconvert-app-go.tar.gz
