@@ -1,0 +1,169 @@
+/* Go-приложение: компоненты, которых не было в исходном home.css
+   (там были только Streamlit-специфичные селекторы). Использует те же
+   CSS-переменные (--bg, --text, --panel, --line, --accent, ...). */
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", "Consolas", "Roboto Mono", monospace;
+}
+
+.sc-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.sc-nav {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.sc-nav a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.sc-nav a:hover {
+  color: var(--accent);
+}
+
+.main .block-container {
+  width: min(1080px, calc(100vw - 1.5rem));
+  margin: 0 auto;
+  padding: 1.25rem 0 3rem;
+}
+
+.sc-collapse-all-btn {
+  width: auto;
+  padding: 0.4rem 0.9rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--btn-border);
+  border-radius: 0.5rem;
+  background: var(--btn-bg-top);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.sc-collapse-all-btn:hover {
+  border-color: var(--btn-border-hover);
+}
+
+.sc-scroll-top-btn {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 1000;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg-top);
+  color: var(--text);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.sc-scroll-top-btn.sc-visible {
+  display: flex;
+}
+
+.sc-scroll-top-btn:hover {
+  border-color: var(--btn-border-hover);
+  color: var(--accent);
+}
+
+.sc-unit-panel {
+  border: 1px solid var(--btn-border);
+  border-radius: 0.5rem;
+  background: linear-gradient(180deg, var(--btn-bg-top) 0%, var(--panel) 100%);
+  margin-bottom: 0.6rem;
+}
+
+.sc-unit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sc-unit-toggle {
+  flex: 1;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+}
+
+.sc-unit-fav {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: 0;
+  color: var(--btn-border);
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+}
+
+.sc-unit-fav-label {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.sc-unit-fav.sc-fav-active,
+.sc-unit-fav.sc-fav-active .sc-unit-fav-label {
+  color: var(--accent);
+}
+
+.sc-unit-body[hidden] {
+  display: none;
+}
+
+.sc-unit-body:not([hidden]) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0 0.8rem 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .sc-unit-body:not([hidden]) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sc-unit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.sc-unit-field input {
+  background: var(--input-bg, var(--panel));
+  border: 1px solid var(--btn-border);
+  border-radius: 0.35rem;
+  color: var(--value-text);
+  padding: 0.4rem 0.55rem;
+  font-size: 0.95rem;
+}
+
+.sc-unit-field input:focus {
+  outline: none;
+  border-color: var(--btn-border-hover);
+}

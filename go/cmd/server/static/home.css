@@ -351,13 +351,14 @@ section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
     color: var(--text) !important;
 }
 
-a[href]:not(.sconvert-clipboard-link)::after {
+/* Только ссылки в основном контенте — не шапка (лого/меню) и не футер. */
+.main .block-container a[href]:not(.sconvert-clipboard-link)::after {
     content: " 🔗";
     font-size: 0.88em;
     opacity: 0.9;
 }
 
-a[href]:not(.sconvert-clipboard-link):hover::after {
+.main .block-container a[href]:not(.sconvert-clipboard-link):hover::after {
     opacity: 1;
 }
 

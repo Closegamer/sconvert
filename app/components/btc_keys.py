@@ -524,15 +524,15 @@ def _render_pubkey_curve_visualization(pubkey_uncompressed_hex: str, texts: dict
     st.markdown(
         f"""
         <svg width="100%" viewBox="0 0 {svg_w} {svg_h}" preserveAspectRatio="xMidYMid meet">
-          <rect x="{pad}" y="{pad}" width="{plot_w}" height="{plot_h}" fill="#07110b" stroke="#1d3324" stroke-width="2"/>
-          <line x1="{axis_x1}" y1="{axis_y0}" x2="{axis_x2}" y2="{axis_y0}" stroke="#6f7f77" stroke-width="1.2"/>
-          <line x1="{axis_yx}" y1="{axis_y1}" x2="{axis_yx}" y2="{axis_y2}" stroke="#6f7f77" stroke-width="1.2"/>
-          <polyline points="{polyline_top}" fill="none" stroke="#f05a5a" stroke-width="1.6" opacity="0.95"/>
-          <polyline points="{polyline_bottom}" fill="none" stroke="#f05a5a" stroke-width="1.6" opacity="0.95"/>
-          <text x="{pad + plot_w - 6}" y="{pad + plot_h + 22}" fill="#86b593" font-size="12" text-anchor="end">x / p</text>
-          <text x="{pad - 10}" y="{pad + 14}" fill="#86b593" font-size="12" text-anchor="end">y / p</text>
-          <circle cx="{px}" cy="{py}" r="6" fill="#1fcf62" stroke="#d9ffe3" stroke-width="1.5"/>
-          <text x="{px + 10}" y="{py - 10}" fill="#d9ffe3" font-size="12">P(x, y)</text>
+          <rect class="sc-svg-plot-bg" x="{pad}" y="{pad}" width="{plot_w}" height="{plot_h}" stroke-width="2"/>
+          <line class="sc-svg-axis" x1="{axis_x1}" y1="{axis_y0}" x2="{axis_x2}" y2="{axis_y0}" stroke-width="1.2"/>
+          <line class="sc-svg-axis" x1="{axis_yx}" y1="{axis_y1}" x2="{axis_yx}" y2="{axis_y2}" stroke-width="1.2"/>
+          <polyline class="sc-svg-curve" points="{polyline_top}" fill="none" stroke-width="1.6" opacity="0.95"/>
+          <polyline class="sc-svg-curve" points="{polyline_bottom}" fill="none" stroke-width="1.6" opacity="0.95"/>
+          <text class="sc-svg-label" x="{pad + plot_w - 6}" y="{pad + plot_h + 22}" font-size="12" text-anchor="end">x / p</text>
+          <text class="sc-svg-label" x="{pad - 10}" y="{pad + 14}" font-size="12" text-anchor="end">y / p</text>
+          <circle class="sc-svg-point" cx="{px}" cy="{py}" r="6" stroke-width="1.5"/>
+          <text class="sc-svg-label-strong" x="{px + 10}" y="{py - 10}" font-size="12">P(x, y)</text>
         </svg>
         """,
         unsafe_allow_html=True,
@@ -565,12 +565,12 @@ def _render_private_key_line_visualization(private_key_int: int, curve_order: in
     st.markdown(
         f"""
         <svg width="100%" viewBox="0 0 {svg_w} {svg_h}" preserveAspectRatio="xMidYMid meet">
-          <line x1="{x1}" y1="{y}" x2="{x2}" y2="{y}" stroke="#4e6b57" stroke-width="3"/>
-          <line x1="{x1}" y1="{y - 9}" x2="{x1}" y2="{y + 9}" stroke="#86b593" stroke-width="1.3"/>
-          <line x1="{x2}" y1="{y - 9}" x2="{x2}" y2="{y + 9}" stroke="#86b593" stroke-width="1.3"/>
-          <circle cx="{px:.3f}" cy="{y}" r="6" fill="#1fcf62" stroke="#d9ffe3" stroke-width="1.5"/>
-          <text x="{x1}" y="{y + 25}" fill="#86b593" font-size="11" text-anchor="start">1</text>
-          <text x="{x2}" y="{y + 25}" fill="#86b593" font-size="11" text-anchor="end">n-1</text>
+          <line class="sc-svg-track" x1="{x1}" y1="{y}" x2="{x2}" y2="{y}" stroke-width="3"/>
+          <line class="sc-svg-tick" x1="{x1}" y1="{y - 9}" x2="{x1}" y2="{y + 9}" stroke-width="1.3"/>
+          <line class="sc-svg-tick" x1="{x2}" y1="{y - 9}" x2="{x2}" y2="{y + 9}" stroke-width="1.3"/>
+          <circle class="sc-svg-point" cx="{px:.3f}" cy="{y}" r="6" stroke-width="1.5"/>
+          <text class="sc-svg-label" x="{x1}" y="{y + 25}" font-size="11" text-anchor="start">1</text>
+          <text class="sc-svg-label" x="{x2}" y="{y + 25}" font-size="11" text-anchor="end">n-1</text>
         </svg>
         """,
         unsafe_allow_html=True,

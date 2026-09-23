@@ -4,11 +4,19 @@ body {
     padding: 0;
 }
 
+:root {
+    --clip-muted: #86b593;
+}
+
+:root[data-theme="light"] {
+    --clip-muted: #4c6357;
+}
+
 a.sconvert-clipboard-link {
     display: block;
     width: 100%;
     text-align: right;
-    color: rgb(134, 181, 147);
+    color: var(--clip-muted);
     text-decoration: none;
     font-size: 0.875rem;
     line-height: 1.3;

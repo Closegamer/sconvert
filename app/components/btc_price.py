@@ -1,4 +1,8 @@
+from pathlib import Path
+
 import streamlit.components.v1 as components
+
+_THEME_SYNC_JS_PATH = Path(__file__).resolve().parent.parent / "static" / "js" / "theme_iframe_sync.js"
 
 
 def render_btc_price_component(texts: dict[str, str]) -> None:
@@ -8,19 +12,29 @@ def render_btc_price_component(texts: dict[str, str]) -> None:
     label_error = texts.get("btc.price.error", "—")
     label_loading = texts.get("btc.price.loading", "...")
     refresh_ms = 30_000
+    theme_sync_js = _THEME_SYNC_JS_PATH.read_text(encoding="utf-8")
 
     components.html(
         f"""
+        <script>{theme_sync_js}</script>
         <style>
           * {{ box-sizing: border-box; margin: 0; padding: 0; }}
           body {{ background: transparent; font-family: sans-serif; }}
+          :root {{
+            --w-bg: #07110b; --w-line: #1d3324; --w-muted: #86b593;
+            --w-text: #d9ffe3; --w-meta: #4e6b57; --w-accent: #1fcf62;
+          }}
+          :root[data-theme="light"] {{
+            --w-bg: #eef6f0; --w-line: #c3dccb; --w-muted: #4c6357;
+            --w-text: #12261b; --w-meta: #5b7568; --w-accent: #178a45;
+          }}
           #widget {{
             display: flex;
             align-items: center;
             gap: 20px;
             padding: 10px 16px;
-            background: #07110b;
-            border: 1px solid #1d3324;
+            background: var(--w-bg);
+            border: 1px solid var(--w-line);
             border-radius: 8px;
             width: fit-content;
           }}
@@ -42,19 +56,19 @@ def render_btc_price_component(texts: dict[str, str]) -> None:
           }}
           .currency {{
             font-size: 11px;
-            color: #86b593;
+            color: var(--w-muted);
             min-width: 28px;
           }}
           .amount {{
             font-size: 15px;
-            color: #d9ffe3;
+            color: var(--w-text);
             font-weight: 600;
             font-variant-numeric: tabular-nums;
             min-width: 120px;
           }}
           .meta {{
             font-size: 10px;
-            color: #4e6b57;
+            color: var(--w-meta);
             margin-top: 2px;
           }}
           .dot {{
@@ -62,7 +76,7 @@ def render_btc_price_component(texts: dict[str, str]) -> None:
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: #1fcf62;
+            background: var(--w-accent);
             margin-right: 5px;
             animation: pulse 2s infinite;
           }}

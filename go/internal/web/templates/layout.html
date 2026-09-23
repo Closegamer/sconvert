@@ -1,0 +1,79 @@
+{{define "layout"}}
+<!doctype html>
+<html lang="{{.Lang}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}}</title>
+  <meta name="description" content="{{.Description}}">
+  <link rel="canonical" href="{{.Canonical}}">
+  <link rel="stylesheet" href="/static/home.css">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <header class="sc-header">
+    <a class="brand-link" href="/">{{index .T "nav.home"}}</a>
+    <nav class="sc-nav">
+      <a href="/units">{{index .T "nav.units"}}</a>
+      <a href="/currency">{{index .T "nav.currency"}}</a>
+      <a href="/btc">{{index .T "nav.btc"}}</a>
+      <a href="/latex">{{index .T "nav.latex"}}</a>
+      <a href="/about">{{index .T "nav.about"}}</a>
+    </nav>
+    <button type="button" class="theme-toggle-btn" title="Light / Dark" aria-label="Toggle color theme" onclick="sconvertToggleTheme()">
+      <span class="theme-icon theme-icon-sun">☀️</span>
+      <span class="theme-icon theme-icon-moon">🌙</span>
+    </button>
+  </header>
+
+  <main class="main">
+    <div class="block-container">
+      {{.Content}}
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span>© sConvert</span>
+    <span> · </span>
+    <a class="footer-link" href="/privacy">{{index .T "footer.privacy"}}</a>
+  </footer>
+
+  <button type="button" id="sc-scroll-top" class="sc-scroll-top-btn" aria-label="Scroll to top" title="↑">↑</button>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("sc-scroll-top");
+      if (!btn) return;
+      var SHOW_AFTER_PX = 400;
+      function onScroll() {
+        btn.classList.toggle("sc-visible", window.scrollY > SHOW_AFTER_PX);
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+      btn.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var KEY = "sconvert_theme";
+      function currentTheme() {
+        try { return localStorage.getItem(KEY) === "light" ? "light" : "dark"; }
+        catch (e) { return "dark"; }
+      }
+      function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+      }
+      applyTheme(currentTheme());
+      window.sconvertToggleTheme = function () {
+        var next = currentTheme() === "light" ? "dark" : "light";
+        try { localStorage.setItem(KEY, next); } catch (e) {}
+        applyTheme(next);
+      };
+    })();
+  </script>
+</body>
+</html>
+{{end}}

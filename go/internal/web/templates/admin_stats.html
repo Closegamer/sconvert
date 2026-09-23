@@ -1,0 +1,30 @@
+{{define "page:admin_stats"}}
+<p class="title">Input usage stats</p>
+<p class="subtitle">Anonymous per-input hit counts (no user identifiers).</p>
+<div style="overflow-x:auto;">
+<table style="width:100%; border-collapse:collapse;">
+  <thead>
+    <tr style="text-align:left; border-bottom:1px solid var(--line);">
+      <th style="padding:.4rem .6rem;">Scope</th>
+      <th style="padding:.4rem .6rem;">Category</th>
+      <th style="padding:.4rem .6rem;">Input</th>
+      <th style="padding:.4rem .6rem;">Hits</th>
+      <th style="padding:.4rem .6rem;">Last used</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .Rows}}
+    <tr style="border-bottom:1px solid var(--line);">
+      <td style="padding:.4rem .6rem;">{{.Scope}}</td>
+      <td style="padding:.4rem .6rem;">{{.CategoryKey}}</td>
+      <td style="padding:.4rem .6rem;">{{.InputKey}}</td>
+      <td style="padding:.4rem .6rem;">{{.HitCount}}</td>
+      <td style="padding:.4rem .6rem; color:var(--muted);">{{.LastUsedAt.Format "2006-01-02 15:04:05"}}</td>
+    </tr>
+    {{else}}
+    <tr><td colspan="5" style="padding:.6rem;">No usage recorded yet.</td></tr>
+    {{end}}
+  </tbody>
+</table>
+</div>
+{{end}}

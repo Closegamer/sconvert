@@ -61,6 +61,12 @@ components.html(
 _css_path = Path(__file__).resolve().parent / "static" / "home.css"
 st.markdown(f"<style>{_css_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
 
+_theme_toggle_js = Path(__file__).resolve().parent / "static" / "js" / "theme_toggle_init.js"
+components.html(
+    f"<script>{_theme_toggle_js.read_text(encoding='utf-8')}</script>",
+    height=0,
+)
+
 allowed_views = {"home", "units", "currency", "btc", "latex", "latex_guide", "about"}
 if "view" not in st.session_state or st.session_state.view not in allowed_views:
     st.session_state.view = "home"

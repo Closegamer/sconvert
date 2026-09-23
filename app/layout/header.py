@@ -53,6 +53,19 @@ def render_header(current_lang: str, texts: dict[str, str]) -> str:
             help=f'{texts["lang.ru"]} / {texts["lang.en"]}',
             key="sidebar_lang_toggle",
         )
+        st.markdown(
+            """
+            <div class="sidebar-theme-toggle">
+                <button type="button" class="theme-toggle-btn" title="Light / Dark"
+                        aria-label="Toggle color theme"
+                        onclick="window.sconvertToggleTheme && window.sconvertToggleTheme()">
+                    <span class="theme-icon theme-icon-sun">☀️</span>
+                    <span class="theme-icon theme-icon-moon">🌙</span>
+                </button>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     with st.container(key="mobile_header_brand"):
         st.markdown(
@@ -63,7 +76,9 @@ def render_header(current_lang: str, texts: dict[str, str]) -> str:
     current_view = str(st.session_state.view)
     default_index = default_by_view.get(current_view, 0)
     with st.container(key="desktop_nav"):
-        _left_spacer, menu_col, lang_col = st.columns([0.6, 8.2, 1.2], vertical_alignment="center")
+        _left_spacer, menu_col, lang_col, theme_col = st.columns(
+            [0.6, 7.8, 1.2, 0.7], vertical_alignment="center"
+        )
         with menu_col:
             selected_label = st.segmented_control(
                 "menu",
@@ -77,6 +92,20 @@ def render_header(current_lang: str, texts: dict[str, str]) -> str:
                 value=current_lang == "en",
                 help=f'{texts["lang.ru"]} / {texts["lang.en"]}',
                 key="desktop_lang_toggle",
+            )
+        with theme_col:
+            st.markdown(
+                """
+                <div class="desktop-theme-toggle">
+                    <button type="button" class="theme-toggle-btn" title="Light / Dark"
+                            aria-label="Toggle color theme"
+                            onclick="window.sconvertToggleTheme && window.sconvertToggleTheme()">
+                        <span class="theme-icon theme-icon-sun">☀️</span>
+                        <span class="theme-icon theme-icon-moon">🌙</span>
+                    </button>
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
 
     selected_view = label_to_view.get(selected_label, current_view)

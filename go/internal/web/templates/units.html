@@ -1,0 +1,12 @@
+{{define "page:units"}}
+<p class="title">{{index .T "units.title"}}</p>
+<p class="subtitle">{{index .T "units.subtitle"}}</p>
+<button type="button" id="sc-units-collapse-all" class="sc-collapse-all-btn">{{index .T "units.collapse_all"}}</button>
+
+{{range .Categories}}
+{{template "unit_category_panel" (dict "T" $.T "Cat" .)}}
+{{end}}
+
+<script>window.SCONVERT_UNITS = {{.UnitsJSON}};</script>
+<script src="/static/js/units.js"></script>
+{{end}}

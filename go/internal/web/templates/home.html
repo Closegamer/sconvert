@@ -1,0 +1,13 @@
+{{define "page:home"}}
+<p class="splash">{{index .T "home.splash"}}</p>
+
+<p class="title" id="sc-favorites-title" hidden>{{index .T "home.favorites.title"}}</p>
+<div id="sc-favorites-section">
+{{range .Categories}}
+{{template "unit_category_panel" (dict "T" $.T "Cat" .)}}
+{{end}}
+</div>
+
+<script>window.SCONVERT_UNITS = {{.UnitsJSON}};</script>
+<script src="/static/js/units.js"></script>
+{{end}}

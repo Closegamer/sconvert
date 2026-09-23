@@ -1,0 +1,18 @@
+{{define "unit_category_panel"}}
+<div class="sc-unit-panel" data-category="{{.Cat.Key}}">
+  <div class="sc-unit-header">
+    <button type="button" class="sc-unit-toggle" aria-expanded="false">{{index .T .Cat.TitleKey}}</button>
+    <button type="button" class="sc-unit-fav" aria-pressed="false" title="{{index .T "units.favorite.toggle"}}">
+      <span class="sc-unit-fav-label">{{index .T "units.favorite.toggle"}}</span>
+    </button>
+  </div>
+  <div class="sc-unit-body" hidden>
+    {{range .Cat.Units}}
+    <label class="sc-unit-field">
+      <span>{{index $.T .LabelKey}}</span>
+      <input type="text" inputmode="decimal" autocomplete="off" data-unit-code="{{.Code}}">
+    </label>
+    {{end}}
+  </div>
+</div>
+{{end}}
