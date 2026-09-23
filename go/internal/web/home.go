@@ -27,8 +27,8 @@ func HomeHandler(store *stats.Store) http.HandlerFunc {
 		data := &UnitsPageData{
 			PageData: NewPageData(
 				lang,
-				"sConvert",
-				"sConvert: online converters for units, data formats, and Bitcoin tools.",
+				i18nOr(lang, "seo.title.home", "sConvert"),
+				i18nOr(lang, "seo.description.home", ""),
 				"https://sconvert.ru/",
 			),
 			Categories: ranked,

@@ -1,0 +1,21 @@
+{{define "page:currency"}}
+<p class="title">{{index .T "curr.title"}}</p>
+<p class="subtitle">{{index .T "curr.subtitle"}}</p>
+
+{{if .RatesError}}
+<p class="subtitle">{{index .T "curr.error"}}</p>
+{{else}}
+<p class="subtitle">{{index .T "curr.rates_as_of"}} {{.UpdatedAt}} &middot; {{index .T "curr.source"}}: open.er-api.com</p>
+<input type="search" id="sc-currency-search" class="sc-search-input" placeholder="{{index .T "search.placeholder"}}" autocomplete="off">
+<div class="sc-currency-grid" id="sc-currency-grid">
+  {{range .Currencies}}
+  <label class="sc-unit-field">
+    <span>{{index $.T .LabelKey}}</span>
+    <input type="text" inputmode="decimal" autocomplete="off" data-currency-code="{{.Code}}">
+  </label>
+  {{end}}
+</div>
+<script>window.SCONVERT_CURRENCY_RATES = {{.RatesJSON}};</script>
+<script src="/static/js/currency.js"></script>
+{{end}}
+{{end}}

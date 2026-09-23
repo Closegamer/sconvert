@@ -1,0 +1,6 @@
+{{define "page:about"}}
+<p class="title">{{index .T "about.title"}}</p>
+<p class="subtitle">{{.Before}}<b>{{.Address}}</b><button type="button" id="sc-about-copy-address" class="sc-copy-icon-btn" title="{{index .T "btc.copy"}}" aria-label="{{index .T "btc.copy"}}" data-copy-value="{{.Address}}">📋</button>{{.After}}</p>
+
+<script src="/static/js/about.js"></script>
+{{end}}

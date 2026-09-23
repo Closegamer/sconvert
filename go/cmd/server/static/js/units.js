@@ -13,6 +13,7 @@
   var DATA = window.SCONVERT_UNITS || [];
   var FAVORITES_KEY = "sconvert_favorites_units";
   var EXPANDED_KEY = "sconvert_expanded_units";
+  var PINNED_KEY = "sconvert_pinned_units_categories";
   var HIT_DEBOUNCE_MS = 800;
   var hitTimers = {};
 
@@ -29,6 +30,14 @@
     try {
       localStorage.setItem(storageKey, JSON.stringify(Array.from(set)));
     } catch (e) {}
+  }
+
+  function pinCategory(key) {
+    var set = readSet(PINNED_KEY);
+    if (!set.has(key)) {
+      set.add(key);
+      writeSet(PINNED_KEY, set);
+    }
   }
 
   function formatNumber(value) {
@@ -102,6 +111,30 @@
         var base = v * u.a + u.b;
         syncFromBase(base, code);
         scheduleHit(key, code);
+      });
+
+      // Picking a field out of the search results (click or Tab into it
+      // while it's a match) counts as a use for popularity — same
+      // debounced hit as typing a value — and also pins the whole category
+      // to the top of the list for this browser (localStorage), clearing
+      // the search box. Pins accumulate: a later pin joins earlier ones at
+      // the top instead of replacing them. Only wired when a search handle
+      // is passed in (the /units page, not the Home favorites section).
+      input.addEventListener("focus", function () {
+        var field = input.parentNode;
+        // A panel can match via its category title alone (no individual
+        // field's label/code contains the query) — in that case only the
+        // panel gets sc-search-match, not the field, so check both.
+        var matched = (field && field.classList.contains("sc-search-match")) ||
+          panel.classList.contains("sc-search-match");
+        if (matched) {
+          scheduleHit(key, input.getAttribute("data-unit-code"));
+          if (opts.search) {
+            pinCategory(key);
+            opts.search.clear();
+            opts.search.applyPinnedOrder();
+          }
+        }
       });
     });
 
@@ -177,14 +210,103 @@
     refresh();
   }
 
+  // Filters category panels against the search box (matches category title,
+  // each field's label, and its unit code) and moves matches to the top of
+  // the list. Only present on /units (#sc-units-list) — the Home favorites
+  // list is short enough not to need it.
+  function initSearch() {
+    var input = document.getElementById("sc-units-search");
+    var list = document.getElementById("sc-units-list");
+    if (!input || !list) return { clear: function () {}, applyPinnedOrder: function () {} };
+    var panels = Array.prototype.slice.call(list.querySelectorAll(".sc-unit-panel"));
+
+    function normalize(s) { return (s || "").toLowerCase(); }
+
+    function fieldMatches(field, query) {
+      var span = field.querySelector("span");
+      var code = field.querySelector("input").getAttribute("data-unit-code");
+      return normalize(span.textContent).indexOf(query) !== -1 || normalize(code).indexOf(query) !== -1;
+    }
+
+    function panelMatches(panel, query) {
+      var toggle = panel.querySelector(".sc-unit-toggle");
+      if (toggle && normalize(toggle.textContent).indexOf(query) !== -1) return true;
+      var fields = panel.querySelectorAll(".sc-unit-field");
+      for (var i = 0; i < fields.length; i++) {
+        if (fieldMatches(fields[i], query)) return true;
+      }
+      return false;
+    }
+
+    function clear() {
+      input.value = "";
+      panels.forEach(function (panel) {
+        panel.hidden = false;
+        panel.classList.remove("sc-search-match");
+        panel.querySelectorAll(".sc-unit-field").forEach(function (f) {
+          f.classList.remove("sc-search-match");
+        });
+      });
+    }
+
+    function applyPinnedOrder() {
+      var pinned = Array.from(readSet(PINNED_KEY));
+      pinned.slice().reverse().forEach(function (key) {
+        var panel = list.querySelector('.sc-unit-panel[data-category="' + key + '"]');
+        if (panel) list.insertBefore(panel, list.firstChild);
+      });
+    }
+
+    input.addEventListener("input", function () {
+      var query = normalize(input.value.trim());
+      if (!query) {
+        panels.forEach(function (panel) {
+          panel.hidden = false;
+          panel.classList.remove("sc-search-match");
+          panel.querySelectorAll(".sc-unit-field").forEach(function (f) {
+            f.classList.remove("sc-search-match");
+          });
+        });
+        return;
+      }
+
+      var matched = [];
+      panels.forEach(function (panel) {
+        var isMatch = panelMatches(panel, query);
+        panel.hidden = !isMatch;
+        panel.classList.toggle("sc-search-match", isMatch);
+        if (!isMatch) return;
+
+        matched.push(panel);
+        panel.querySelectorAll(".sc-unit-field").forEach(function (f) {
+          f.classList.toggle("sc-search-match", fieldMatches(f, query));
+        });
+
+        var body = panel.querySelector(".sc-unit-body");
+        var toggleBtn = panel.querySelector(".sc-unit-toggle");
+        if (body && body.hidden) {
+          body.hidden = false;
+          panel.classList.add("sc-unit-open");
+          if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "true");
+        }
+      });
+      matched.slice().reverse().forEach(function (panel) { list.insertBefore(panel, list.firstChild); });
+    });
+
+    return { clear: clear, applyPinnedOrder: applyPinnedOrder };
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
+    var search = initSearch();
+
     var favoritesSection = document.getElementById("sc-favorites-section");
     if (favoritesSection) {
       initFavoritesSection(favoritesSection);
     } else {
       document.querySelectorAll(".sc-unit-panel").forEach(function (p) {
-        initCategory(p);
+        initCategory(p, { search: search });
       });
+      search.applyPinnedOrder();
     }
 
     var collapseAllBtn = document.getElementById("sc-units-collapse-all");

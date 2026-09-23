@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"sconvert/internal/currency"
 	"sconvert/internal/stats"
 	"sconvert/internal/units"
 )
@@ -34,8 +35,8 @@ func UnitsHandler(store *stats.Store) http.HandlerFunc {
 		data := &UnitsPageData{
 			PageData: NewPageData(
 				lang,
-				"sConvert — "+i18nOr(lang, "units.title", "Units"),
-				i18nOr(lang, "units.subtitle", ""),
+				i18nOr(lang, "seo.title.units", "Units - sConvert"),
+				i18nOr(lang, "seo.description.units", ""),
 				"https://sconvert.ru/units",
 			),
 			Categories: ranked,
@@ -60,7 +61,8 @@ func StatsHitHandler(store *stats.Store) http.HandlerFunc {
 			w.WriteHeader(http.StatusNoContent) // best-effort beacon; never error to the client
 			return
 		}
-		if body.Scope == "units" {
+		switch body.Scope {
+		case "units":
 			if cat, ok := units.ByKey(body.Category); ok {
 				for _, u := range cat.Units {
 					if u.Code == body.Input {
@@ -68,6 +70,10 @@ func StatsHitHandler(store *stats.Store) http.HandlerFunc {
 						break
 					}
 				}
+			}
+		case "currency":
+			if body.Category == "currency" && currency.Contains(body.Input) {
+				store.Hit(context.Background(), body.Scope, body.Category, body.Input)
 			}
 		}
 		w.WriteHeader(http.StatusNoContent)

@@ -2,10 +2,16 @@ package web
 
 import (
 	"bytes"
+	"encoding/json"
 	"html/template"
 	"net/http"
 
 	"sconvert/internal/i18n"
+)
+
+const (
+	siteBaseURL = "https://sconvert.ru"
+	ogImageURL  = siteBaseURL + "/og-image.png"
 )
 
 type PageData struct {
@@ -13,16 +19,49 @@ type PageData struct {
 	Title       string
 	Description string
 	Canonical   string
+	OGLocale    string
+	OGImage     string
+	SiteBaseURL string
+	JSONLD      template.JS
 	T           i18n.Dict
 	Content     template.HTML
 }
 
+type websiteJSONLD struct {
+	Context     string   `json:"@context"`
+	Type        string   `json:"@type"`
+	Name        string   `json:"name"`
+	URL         string   `json:"url"`
+	InLanguage  []string `json:"inLanguage"`
+	Description string   `json:"description"`
+}
+
+// NewPageData centralizes the SEO fields every page needs (ported from
+// Python's _inject_seo_meta in app/Home.py) so each handler only supplies
+// the per-page title/description/canonical — OG locale and the JSON-LD
+// WebSite block are derived here once instead of duplicated per handler.
 func NewPageData(lang, title, description, canonical string) PageData {
+	ogLocale := "ru_RU"
+	if lang == "en" {
+		ogLocale = "en_US"
+	}
+	jsonLD, _ := json.Marshal(websiteJSONLD{
+		Context:     "https://schema.org",
+		Type:        "WebSite",
+		Name:        "sConvert",
+		URL:         siteBaseURL,
+		InLanguage:  []string{"ru", "en"},
+		Description: description,
+	})
 	return PageData{
 		Lang:        lang,
 		Title:       title,
 		Description: description,
 		Canonical:   canonical,
+		OGLocale:    ogLocale,
+		OGImage:     ogImageURL,
+		SiteBaseURL: siteBaseURL,
+		JSONLD:      template.JS(jsonLD),
 		T:           i18n.For(lang),
 	}
 }

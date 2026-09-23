@@ -6,24 +6,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{.Title}}</title>
   <meta name="description" content="{{.Description}}">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="yandex-verification" content="3c93613f1bcf5ed3">
   <link rel="canonical" href="{{.Canonical}}">
+  <link rel="alternate" hreflang="x-default" href="{{.SiteBaseURL}}">
+  <link rel="alternate" hreflang="ru" href="{{.SiteBaseURL}}">
+  <link rel="alternate" hreflang="en" href="{{.SiteBaseURL}}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="sConvert">
+  <meta property="og:title" content="{{.Title}}">
+  <meta property="og:description" content="{{.Description}}">
+  <meta property="og:url" content="{{.Canonical}}">
+  <meta property="og:locale" content="{{.OGLocale}}">
+  <meta property="og:image" content="{{.OGImage}}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{.Title}}">
+  <meta name="twitter:description" content="{{.Description}}">
+  <meta name="twitter:image" content="{{.OGImage}}">
+  <script type="application/ld+json">{{.JSONLD}}</script>
   <link rel="stylesheet" href="/static/home.css">
   <link rel="stylesheet" href="/static/css/app.css">
+  <script>
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js?id=109708961", "ym");
+
+    ym(109708961, "init", {
+      ssr: true,
+      webvisor: true,
+      clickmap: true,
+      ecommerce: "dataLayer",
+      accurateTrackBounce: true,
+      trackLinks: true
+    });
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/109708961" style="position:absolute; left:-9999px;" alt=""></div></noscript>
 </head>
 <body>
   <header class="sc-header">
     <a class="brand-link" href="/">{{index .T "nav.home"}}</a>
-    <nav class="sc-nav">
+    <nav class="sc-nav" id="sc-nav">
       <a href="/units">{{index .T "nav.units"}}</a>
       <a href="/currency">{{index .T "nav.currency"}}</a>
       <a href="/btc">{{index .T "nav.btc"}}</a>
       <a href="/latex">{{index .T "nav.latex"}}</a>
       <a href="/about">{{index .T "nav.about"}}</a>
     </nav>
-    <button type="button" class="theme-toggle-btn" title="Light / Dark" aria-label="Toggle color theme" onclick="sconvertToggleTheme()">
-      <span class="theme-icon theme-icon-sun">☀️</span>
-      <span class="theme-icon theme-icon-moon">🌙</span>
-    </button>
+    <div class="sc-header-actions">
+      <button type="button" class="sc-lang-toggle-btn" title="RU / EN" aria-label="Switch language" onclick="sconvertToggleLang()">{{if eq .Lang "en"}}EN{{else}}RU{{end}}</button>
+      <button type="button" class="theme-toggle-btn" title="Light / Dark" aria-label="Toggle color theme" onclick="sconvertToggleTheme()">
+        <span class="theme-icon theme-icon-sun">☀️</span>
+        <span class="theme-icon theme-icon-moon">🌙</span>
+      </button>
+      <button type="button" class="sc-nav-toggle-btn" id="sc-nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="sc-nav">☰</button>
+    </div>
   </header>
 
   <main class="main">
@@ -54,6 +92,35 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     })();
+  </script>
+
+  <script>
+    (function () {
+      var toggleBtn = document.getElementById("sc-nav-toggle");
+      var nav = document.getElementById("sc-nav");
+      if (!toggleBtn || !nav) return;
+      toggleBtn.addEventListener("click", function () {
+        var isOpen = nav.classList.toggle("sc-nav-open");
+        toggleBtn.setAttribute("aria-expanded", String(isOpen));
+        toggleBtn.textContent = isOpen ? "✕" : "☰";
+      });
+      nav.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function () {
+          nav.classList.remove("sc-nav-open");
+          toggleBtn.setAttribute("aria-expanded", "false");
+          toggleBtn.textContent = "☰";
+        });
+      });
+    })();
+  </script>
+
+  <script>
+    function sconvertToggleLang() {
+      var current = document.documentElement.getAttribute("lang") === "en" ? "en" : "ru";
+      var next = current === "en" ? "ru" : "en";
+      document.cookie = "sconvert_lang=" + next + "; path=/; max-age=31536000; samesite=lax";
+      window.location.reload();
+    }
   </script>
 
   <script>

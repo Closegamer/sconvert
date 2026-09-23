@@ -74,6 +74,44 @@ func (s *Store) CategoryTotals(ctx context.Context, scope string, categoryKeys [
 	return totals
 }
 
+// InputTotals returns the hit_count for each of the given input keys
+// within a scope/category, in the same order — parallel to CategoryTotals
+// but at input granularity. Used where each input ranks independently
+// rather than being grouped into a category (e.g. currency, where every
+// code is its own "category of one"). Missing rows / DB errors resolve to
+// 0 so ranking always falls back to the caller's default order.
+func (s *Store) InputTotals(ctx context.Context, scope, category string, inputKeys []string) []int64 {
+	totals := make([]int64, len(inputKeys))
+	if s == nil || s.pool == nil || len(inputKeys) == 0 {
+		return totals
+	}
+	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+
+	rows, err := s.pool.Query(ctx, `
+		SELECT input_key, hit_count
+		FROM input_usage_stats
+		WHERE scope = $1 AND category_key = $2 AND input_key = ANY($3)
+	`, scope, category, inputKeys)
+	if err != nil {
+		return totals
+	}
+	defer rows.Close()
+
+	byKey := make(map[string]int64, len(inputKeys))
+	for rows.Next() {
+		var key string
+		var count int64
+		if err := rows.Scan(&key, &count); err == nil {
+			byKey[key] = count
+		}
+	}
+	for i, k := range inputKeys {
+		totals[i] = byKey[k]
+	}
+	return totals
+}
+
 type Row struct {
 	Scope       string
 	CategoryKey string

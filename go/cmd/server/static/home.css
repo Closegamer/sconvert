@@ -80,10 +80,6 @@ header[data-testid="stHeader"] {
     z-index: 1002;
 }
 
-footer {
-    display: none;
-}
-
 .stAppDeployButton {
     display: none !important;
 }

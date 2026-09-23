@@ -1,0 +1,31 @@
+{{define "page:latex"}}
+<p class="title">{{index .T "latex.title"}}</p>
+<p class="subtitle">{{index .T "latex.lead"}} <a class="footer-link" href="/latex_guide">{{index .T "footer.latex_guide"}}</a>.</p>
+
+<div class="sc-btc-field-header">
+  <span class="sc-btc-label">{{index .T "latex.input_label"}}</span>
+  <button type="button" class="sc-btc-copy-btn" id="sc-latex-copy-source">{{index .T "latex.copy_source_button"}}</button>
+</div>
+<textarea id="sc-latex-input" class="sc-latex-textarea" rows="6" autocomplete="off">{{.Example}}</textarea>
+
+<p class="sc-btc-label" style="margin-top:0.75rem;">{{index .T "latex.preview_label"}}</p>
+<div id="sc-latex-preview" class="sc-latex-preview"></div>
+<p id="sc-latex-empty-hint" class="sc-btc-caption" hidden>{{index .T "latex.empty_hint"}}</p>
+<p id="sc-latex-error" class="sc-btc-error" hidden></p>
+
+<div id="sc-latex-normalized-wrap" hidden>
+  <p class="sc-btc-caption">{{index .T "latex.clipboard_result"}}</p>
+  <pre id="sc-latex-normalized" class="sc-latex-code"></pre>
+</div>
+
+<p class="sc-btc-caption">{{index .T "latex.formula_png_label"}}</p>
+<div class="sc-btc-toolbar" style="justify-content:flex-start;">
+  <button type="button" id="sc-latex-download-png" class="sc-collapse-all-btn">{{index .T "latex.download_png"}}</button>
+</div>
+<p id="sc-latex-png-error" class="sc-btc-caption" hidden>{{index .T "latex.png_unavailable"}}</p>
+
+<link rel="stylesheet" href="/static/vendor/katex/katex.min.css">
+<script src="/static/vendor/katex/katex.min.js"></script>
+<script src="/static/vendor/html-to-image/html-to-image.js"></script>
+<script src="/static/js/latex.js"></script>
+{{end}}

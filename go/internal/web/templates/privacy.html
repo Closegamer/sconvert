@@ -1,0 +1,11 @@
+{{define "page:privacy"}}
+<p class="title">{{index .T "privacy.title"}}</p>
+<p class="subtitle">{{.Text}}</p>
+
+<div id="sc-privacy-email-wrap" class="sc-privacy-email-wrap" data-email-b64="{{.ContactEmailB64}}" data-copied-label="{{index .T "privacy.contact_copied"}}">
+  <button type="button" id="sc-privacy-reveal-btn" class="sc-btc-copy-btn">{{index .T "privacy.contact_button"}}</button>
+  <span id="sc-privacy-email-text" class="sc-privacy-email-text" hidden></span>
+</div>
+
+<script src="/static/js/privacy.js"></script>
+{{end}}

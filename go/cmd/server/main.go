@@ -10,7 +10,10 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 
+	"sconvert/internal/btc"
+	"sconvert/internal/currency"
 	"sconvert/internal/stats"
 	"sconvert/internal/web"
 )
@@ -29,13 +32,27 @@ func main() {
 		log.Fatalf("static assets: %v", err)
 	}
 
-	store := stats.New(newPgPool())
+	pgPool := newPgPool()
+	redisClient := newRedisClient()
+
+	store := stats.New(pgPool)
+	currencyProvider := currency.NewProvider(redisClient)
+	btcStore := btc.NewStore(pgPool, redisClient)
+	btcPriceProvider := btc.NewPriceProvider(redisClient)
 
 	mux := http.NewServeMux()
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(staticSub)))
 	mux.HandleFunc("GET /healthz", handleHealthz)
 	mux.HandleFunc("GET /{$}", web.HomeHandler(store))
 	mux.HandleFunc("GET /units", web.UnitsHandler(store))
+	mux.HandleFunc("GET /currency", web.CurrencyHandler(store, currencyProvider))
+	mux.HandleFunc("GET /btc", web.BTCHandler())
+	mux.HandleFunc("GET /latex", web.LatexHandler())
+	mux.HandleFunc("GET /latex_guide", web.LatexGuideHandler())
+	mux.HandleFunc("GET /about", web.AboutHandler())
+	mux.HandleFunc("GET /privacy", web.PrivacyHandler())
+	mux.HandleFunc("POST /btc/convert", web.ConvertHandler(btcStore))
+	mux.HandleFunc("GET /api/btc/price", web.PriceHandler(btcPriceProvider))
 	mux.HandleFunc("POST /api/stats/hit", web.StatsHitHandler(store))
 
 	registerAdmin(mux, store)
@@ -88,6 +105,28 @@ func newPgPool() *pgxpool.Pool {
 		log.Printf("postgres: unreachable at startup, stats disabled until it recovers: %v", err)
 	}
 	return pool
+}
+
+// newRedisClient never fails hard: if REDIS_URL is unset/unreachable, every
+// caller (currency rates, BTC price, BTC conversion cache) degrades to
+// fetching/deriving fresh on every request instead of serving from cache.
+func newRedisClient() *redis.Client {
+	url := os.Getenv("REDIS_URL")
+	if url == "" {
+		url = "redis://redis:6379/0"
+	}
+	opts, err := redis.ParseURL(url)
+	if err != nil {
+		log.Printf("redis: invalid REDIS_URL, caching disabled: %v", err)
+		return nil
+	}
+	client := redis.NewClient(opts)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := client.Ping(ctx).Err(); err != nil {
+		log.Printf("redis: unreachable at startup, caching disabled until it recovers: %v", err)
+	}
+	return client
 }
 
 func handleHealthz(w http.ResponseWriter, r *http.Request) {
