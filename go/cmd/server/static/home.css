@@ -338,6 +338,10 @@ section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
     letter-spacing: 0.01em;
 }
 
+.page-footer code {
+    white-space: nowrap;
+}
+
 .footer-link {
     color: var(--muted) !important;
     text-decoration: none !important;
