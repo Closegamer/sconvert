@@ -1,10 +1,10 @@
 services:
   app-go:
-    build: ./go
+    # Image is built off-box and docker-loaded; no build: key, so compose
+    # never touches buildx (its cache once filled this 5.8GB disk).
+    image: sconvert-app-go:latest
     ports:
-      # Localhost-only, same pattern as the Python `app` service's
-      # STREAMLIT_PORT binding — lets us smoke-test the Go stack directly
-      # from the server before nginx ever points at it.
+      # Localhost-only: smoke-test the Go stack directly from the server.
       - "127.0.0.1:${GO_PORT:-8090}:8080"
     environment:
       DATABASE_URL: postgres://sconvert:${GO_POSTGRES_PASSWORD:?GO_POSTGRES_PASSWORD is required}@db-go:5432/sconvert
