@@ -125,6 +125,13 @@
       };
     })();
   </script>
+
+  <script>
+    // Anonymous page-view counter: only the path is sent, no IP/cookies/IDs.
+    try {
+      navigator.sendBeacon("/api/stats/hit", new Blob([JSON.stringify({ scope: "page", category: "page", input: location.pathname })], { type: "application/json" }));
+    } catch (e) {}
+  </script>
 </body>
 </html>
 {{end}}

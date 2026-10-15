@@ -50,6 +50,13 @@ func UnitsHandler(store *stats.Store) http.HandlerFunc {
 // into the "km" field of the "length" category). scope/category/input are
 // validated against the known unit registry so the endpoint can't be used
 // to write arbitrary rows.
+// countedPages whitelists paths for the anonymous page-view counter, so the
+// beacon can't be used to insert arbitrary rows.
+var countedPages = map[string]bool{
+	"/": true, "/units": true, "/currency": true, "/btc": true, "/latex": true,
+	"/latex_guide": true, "/calculators": true, "/about": true, "/privacy": true,
+}
+
 func StatsHitHandler(store *stats.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
@@ -73,6 +80,10 @@ func StatsHitHandler(store *stats.Store) http.HandlerFunc {
 			}
 		case "currency":
 			if body.Category == "currency" && currency.Contains(body.Input) {
+				store.Hit(context.Background(), body.Scope, body.Category, body.Input)
+			}
+		case "page":
+			if body.Category == "page" && countedPages[body.Input] {
 				store.Hit(context.Background(), body.Scope, body.Category, body.Input)
 			}
 		}

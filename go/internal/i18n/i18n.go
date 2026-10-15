@@ -38,9 +38,9 @@ var RU = Dict{
 		"Тема оформления и избранные поля хранятся в localStorage вашего браузера и никуда не отправляются. " +
 		"Эти данные не позволяют вас идентифицировать." +
 		"<br><br>" +
-		"<b>Обезличенная статистика полей</b><br>" +
+		"<b>Обезличенная статистика</b><br>" +
 		"Сервер считает, как часто используется каждое поле конвертеров (например, «метры» или «USD»), чтобы показывать популярные поля выше. " +
-		"Хранится только общий счётчик по каждому полю — без привязки к посетителю, IP-адресу или времени визита." +
+		"Также считается, сколько раз открывалась каждая страница сайта. Хранится только общий счётчик по каждому полю и странице — без привязки к посетителю, IP-адресу или времени визита." +
 		"<br><br>" +
 		"<b>Инструменты раздела Биткоин</b><br>" +
 		"Введённые ключи и адреса используются только для вычисления результата и не сохраняются: результат держится в оперативной памяти сервера не более 2 минут для ускорения повторного запроса. " +
@@ -82,9 +82,9 @@ var EN = Dict{
 		"Your color theme and favorite fields are kept in your browser's localStorage and are never sent anywhere. " +
 		"None of this can identify you." +
 		"<br><br>" +
-		"<b>Anonymous field statistics</b><br>" +
+		"<b>Anonymous statistics</b><br>" +
 		"The server counts how often each converter field is used (e.g. \"meters\" or \"USD\") to show popular fields first. " +
-		"Only a total count per field is stored — not linked to any visitor, IP address, or visit time." +
+		"It also counts how many times each page of the site is opened. Only a total count per field and per page is stored — not linked to any visitor, IP address, or visit time." +
 		"<br><br>" +
 		"<b>Bitcoin section</b><br>" +
 		"Entered keys and addresses are used only to compute the result and are not saved: the result is held in server memory for at most 2 minutes to speed up a repeated request. " +
