@@ -19,5 +19,5 @@ var seoEN = Dict{
 	"seo.title.calculators":     "Calculators: price per kilogram, betting arbitrage - sConvert",
 	"seo.description.calculators": "Practical calculators: price per kilogram and sports-betting arbitrage (2 and 3 outcomes).",
 	"seo.title.privacy":         "Privacy Policy - sConvert",
-	"seo.description.privacy":   "What data sConvert collects via Yandex Metrica and how it is processed.",
+	"seo.description.privacy":   "sConvert collects no personal data: no analytics, no trackers, no access logs.",
 }

@@ -17,7 +17,7 @@ type PrivacyPageData struct {
 }
 
 // PrivacyHandler renders /privacy. Text is trusted, static HTML (headings,
-// <br>, a link to Yandex's own privacy policy) ported verbatim from
+// <br>, <code>) ported verbatim from
 // app/lang/*.py's privacy.text. The original's iframe-sandboxed email
 // reveal widget (Streamlit components.html) becomes plain inline
 // markup+JS here — no sandbox needed since the Go page isn't embedded.

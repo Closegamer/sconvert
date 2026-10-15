@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/skip2/go-qrcode"
+
 	"sconvert/internal/btc"
 	"sconvert/internal/i18n"
 )
@@ -337,4 +339,24 @@ func firstNonEmpty(values ...string) string {
 func writeJSON(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(v)
+}
+
+// QRHandler renders ?data= as a PNG QR code locally, so the visitor's
+// browser never contacts a third-party QR service.
+func QRHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := r.URL.Query().Get("data")
+		if data == "" || len(data) > 256 {
+			http.Error(w, "bad data", http.StatusBadRequest)
+			return
+		}
+		png, err := qrcode.Encode(data, qrcode.Medium, 180)
+		if err != nil {
+			http.Error(w, "bad data", http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Cache-Control", "no-store")
+		w.Write(png)
+	}
 }

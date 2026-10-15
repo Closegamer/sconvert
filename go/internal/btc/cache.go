@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -121,89 +120,39 @@ type Record struct {
 
 const cacheTTL = 120 * time.Second
 
-// Store is the two-tier (Redis -> Postgres) cache for derived conversions,
-// keyed by request signature. Both backends degrade gracefully: a nil pool
-// or nil client just skips that tier rather than erroring, matching
-// stats.Store's pattern.
+// Store is a short-lived Redis cache for derived conversions, keyed by
+// request signature. Nothing is persisted: entries expire after cacheTTL.
+// A nil client just disables caching.
 type Store struct {
-	pool *pgxpool.Pool
-	rdb  *redis.Client
+	rdb *redis.Client
 }
 
-func NewStore(pool *pgxpool.Pool, rdb *redis.Client) *Store {
-	return &Store{pool: pool, rdb: rdb}
+func NewStore(rdb *redis.Client) *Store {
+	return &Store{rdb: rdb}
 }
 
 func redisKey(signature string) string { return "btc:conv:v1:" + signature }
 
-// Get checks Redis, then Postgres, backfilling Redis on a Postgres hit.
-// Returns (nil, false) on a genuine miss or if both backends are
+// Get returns a cached record, or (nil, false) on a miss or if Redis is
 // unavailable — callers should then derive+look up fresh and call Save.
 func (s *Store) Get(ctx context.Context, signature string) (*Record, bool) {
-	if s == nil {
+	if s == nil || s.rdb == nil {
 		return nil, false
 	}
-	if s.rdb != nil {
-		if payload, err := s.rdb.Get(ctx, redisKey(signature)).Result(); err == nil {
-			var rec Record
-			if json.Unmarshal([]byte(payload), &rec) == nil {
-				return &rec, true
-			}
-		}
-	}
-	if s.pool == nil {
-		return nil, false
-	}
-	rec, ok := s.loadFromPostgres(ctx, signature)
-	if ok {
-		s.setRedis(ctx, &rec)
-	}
-	return &rec, ok
-}
-
-func (s *Store) loadFromPostgres(ctx context.Context, signature string) (Record, bool) {
-	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-	defer cancel()
-	var r Record
-	err := s.pool.QueryRow(ctx, `
-		SELECT
-			request_signature, entry_point_field,
-			COALESCE(in_private_dec, ''), COALESCE(in_private_hex, ''), COALESCE(in_private_wif, ''),
-			COALESCE(in_private_wif_u, ''), COALESCE(in_seed_phrase, ''), COALESCE(in_public_key_c, ''),
-			COALESCE(in_public_key_u, ''), COALESCE(in_ripemd160_c, ''), COALESCE(in_ripemd160_u, ''),
-			COALESCE(in_address_c, ''), COALESCE(in_address_u, ''), COALESCE(in_address_p2sh, ''),
-			COALESCE(in_address_p2wpkh, ''),
-			COALESCE(out_private_dec, ''), COALESCE(out_private_hex, ''), COALESCE(out_private_hex_normalized, ''),
-			COALESCE(out_private_wif, ''), COALESCE(out_private_wif_u, ''), COALESCE(out_public_key_c, ''),
-			COALESCE(out_public_key_u, ''), COALESCE(out_ripemd160_c, ''), COALESCE(out_ripemd160_u, ''),
-			COALESCE(out_address_c, ''), COALESCE(out_address_u, ''), COALESCE(out_address_p2sh, ''),
-			COALESCE(out_address_p2wpkh, ''), COALESCE(out_address_info, ''), COALESCE(out_balance_text, ''),
-			COALESCE(out_address_summary_text, ''), COALESCE(out_utxos_text, ''), COALESCE(out_txs_text, ''),
-			COALESCE(out_pubkey_x_hex, ''), COALESCE(out_pubkey_y_hex, ''), COALESCE(out_pubkey_on_curve, false),
-			COALESCE(out_address_c_status, ''), COALESCE(out_address_u_status, ''),
-			COALESCE(out_address_p2sh_status, ''), COALESCE(out_address_p2wpkh_status, '')
-		FROM btc_conversion_log
-		WHERE request_signature = $1
-	`, signature).Scan(
-		&r.RequestSignature, &r.EntryPointField,
-		&r.InPrivateDec, &r.InPrivateHex, &r.InPrivateWIF, &r.InPrivateWIFU, &r.InSeedPhrase,
-		&r.InPublicKeyC, &r.InPublicKeyU, &r.InRipemd160C, &r.InRipemd160U,
-		&r.InAddressC, &r.InAddressU, &r.InAddressP2SH, &r.InAddressP2WPKH,
-		&r.OutPrivateDec, &r.OutPrivateHex, &r.OutPrivateHexNormalized, &r.OutPrivateWIF, &r.OutPrivateWIFU,
-		&r.OutPublicKeyC, &r.OutPublicKeyU, &r.OutRipemd160C, &r.OutRipemd160U,
-		&r.OutAddressC, &r.OutAddressU, &r.OutAddressP2SH, &r.OutAddressP2WPKH, &r.OutAddressInfo,
-		&r.OutBalanceText, &r.OutAddressSummaryText, &r.OutUtxosText, &r.OutTxsText,
-		&r.OutPubkeyXHex, &r.OutPubkeyYHex, &r.OutPubkeyOnCurve,
-		&r.OutAddressCStatus, &r.OutAddressUStatus, &r.OutAddressP2SHStatus, &r.OutAddressP2WPKHStatus,
-	)
+	payload, err := s.rdb.Get(ctx, redisKey(signature)).Result()
 	if err != nil {
-		return Record{}, false
+		return nil, false
 	}
-	return r, true
+	var rec Record
+	if json.Unmarshal([]byte(payload), &rec) != nil {
+		return nil, false
+	}
+	return &rec, true
 }
 
-func (s *Store) setRedis(ctx context.Context, rec *Record) {
-	if s.rdb == nil {
+// Save caches the record in Redis for cacheTTL.
+func (s *Store) Save(ctx context.Context, rec *Record) {
+	if s == nil || s.rdb == nil {
 		return
 	}
 	payload, err := json.Marshal(rec)
@@ -211,46 +160,4 @@ func (s *Store) setRedis(ctx context.Context, rec *Record) {
 		return
 	}
 	_ = s.rdb.Set(ctx, redisKey(rec.RequestSignature), payload, cacheTTL).Err()
-}
-
-// Save upserts the record into Postgres (best-effort) and refreshes Redis.
-func (s *Store) Save(ctx context.Context, rec *Record) {
-	if s == nil {
-		return
-	}
-	if s.pool != nil {
-		ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-		defer cancel()
-		_, _ = s.pool.Exec(ctx, `
-			INSERT INTO btc_conversion_log (
-				request_signature, entry_point_field,
-				in_private_dec, in_private_hex, in_private_wif, in_private_wif_u, in_seed_phrase,
-				in_public_key_c, in_public_key_u, in_ripemd160_c, in_ripemd160_u,
-				in_address_c, in_address_u, in_address_p2sh, in_address_p2wpkh,
-				out_private_dec, out_private_hex, out_private_hex_normalized, out_private_wif, out_private_wif_u,
-				out_public_key_c, out_public_key_u, out_ripemd160_c, out_ripemd160_u,
-				out_address_c, out_address_u, out_address_p2sh, out_address_p2wpkh, out_address_info,
-				out_balance_text, out_address_summary_text, out_utxos_text, out_txs_text,
-				out_pubkey_x_hex, out_pubkey_y_hex, out_pubkey_on_curve,
-				out_address_c_status, out_address_u_status, out_address_p2sh_status, out_address_p2wpkh_status
-			) VALUES (
-				$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
-				$16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33,
-				$34, $35, $36, $37, $38, $39, $40
-			)
-			ON CONFLICT (request_signature) DO UPDATE SET updated_at = NOW()
-		`,
-			rec.RequestSignature, rec.EntryPointField,
-			rec.InPrivateDec, rec.InPrivateHex, rec.InPrivateWIF, rec.InPrivateWIFU, rec.InSeedPhrase,
-			rec.InPublicKeyC, rec.InPublicKeyU, rec.InRipemd160C, rec.InRipemd160U,
-			rec.InAddressC, rec.InAddressU, rec.InAddressP2SH, rec.InAddressP2WPKH,
-			rec.OutPrivateDec, rec.OutPrivateHex, rec.OutPrivateHexNormalized, rec.OutPrivateWIF, rec.OutPrivateWIFU,
-			rec.OutPublicKeyC, rec.OutPublicKeyU, rec.OutRipemd160C, rec.OutRipemd160U,
-			rec.OutAddressC, rec.OutAddressU, rec.OutAddressP2SH, rec.OutAddressP2WPKH, rec.OutAddressInfo,
-			rec.OutBalanceText, rec.OutAddressSummaryText, rec.OutUtxosText, rec.OutTxsText,
-			rec.OutPubkeyXHex, rec.OutPubkeyYHex, rec.OutPubkeyOnCurve,
-			rec.OutAddressCStatus, rec.OutAddressUStatus, rec.OutAddressP2SHStatus, rec.OutAddressP2WPKHStatus,
-		)
-	}
-	s.setRedis(ctx, rec)
 }

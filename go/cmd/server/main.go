@@ -37,7 +37,7 @@ func main() {
 
 	store := stats.New(pgPool)
 	currencyProvider := currency.NewProvider(redisClient)
-	btcStore := btc.NewStore(pgPool, redisClient)
+	btcStore := btc.NewStore(redisClient)
 	btcPriceProvider := btc.NewPriceProvider(redisClient)
 
 	mux := http.NewServeMux()
@@ -53,6 +53,7 @@ func main() {
 	mux.HandleFunc("GET /about", web.AboutHandler())
 	mux.HandleFunc("GET /privacy", web.PrivacyHandler())
 	mux.HandleFunc("POST /btc/convert", web.ConvertHandler(btcStore))
+	mux.HandleFunc("GET /btc/qr", web.QRHandler())
 	mux.HandleFunc("GET /api/btc/price", web.PriceHandler(btcPriceProvider))
 	mux.HandleFunc("POST /api/stats/hit", web.StatsHitHandler(store))
 

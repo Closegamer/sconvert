@@ -61,7 +61,7 @@
       wrap.hidden = true;
       return;
     }
-    img.src = "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" + encodeURIComponent(value);
+    img.src = "/btc/qr?data=" + encodeURIComponent(value);
     wrap.hidden = false;
   }
 
