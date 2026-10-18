@@ -1,6 +1,6 @@
 # sConvert
 
-Онлайн-сервис с конвертером единиц измерения, Bitcoin-инструментами и LaTeX-редактором.
+Онлайн-сервис с конвертером единиц и валют, Bitcoin-инструментами, LaTeX-редактором и калькуляторами.
 Сайт: **sconvert.ru**
 
 ---
@@ -9,155 +9,155 @@
 
 | Слой | Технология |
 |---|---|
-| Веб-интерфейс | Python · Streamlit ≥ 1.31 |
-| API сервис | Python · FastAPI + Uvicorn |
+| Приложение | Go 1.25 · `net/http`, `html/template`, статика встроена через `embed` |
 | Кэш | Redis 7 |
-| База данных | PostgreSQL 16 |
-| Реверс-прокси | Nginx 1.27 |
+| База данных | PostgreSQL 16 (`pgx`) |
+| Реверс-прокси и SSL | Nginx 1.27 · Let's Encrypt (certbot) |
 | Контейнеризация | Docker · Docker Compose |
 | CI/CD | GitHub Actions |
 
-Зависимости приложения: `streamlit`, `matplotlib` (PNG-рендер формул), `ecdsa` (BTC-криптография), `psycopg` (PostgreSQL), `redis`, `streamlit-local-storage`.
-Зависимости API: `fastapi`, `uvicorn[standard]`, `httpx`, `redis`.
-
 ---
 
-## Разделы приложения
+## Разделы сайта
 
-### Конвертер единиц
-22 категории: длина, масса, площадь, объём, скорость, время, давление, энергия, мощность, сила, частота, угол, плотность, расход, ускорение, ток, напряжение, сопротивление, освещённость, радиация, данные.
+| Адрес | Что там |
+|---|---|
+| `/` | Главная |
+| `/units` | Конвертер единиц: 22 категории (длина, масса, давление, данные и т. д.). Порядок категорий зависит от популярности |
+| `/currency` | Конвертер валют. Курсы с open.er-api.com, кэш в Redis на 1 час |
+| `/btc` | Bitcoin-инструменты: seed-фраза ↔ приватный ключ ↔ публичный ключ ↔ адреса (P2PKH, P2SH-P2WPKH, P2WPKH), баланс и транзакции через blockstream.info, QR-код |
+| `/latex`, `/latex_guide` | LaTeX-редактор с предпросмотром (KaTeX) и справочник |
+| `/calculators` | Цена за килограмм и вилки в ставках. Считается в браузере |
+| `/about`, `/privacy` | О проекте и политика конфиденциальности |
+| `/claude-pod-klyuch` | Отдельная статическая страница (туториал по MCP). Раздаётся nginx, в меню и sitemap её нет |
 
-Каждую категорию можно добавить в избранное — порядок избранного сохраняется в `localStorage` браузера между сессиями.
+Курс BTC (USD и RUB) показывается виджетом вверху страницы и обновляется JS-поллингом `/api/btc/price` (CoinGecko, кэш 60 с).
 
-### Bitcoin-инструменты
-Двунаправленная конвертация между всеми представлениями ключей и адресов:
-
-```
-Seed-фраза (12/24 слов)
-       ↕
-Приватный ключ  ─── DEC / HEX / WIF (compressed) / WIF (uncompressed)
-       ↓
-Публичный ключ  ─── compressed (33 байта) / uncompressed (65 байт)
-       ↓
-RIPEMD160 (hash160)
-       ↓
-Адреса  ─── P2PKH · P2SH-P2WPKH · P2WPKH (Bech32)
-```
-
-Дополнительно для адреса: баланс, история транзакций и UTXO (через blockstream.info), QR-код, тип и сеть адреса.
-
-Визуализации: положение ключа на линии допустимых значений secp256k1, проекция публичного ключа на кривую y² = x³ + 7.
-
-**Текущий курс BTC** отображается виджетом в верхней части страницы. Курс (USD и RUB) обновляется каждые 30 секунд через JS-поллинг к FastAPI-сервису без перезагрузки страницы.
-
-### LaTeX-редактор
-Предпросмотр формул через встроенный KaTeX-рендерер Streamlit. Поддерживает голый TeX и разделители `\(...\)`, `$...$`, `$$...$$`. Экспорт формулы в PNG через matplotlib (подмножество TeX — результат может отличаться от KaTeX).
+Языки: русский (по умолчанию) и английский. Выбор хранится в cookie `sconvert_lang`, строки интерфейса лежат в `go/internal/i18n/`.
 
 ---
 
 ## Архитектура
 
-### Маршрутизация
-Приложение — одностраничный Streamlit (`app/Home.py`) с маршрутизацией через `st.session_state.view`. Папка `app/pages/` пуста намеренно: Streamlit не генерирует боковую навигацию при пустой директории. URL-параметр `?view=units|btc|latex|latex_guide|about` задаёт раздел при открытии и сразу сбрасывается. Параметр `?policy=1` показывает оверлей политики конфиденциальности.
-
-### Кэширование BTC-конвертаций (двухуровневое)
-При каждом вводе строится `request_signature` — SHA-256 от нормализованного входного значения. Поиск результата идёт по уровням:
-
 ```
-1. Redis  (ключ btc:conv:v1:{signature}, TTL 120 с)
-       ↓ промах
-2. PostgreSQL  (таблица btc_conversion_log)
-       ↓ промах
-3. Вычисление  →  запись в PostgreSQL  →  запись в Redis
+Браузер → Nginx (SSL, robots.txt, sitemap.xml, статические страницы)
+            ↓
+          app-go :8080
+            ├─ Redis    кэш курсов валют (1 ч), курса BTC (60 с), BTC-конвертаций (120 с)
+            └─ Postgres анонимные счётчики использования (input_usage_stats)
 ```
 
-### Курс BTC (FastAPI)
-```
-Браузер  →  /api/btc/price  →  Nginx  →  FastAPI
-                                              ↓
-                                         Redis (ключ btc:price:v1, TTL 60 с)
-                                              ↓ промах
-                                         CoinGecko API
-```
-FastAPI работает отдельным сервисом (`api/`). Nginx проксирует `/api/` на порт 8000, все остальные запросы — на Streamlit (порт 8501).
+**Счётчики.** Таблица `input_usage_stats` хранит по одной строке на пару «категория + единица/валюта/поле» и увеличивает `hit_count` на месте. IP-адресов и идентификаторов пользователей нет. Счётчики используются для сортировки категорий на `/units` и для панели статистики.
+
+**Панель статистики** подключается, только если заданы `ADMIN_PATH`, `ADMIN_USER` и `ADMIN_PASSWORD`, и закрыта Basic Auth. Путь хранится только в `.env` на сервере, в репозиторий его не коммитим.
+
+**Без Redis и Postgres приложение тоже работает:** кэш отключается, счётчики становятся no-op, категории идут в порядке по умолчанию.
+
+**Логи посетителей не пишутся:** в nginx `access_log off`.
 
 ### Структура проекта
+
 ```
 sconvert/
-├── app/                        # Streamlit-приложение
-│   ├── Home.py                 # Точка входа, маршрутизация, состояние
-│   ├── components/             # UI-компоненты (конвертеры, BTC, LaTeX, прочее)
-│   ├── views/                  # Страницы (home, units, btc, latex, about)
-│   ├── layout/                 # Header и footer
-│   ├── lang/                   # Локализация (ru.py, en.py)
-│   ├── static/                 # CSS и JS (clipboard, SEO)
-│   ├── content/                # Markdown-справочники (LaTeX guide)
-│   └── pages/                  # Пуст — блокирует автонавигацию Streamlit
-├── api/                        # FastAPI-сервис (курс BTC)
-│   ├── main.py
-│   ├── requirements.txt
+├── go/
+│   ├── cmd/server/          # main.go, маршруты; static/ — CSS, JS, KaTeX
+│   ├── internal/
+│   │   ├── web/             # обработчики страниц и шаблоны (templates/)
+│   │   ├── units/           # категории единиц и сортировка по популярности
+│   │   ├── currency/        # курсы валют
+│   │   ├── btc/             # ключи, адреса, курс BTC, кэш
+│   │   ├── stats/           # счётчики использования
+│   │   ├── i18n/            # строки ru/en
+│   │   └── latexguide/      # справочник LaTeX (Markdown → HTML)
+│   ├── db/sql/              # схема Postgres
 │   └── Dockerfile
-├── db/sql/                     # Миграции PostgreSQL
-├── nginx/                      # Конфиги nginx (local / http / https+SSL)
-├── Dockerfile                  # Образ Streamlit-приложения
-├── docker-compose.yml
-└── docker-compose.override.yml # Dev-оверрайд (hot reload, volume mounts)
+├── nginx/
+│   ├── default.go.conf      # боевой конфиг
+│   ├── default.paused.conf  # заглушка «сайт временно недоступен»
+│   ├── paused.html
+│   └── static/              # статические страницы вне приложения
+├── docker-compose.yml           # nginx + certbot
+├── docker-compose.go.yml        # Go-стек для локальной разработки
+└── docker-compose.go.prod.yml   # Go-стек на сервере
 ```
-
-### База данных
-Таблица `btc_conversion_log` хранит снапшоты входных и выходных значений каждой уникальной конвертации. Уникальность — по `request_signature`. Индексы — по адресам и дате создания. Триггер поддерживает `updated_at` актуальным.
-
-### Локализация
-Два языка: русский (по умолчанию) и английский. Все строки интерфейса — в словарях `app/lang/ru.py` и `app/lang/en.py`. Переключение — в сайдбаре, выбранный язык хранится в `st.session_state.lang`.
 
 ---
 
 ## Запуск локально
 
-**Требования:** Docker, Docker Compose.
+С Docker (приложение, Redis и Postgres):
 
 ```bash
-cp .env.example .env
-# Задать POSTGRES_PASSWORD в .env
-
-docker compose up -d --build
+docker compose -f docker-compose.go.yml up -d --build
 ```
 
-Приложение доступно на `http://localhost` (через nginx).
+Сайт откроется на `http://localhost:8090`. Схема БД применится автоматически при первом запуске.
 
-При разработке `docker-compose.override.yml` подключает volume-маунты и включает `--reload` для FastAPI и `STREAMLIT_SERVER_RUN_ON_SAVE=true` для Streamlit — изменения подхватываются без пересборки образов.
+Без Docker (без кэша и счётчиков):
+
+```bash
+cd go
+go run ./cmd/server     # http://localhost:8080
+go test ./...
+```
+
+---
+
+## Продакшн
+
+Сервер: `/home/deploy/sconvert`, пользователь `deploy`. Там работают два набора контейнеров с общим именем проекта `sconvert`:
+
+| Файл | Сервисы |
+|---|---|
+| `docker-compose.yml` | `nginx`, `certbot` |
+| `docker-compose.go.prod.yml` | `app-go`, `db-go`, `redis-go` |
+
+Переменные окружения описаны в `.env.example`. На сервере `NGINX_CONF=./nginx/default.go.conf`.
+
+### Выкладка Go-приложения
+
+Образ собирается не на сервере: сборка на сервере однажды заполнила кэшем весь диск (5,8 ГБ). Собираем локально и загружаем:
+
+```bash
+docker build -t sconvert-app-go:latest ./go
+docker save sconvert-app-go:latest | gzip | ssh deploy@SERVER 'gunzip | docker load'
+ssh deploy@SERVER 'cd ~/sconvert && git pull && docker compose -f docker-compose.go.prod.yml up -d app-go'
+```
 
 ### Миграции БД
 
+Файлы из `go/db/sql/` применяются автоматически только при создании пустой базы. Новую миграцию на работающей базе применяем вручную:
+
 ```bash
-docker compose exec db psql -U sconvert -d sconvert < db/sql/001_create_btc_conversion_log.sql
+docker compose -f docker-compose.go.prod.yml exec -T db-go psql -U sconvert -d sconvert < go/db/sql/002_....sql
+```
+
+### Временно закрыть сайт
+
+В `.env` на сервере поставить `NGINX_CONF=./nginx/default.paused.conf` и пересоздать nginx: `docker compose up -d nginx`. Все страницы будут вести на заглушку. Чтобы открыть сайт, вернуть `default.go.conf`.
+
+### Статическая страница вне приложения
+
+Положить HTML-файл в `nginx/static/` и добавить в `nginx/default.go.conf` правило:
+
+```nginx
+location = /имя-страницы {
+    default_type text/html;
+    charset utf-8;
+    alias /usr/share/nginx/static/имя-страницы.html;
+}
 ```
 
 ---
 
 ## CI/CD
 
-**CI** (`ci.yml`) — запускается на каждый push и PR в `main`:
-- `actionlint` — проверка workflow-файлов
-- `docker compose build` — проверка сборки образов
+**CI** (`ci.yml`) — на каждый push и PR в `main`:
+- `actionlint` проверяет workflow-файлы
+- `docker compose config` и сборка образа Go-приложения
 
-**CD** (`deploy.yml`) — запускается на push в `main` и вручную через Actions:
-- SSH-подключение к продакшн-серверу
-- `git reset --hard origin/main` → `docker compose up -d --build --force-recreate`
-- Применение миграций БД
+**CD** (`deploy.yml`) — на push в `main` и вручную через Actions:
+- SSH на сервер → `git reset --hard origin/main` → пересоздание nginx и certbot
+- Go-приложение CD не выкатывает, см. «Выкладка Go-приложения»
 
 Секреты в GitHub: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_APP_PATH`.
-
-### Nginx-конфиги
-
-| Файл | Назначение |
-|---|---|
-| `nginx/default.local.conf` | Локальная разработка (HTTP, `server_name _`) |
-| `nginx/default.http.conf` | Продакшн HTTP (sconvert.ru) |
-| `nginx/default.conf` | Продакшн HTTPS + редирект HTTP→HTTPS |
-
-Активный конфиг задаётся переменной `NGINX_CONF` в `.env` (по умолчанию `./nginx/default.local.conf`).
-
-### Продление SSL-сертификата
-
-Сервис `certbot` в `docker-compose.yml` каждые 12 часов вызывает `certbot renew` (webroot-режим через `/var/www/certbot`). Nginx перечитывает конфигурацию каждые 6 часов (`nginx -s reload` в цикле), чтобы подхватить обновлённый сертификат без простоя.

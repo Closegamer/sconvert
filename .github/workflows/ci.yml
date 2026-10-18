@@ -24,9 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: docker compose config & build
-        env:
-          POSTGRES_PASSWORD: ci_not_a_real_secret
+      - name: docker compose config & Go image build
         run: |
           docker compose config
-          docker compose build
+          docker compose -f docker-compose.go.yml build
