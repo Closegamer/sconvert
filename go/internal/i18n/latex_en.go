@@ -1,6 +1,6 @@
 package i18n
 
-// Ported from app/lang/en.py — see latex_ru.go for what changed vs. the original.
+// "latex.*"/"latex_guide.*" keys, English — see latex_ru.go.
 var latexEN = Dict{
 	"latex.title":             "LaTeX formulas",
 	"latex.lead":               "Enter TeX below. Plain TeX or delimiters \\(...\\), $...$, $$...$$ — delimiters are stripped before preview. You can then copy your formula when it is ready or download result picture.",

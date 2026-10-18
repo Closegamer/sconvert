@@ -2,11 +2,10 @@ package btc
 
 import "errors"
 
-// Sentinel errors that map to a specific user-facing message (see
-// app/lang/*.py's btc.error.* keys, ported to i18n in the web layer). Any
-// other error from Derive is treated the same way the original Python did
-// for a malformed field: silently ignored, no message shown, wait for
-// valid input.
+// Sentinel errors that map to a specific user-facing message (the
+// btc.error.* i18n keys, resolved in the web layer). Any other error from
+// Derive means a malformed field: silently ignored, no message shown, wait
+// for valid input.
 var (
 	ErrPrivateKeyRange  = errors.New("btc: private key out of secp256k1 range")
 	ErrPubKeyNotOnCurve = errors.New("btc: public key not on secp256k1 curve")

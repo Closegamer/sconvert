@@ -1,6 +1,6 @@
 package i18n
 
-// New section (not present in the Python version): /calculators —
+// /calculators —
 // price-per-kilogram and sports-betting arbitrage ("вилка"/surebet)
 // calculators. Both are pure client-side arithmetic, no server round trip.
 var calculatorsRU = Dict{

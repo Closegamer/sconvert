@@ -90,12 +90,9 @@ type convertResponse struct {
 
 // ConvertHandler is the single endpoint powering the whole /btc form: given
 // one changed field, it derives every other representation (btc.Derive),
-// checks/refreshes the two-tier cache, and — on a fresh (non-cached)
-// derivation — looks up balance/tx/utxo data from blockstream.info. This
-// mirrors app/components/btc_keys.py's per-rerun fan-out, but as one
-// stateless request instead of Streamlit session-state diffing: since each
-// entry recomputes everything from scratch anyway, statelessness is a
-// simplification, not a loss.
+// checks/refreshes the Redis cache, and — on a fresh (non-cached)
+// derivation — looks up balance/tx/utxo data from blockstream.info. The
+// request is stateless: each entry recomputes everything from scratch.
 func ConvertHandler(store *btc.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lang := langFromRequest(r)

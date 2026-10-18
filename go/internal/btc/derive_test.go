@@ -8,8 +8,7 @@ import "testing"
 // internal/units). Instead they check: (a) the on-curve validation the
 // audited secp256k1 library performs internally, and (b) round-trip
 // consistency across every encode/decode pair. The seed-phrase (BIP32) path
-// is verified separately by diffing against the live Python reference site
-// (see project notes) rather than a memorized fixture.
+// has no fixture test here.
 
 func TestDeriveFromPrivateDec_RoundTrips(t *testing.T) {
 	res, err := Derive("private_dec", "1")

@@ -23,7 +23,7 @@ type Price struct {
 	Cached    bool    `json:"cached"`
 }
 
-// PriceProvider mirrors api/main.py's /api/btc/price: proxies CoinGecko,
+// PriceProvider serves /api/btc/price: proxies CoinGecko,
 // cached in Redis for 60s. Degrades to a direct fetch per request if Redis
 // is unreachable, same pattern as currency.Provider.
 type PriceProvider struct {

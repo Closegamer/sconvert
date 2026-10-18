@@ -1,7 +1,6 @@
 package i18n
 
-// Ported verbatim from app/lang/en.py ("btc.*" keys) — see btc_ru.go for
-// the notes on what was intentionally rewritten vs. kept.
+// "btc.*" keys, English.
 var btcEN = Dict{
 	"btc.title":    "Bitcoin (BTC)",
 	"btc.subtitle": "Bitcoin tools: keys, addresses, seed phrases, address balance and transactions.",

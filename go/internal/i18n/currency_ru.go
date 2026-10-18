@@ -1,6 +1,6 @@
 package i18n
 
-// Ported verbatim from app/lang/ru.py ("curr.*" keys).
+// "curr.*" keys, Russian.
 var currencyRU = Dict{
 	"curr.title":        "Конвертер валют",
 	"curr.subtitle":     "Онлайн конвертер валют с актуальным курсом: USD, EUR, RUB, GBP, CNY, JPY и другие.",

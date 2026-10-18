@@ -36,8 +36,7 @@ type websiteJSONLD struct {
 	Description string   `json:"description"`
 }
 
-// NewPageData centralizes the SEO fields every page needs (ported from
-// Python's _inject_seo_meta in app/Home.py) so each handler only supplies
+// NewPageData centralizes the SEO fields every page needs so each handler only supplies
 // the per-page title/description/canonical — OG locale and the JSON-LD
 // WebSite block are derived here once instead of duplicated per handler.
 func NewPageData(lang, title, description, canonical string) PageData {

@@ -1,9 +1,6 @@
 package i18n
 
-// Ported verbatim from app/lang/ru.py ("btc.*" keys), except btc.subtitle
-// and btc.error.ecdsa (Python-specific: the original text said "section
-// in progress" even though the feature was fully implemented, and named a
-// Python module that doesn't exist here).
+// "btc.*" keys, Russian.
 var btcRU = Dict{
 	"btc.title":    "Биткоин (BTC)",
 	"btc.subtitle": "Инструменты Bitcoin: ключи, адреса, seed-фразы, баланс и транзакции по адресу.",

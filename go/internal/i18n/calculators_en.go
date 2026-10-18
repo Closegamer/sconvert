@@ -1,6 +1,6 @@
 package i18n
 
-// See calculators_ru.go — new section, not present in the Python version.
+// See calculators_ru.go.
 var calculatorsEN = Dict{
 	"calculators.title":    "Calculators",
 	"calculators.subtitle": "Practical calculators: price per kilogram and sports-betting arbitrage.",

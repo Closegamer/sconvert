@@ -1,6 +1,5 @@
 /**
- * Client engine for /btc. Ports app/components/btc_keys.py's reactive
- * fan-out: entering any one of 13 fields POSTs {field, value} to
+ * Client engine for /btc. Reactive fan-out: entering any one of 13 fields POSTs {field, value} to
  * /btc/convert, which derives every other representation server-side
  * (secp256k1, WIF, addresses, blockstream.info lookups) and returns JSON —
  * this script just applies that JSON to the form. The two SVG

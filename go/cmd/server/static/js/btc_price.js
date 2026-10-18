@@ -1,8 +1,6 @@
 /**
  * BTC price widget. Polls /api/btc/price (CoinGecko proxy, Redis-cached
- * server-side for 60s) every 30s. Ported from app/components/btc_price.py's
- * Streamlit iframe widget — no iframe needed here since Go pages aren't
- * sandboxed the way Streamlit components are.
+ * server-side for 60s) every 30s.
  */
 (function () {
   "use strict";

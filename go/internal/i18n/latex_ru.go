@@ -1,10 +1,8 @@
 package i18n
 
-// Ported from app/lang/ru.py ("latex.*"/"latex_guide.*" keys). latex.png_unavailable
-// and latex.formula_png_label drop the original's matplotlib-specific wording:
-// the Go rewrite renders the PNG client-side from the same KaTeX DOM node the
-// preview uses (via html-to-image), so there's no separate matplotlib subset
-// that could disagree with the preview anymore.
+// "latex.*"/"latex_guide.*" keys, Russian. The PNG is rendered client-side
+// from the same KaTeX DOM node the preview uses (via html-to-image), so the
+// download always matches the preview.
 var latexRU = Dict{
 	"latex.title":              "Формулы LaTeX",
 	"latex.lead":                "Введите формулу на языке TeX. Голый TeX или с разделителями \\(...\\), $...$, $$...$$ — перед предпросмотром разделители снимаются. Когда формула будет готова, её можно скопировать в буфер в исходном виде или скачать результирующую картинку.",

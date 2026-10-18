@@ -1,6 +1,6 @@
 package i18n
 
-// Ported verbatim from app/lang/ru.py ("units.*" keys).
+// "units.*" keys, Russian.
 var unitsRU = Dict{
 	"units.title":         "Единицы измерения",
 	"units.subtitle":      "Раздел в разработке. Здесь будет конвертер единиц.",

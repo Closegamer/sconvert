@@ -1,11 +1,10 @@
-// Package i18n будет прямым портом app/lang/ru.py и en.py.
-// Пока — минимальный набор ключей для скелета (Фаза 1).
+// Package i18n holds the interface strings in Russian and English.
 package i18n
 
 type Dict map[string]string
 
-// Base keys ported verbatim from app/lang/ru.py / en.py (dotted naming,
-// matching the original — kept 1:1 so both sources stay easy to diff).
+// Base keys (dotted naming; section-specific keys live in <section>_ru.go /
+// <section>_en.go).
 var RU = Dict{
 	"nav.home":       "sConvert",
 	"nav.units":      "Единицы измерения",

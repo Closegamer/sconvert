@@ -112,8 +112,7 @@ func hash160FromP2WPKH(address string) ([]byte, error) {
 // checksum-validate an address for the read-only "validation status"
 // caption — distinct from DescribeAddress below, which only sniffs the
 // prefix/version byte for a human-readable type/network description and
-// deliberately does not validate a bech32 checksum (matching Python's
-// _describe_address_type_network, which has the same split).
+// deliberately does not validate a bech32 checksum.
 func IsValidP2PKHAddress(address string) bool {
 	_, err := hash160FromP2PKH(address)
 	return err == nil
@@ -134,7 +133,7 @@ type AddressInfo struct {
 	Unknown bool
 }
 
-// DescribeAddress mirrors Python's _describe_address_type_network: sniff the
+// DescribeAddress sniffs the
 // bech32 HRP or base58check version byte to report address type/network,
 // without needing to know which field the address came from.
 func DescribeAddress(address string) AddressInfo {

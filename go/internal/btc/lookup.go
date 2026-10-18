@@ -41,7 +41,7 @@ type addressInfoResponse struct {
 	MempoolStats chainStats `json:"mempool_stats"`
 }
 
-// LookupBalanceSats mirrors Python's _lookup_balance_sats.
+// LookupBalanceSats returns the confirmed balance of address in satoshis.
 func LookupBalanceSats(address string) (int64, error) {
 	var info addressInfoResponse
 	if err := fetchJSON(blockstreamBase+"/address/"+address, &info); err != nil {
@@ -58,7 +58,7 @@ type AddressSummary struct {
 	Balance  int64
 }
 
-// LookupAddressSummary mirrors Python's _lookup_address_summary.
+// LookupAddressSummary fetches the address's chain stats from blockstream.info.
 func LookupAddressSummary(address string) (*AddressSummary, error) {
 	var info addressInfoResponse
 	if err := fetchJSON(blockstreamBase+"/address/"+address, &info); err != nil {
@@ -69,7 +69,7 @@ func LookupAddressSummary(address string) (*AddressSummary, error) {
 	return &AddressSummary{Received: funded, Sent: spent, Balance: funded - spent}, nil
 }
 
-// LookupTipHeight mirrors Python's _lookup_tip_height.
+// LookupTipHeight returns the current block height.
 func LookupTipHeight() (int, error) {
 	req, err := http.NewRequest(http.MethodGet, blockstreamBase+"/blocks/tip/height", nil)
 	if err != nil {
@@ -102,7 +102,7 @@ type UTXO struct {
 	Status UTXOStatus `json:"status"`
 }
 
-// LookupUTXOs mirrors Python's _lookup_utxos.
+// LookupUTXOs lists the address's unspent outputs.
 func LookupUTXOs(address string) ([]UTXO, error) {
 	var utxos []UTXO
 	if err := fetchJSON(blockstreamBase+"/address/"+address+"/utxo", &utxos); err != nil {
@@ -140,7 +140,7 @@ type Tx struct {
 	Vout   []txVout `json:"vout"`
 }
 
-// LookupTransactions mirrors Python's _lookup_transactions.
+// LookupTransactions lists the address's recent transactions.
 func LookupTransactions(address string) ([]Tx, error) {
 	var txs []Tx
 	if err := fetchJSON(blockstreamBase+"/address/"+address+"/txs", &txs); err != nil {
@@ -176,8 +176,7 @@ func extractPubkeyFromVin(vin txVin) string {
 }
 
 // LookupPubkeyByAddress scans the address's transaction history for a past
-// spend that reveals its public key (witness or scriptSig), mirroring
-// Python's _lookup_pubkey_by_address. Returns "" (no error) if the address
+// spend that reveals its public key (witness or scriptSig). Returns "" (no error) if the address
 // has never spent from, which is the common case for a fresh address.
 func LookupPubkeyByAddress(address string) (string, error) {
 	txs, err := LookupTransactions(address)
@@ -197,8 +196,8 @@ func LookupPubkeyByAddress(address string) (string, error) {
 	return "", nil
 }
 
-// FormatUTXOs renders a UTXO list as the same human-readable text block
-// Python's _format_utxos_for_view produced, for the read-only textarea.
+// FormatUTXOs renders a UTXO list as a human-readable text block for the
+// read-only textarea.
 func FormatUTXOs(utxos []UTXO, yesWord, noWord string) string {
 	var lines []string
 	for i, u := range utxos {
@@ -232,10 +231,9 @@ func txAmountsForAddress(tx Tx, address string) (received, sent int64) {
 	return received, sent
 }
 
-// FormatTransactions renders a transaction list as the same human-readable
-// text block Python's _format_transactions_for_view produced. Like the
-// original, "confirmed" here is always the literal English "yes"/"no"
-// (unlike FormatUTXOs, which localizes it) — preserved for parity.
+// FormatTransactions renders a transaction list as a human-readable text
+// block. "confirmed" here is always the literal English "yes"/"no"
+// (unlike FormatUTXOs, which localizes it).
 func FormatTransactions(txs []Tx, address string, tipHeight int) string {
 	var lines []string
 	for i, tx := range txs {

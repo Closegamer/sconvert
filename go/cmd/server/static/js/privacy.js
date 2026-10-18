@@ -1,9 +1,7 @@
 /**
  * Contact email reveal widget. The address is base64-encoded in the HTML
  * source (data-email-b64) so it never appears in plain text to scrapers;
- * decoded client-side only when the user clicks "Contact". Ported from
- * app/components/privacy.py's Streamlit iframe widget — no iframe needed
- * here since the Go page isn't sandboxed.
+ * decoded client-side only when the user clicks "Contact".
  */
 (function () {
   "use strict";

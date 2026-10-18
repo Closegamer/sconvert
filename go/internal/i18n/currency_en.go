@@ -1,6 +1,6 @@
 package i18n
 
-// Ported verbatim from app/lang/en.py ("curr.*" keys).
+// "curr.*" keys, English.
 var currencyEN = Dict{
 	"curr.title":       "Currency converter",
 	"curr.subtitle":    "Online currency converter with live rates: USD, EUR, RUB, GBP, CNY, JPY and more.",

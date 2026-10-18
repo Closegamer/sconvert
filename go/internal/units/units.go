@@ -307,10 +307,8 @@ var Data = Category{
 	},
 }
 
-// Temperature: base unit is Kelvin. Every conversion in the original Python
-// (temperature.py: _to_kelvin/_from_kelvin) is affine (K = value*A + B), so
-// it fits the same Unit struct as every other category, coefficients solved
-// from the original piecewise functions.
+// Temperature: base unit is Kelvin. Every temperature conversion is affine
+// (K = value*A + B), so it fits the same Unit struct as every other category.
 var Temperature = Category{
 	Key: "temperature", TitleKey: "units.temperature.title",
 	Units: []Unit{

@@ -11,10 +11,9 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// EntryPointDBName translates Derive's field names to the DB's
-// entry_point_field enum (see db/sql/002_btc_conversion_log.sql) — a few
-// entries have a "_uncompressed"/plain split in the UI but a "_c"/"_u"
-// split in storage, matching Python's entry_point_map.
+// EntryPointDBName maps Derive's field names to the short names used in the
+// cache key — a few entries have an "_uncompressed"/plain split in the UI
+// but a "_c"/"_u" split in the key.
 func EntryPointDBName(field string) string {
 	switch field {
 	case "private_wif_uncompressed":
@@ -50,11 +49,7 @@ func normalizeSignatureValue(dbField, value string) string {
 }
 
 // BuildRequestSignature is a deterministic cache key for one (entry field,
-// entry value) pair — same idea as Python's _build_request_signature, but
-// scoped to this rewrite's own btc_conversion_log table (a separate
-// Postgres instance from the Python site), so it doesn't need to match the
-// original's exact byte-for-byte JSON encoding, only be internally
-// consistent.
+// entry value) pair. It only needs to be internally consistent.
 func BuildRequestSignature(dbField, entryValue string) string {
 	normalized := normalizeSignatureValue(dbField, entryValue)
 	body, _ := json.Marshal(struct {

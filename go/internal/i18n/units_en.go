@@ -1,6 +1,6 @@
 package i18n
 
-// Ported verbatim from app/lang/en.py ("units.*" keys).
+// "units.*" keys, English.
 var unitsEN = Dict{
 	"units.title":            "Units",
 	"units.subtitle":         "Section in progress. Unit converter will appear here.",

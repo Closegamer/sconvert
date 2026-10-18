@@ -1,7 +1,6 @@
 package i18n
 
-// SEO <title>/<meta description> text per page, ported from
-// app/Home.py's _inject_seo_meta (title_by_view/description_by_view) —
+// SEO <title>/<meta description> text per page —
 // distinct from on-page headings/subtitles, which is why these live in
 // their own key namespace instead of reusing e.g. "units.subtitle" (a
 // stale placeholder, wrong to also use as a meta description).

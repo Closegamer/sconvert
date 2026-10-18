@@ -14,9 +14,8 @@ type LatexPageData struct {
 
 // LatexHandler renders /latex. There's no server-side computation at all:
 // delimiter-stripping and KaTeX rendering happen entirely client-side (see
-// static/js/latex.js) — the original Python's matplotlib PNG rasterization
-// is replaced by rendering the same client-side KaTeX DOM node to a PNG via
-// html-to-image, so preview and download can never disagree with each other.
+// static/js/latex.js). PNG export renders the same client-side KaTeX DOM
+// node via html-to-image, so preview and download can never disagree with each other.
 func LatexHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lang := langFromRequest(r)

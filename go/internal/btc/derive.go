@@ -1,4 +1,4 @@
-// Package btc ports app/components/btc_keys.py's key/address derivation:
+// Package btc implements key/address derivation:
 // given any one of 13 possible entry fields (private key in dec/hex/WIF/
 // seed-phrase form, a public key, a RIPEMD-160 hash, or an address), fan
 // out to every other representation. The EC math (private->public key,
@@ -41,8 +41,8 @@ type Result struct {
 	PubkeyYHex    string
 
 	// LookupAddress is the address the caller should use for external
-	// balance/tx/utxo lookups (see internal/web/btc.go), matching Python's
-	// target_address fallback: the derived compressed address, else the
+	// balance/tx/utxo lookups (see internal/web/btc.go), with a
+	// fallback chain: the derived compressed address, else the
 	// uncompressed one, else (for a P2SH entry, which has no derivable
 	// hash160) the raw entered value.
 	LookupAddress string
@@ -233,10 +233,10 @@ func Derive(field, rawValue string) (*Result, error) {
 }
 
 // privateKeyFromSeedPhrase derives the private key at the fixed path
-// m/44'/0'/0'/0/0 from a 12- or 24-word phrase. Deliberately permissive,
-// matching the original Python: no BIP39 wordlist/checksum validation, just
-// PBKDF2-HMAC-SHA512 over the NFKD-normalized phrase (go-bip39's NewSeed
-// does exactly this and, like the Python, performs no checksum check).
+// m/44'/0'/0'/0/0 from a 12- or 24-word phrase. Deliberately permissive:
+// no BIP39 wordlist/checksum validation, just PBKDF2-HMAC-SHA512 over the
+// NFKD-normalized phrase (go-bip39's NewSeed does exactly this and performs
+// no checksum check).
 func privateKeyFromSeedPhrase(phrase string) (*big.Int, error) {
 	words := strings.Fields(phrase)
 	if len(words) != 12 && len(words) != 24 {

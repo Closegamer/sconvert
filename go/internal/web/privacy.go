@@ -5,8 +5,7 @@ import (
 	"net/http"
 )
 
-// contactEmailB64 is "closegamer@mail.ru" base64-encoded, matching the
-// original Python component — never appears in plain text in the HTML
+// contactEmailB64 is "closegamer@mail.ru" base64-encoded — never appears in plain text in the HTML
 // source, only decoded client-side on click (see static/js/privacy.js).
 const contactEmailB64 = "Y2xvc2VnYW1lckBtYWlsLnJ1"
 
@@ -17,10 +16,8 @@ type PrivacyPageData struct {
 }
 
 // PrivacyHandler renders /privacy. Text is trusted, static HTML (headings,
-// <br>, <code>) ported verbatim from
-// app/lang/*.py's privacy.text. The original's iframe-sandboxed email
-// reveal widget (Streamlit components.html) becomes plain inline
-// markup+JS here — no sandbox needed since the Go page isn't embedded.
+// <br>, <code>) from the privacy.text i18n key. The email reveal is plain
+// inline markup+JS (static/js/privacy.js).
 func PrivacyHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lang := langFromRequest(r)

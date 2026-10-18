@@ -1,6 +1,5 @@
 // Package currency proxies live USD-based exchange rates from
-// open.er-api.com (same upstream and cache TTL as the old Python
-// api/main.py /api/currency/rates endpoint), cached in Redis so the
+// open.er-api.com, cached in Redis so the
 // external API is hit at most once per hour regardless of traffic.
 package currency
 
@@ -21,8 +20,8 @@ type Entry struct {
 	LabelKey string `json:"labelKey"`
 }
 
-// List is a direct port of app/components/currency.py's _CURRENCIES, same
-// order (used for the two-column layout on /currency).
+// List is the set of supported currencies, in display order (used for the
+// two-column layout on /currency).
 var List = []Entry{
 	{"USD", "curr.usd"}, {"EUR", "curr.eur"}, {"GBP", "curr.gbp"}, {"JPY", "curr.jpy"},
 	{"CHF", "curr.chf"}, {"CNY", "curr.cny"},
