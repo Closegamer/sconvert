@@ -145,6 +145,7 @@ location = /имя-страницы {
     default_type text/html;
     charset utf-8;
     alias /usr/share/nginx/static/имя-страницы.html;
+    add_header X-Robots-Tag "noindex, nofollow" always;  # если страница только по прямой ссылке
 }
 ```
 
