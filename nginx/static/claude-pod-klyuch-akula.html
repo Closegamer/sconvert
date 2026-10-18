@@ -217,6 +217,13 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--rule);color:v
     </div>
   </div>
   <div class="os">
+    <span class="label">Тема</span>
+    <div class="seg" role="group" aria-label="Тема оформления">
+      <button type="button" id="theme-light" data-theme-btn="light" aria-pressed="false">Светлая</button>
+      <button type="button" id="theme-dark" data-theme-btn="dark" aria-pressed="false">Тёмная</button>
+    </div>
+  </div>
+  <div class="os">
     <span class="label">Фон</span>
     <div class="seg" role="group" aria-label="Акулы на фоне">
       <button type="button" id="sharks-on" data-sharks="on" aria-pressed="true">С акулами</button>
@@ -1052,6 +1059,23 @@ mcp = FastMCP("Интернет")</div></div></div></div></div><figcaption>crede
     state.sharks = v; save();
   }
   setSharks(state.sharks || "on");
+
+  function markTheme(v){
+    document.querySelectorAll(".seg button[data-theme-btn]").forEach(function(b){
+      b.setAttribute("aria-pressed", String(b.dataset.themeBtn === v));
+    });
+  }
+  function setTheme(v){
+    document.documentElement.setAttribute("data-theme", v);
+    markTheme(v);
+    state.theme = v; save();
+  }
+  if (state.theme) setTheme(state.theme);
+  else markTheme(document.documentElement.getAttribute("data-theme") ||
+    (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+  document.querySelectorAll(".seg button[data-theme-btn]").forEach(function(b){
+    b.addEventListener("click", function(){ setTheme(b.dataset.themeBtn); });
+  });
   document.querySelectorAll(".seg button[data-sharks]").forEach(function(b){
     b.addEventListener("click", function(){ setSharks(b.dataset.sharks); });
   });
