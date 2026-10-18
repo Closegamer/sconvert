@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Claude под ключ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F4F5F8; --surface:#FFFFFF; --ink:#1A1B26; --muted:#5C5F72; --rule:#DADBE5;
+  --accent:#5236D6; --accent-soft:#ECE8FD; --code-bg:#EFEEF6; --code-ink:#24203A;
+  --a:#2563C9; --b:#454B5B; --c:#1C8656; --warn:#9A5600; --warn-soft:#FFF2DE;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Onest","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",Consolas,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121219; --surface:#1A1A24; --ink:#E7E7F0; --muted:#9B9DB2; --rule:#2C2C3A;
+    --accent:#A390FF; --accent-soft:#272143; --code-bg:#1F1D2C; --code-ink:#E4E0FA;
+    --a:#6FA1F5; --b:#A9AFBF; --c:#4CC48A; --warn:#F2A54A; --warn-soft:#2C2214;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121219; --surface:#1A1A24; --ink:#E7E7F0; --muted:#9B9DB2; --rule:#2C2C3A;
+  --accent:#A390FF; --accent-soft:#272143; --code-bg:#1F1D2C; --code-ink:#E4E0FA;
+  --a:#6FA1F5; --b:#A9AFBF; --c:#4CC48A; --warn:#F2A54A; --warn-soft:#2C2214;
+}
+html[data-os="win"] .mac, html[data-os="mac"] .win{display:none !important}
+
+body{background:var(--bg);color:var(--ink);font:400 16px/1.65 var(--body);padding-inline:20px}
+a{color:var(--accent);text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.88em}
+p code,li code,td code{background:var(--code-bg);color:var(--code-ink);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+kbd{border:1px solid var(--rule);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface)}
+
+.wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:64px;padding-block:48px 96px}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 28px);align-self:start;display:flex;flex-direction:column;gap:22px;font-size:14px}
+.brand{font:600 15px/1.3 var(--display);letter-spacing:-.01em}
+.os{display:flex;flex-direction:column;gap:6px}
+.label{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:8px;padding:3px;background:var(--surface);gap:2px;width:max-content}
+.seg button{font:500 13px var(--body);border:0;background:none;color:var(--muted);padding:5px 12px;border-radius:6px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{color:#14121F}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{color:#14121F}}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.toc ol a{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:baseline;padding:5px 8px;margin-inline:-8px;border-radius:6px;color:var(--ink);text-decoration:none}
+.toc ol a:hover{background:var(--surface)}
+.toc .n{font:500 12px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.toc a.done .n{color:var(--c)}
+.toc a.done .n::before{content:"✓"}
+.toc a.done .n span{display:none}
+.progress{color:var(--muted);font-size:13px}
+
+main{min-width:0;max-width:700px}
+header.hero{display:flex;flex-direction:column;gap:18px;padding-bottom:40px;border-bottom:1px solid var(--rule)}
+h1{font:600 clamp(34px,6vw,54px)/1.05 var(--display);letter-spacing:-.025em;margin:0;text-wrap:balance}
+.lead{font-size:19px;line-height:1.55;margin:0;max-width:60ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--muted);font-size:14px}
+
+section{padding-block:56px 8px;scroll-margin-top:24px}
+.eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px}
+.chip{font:600 11.5px/1 var(--body);text-transform:uppercase;letter-spacing:.07em;padding:5px 8px;border-radius:5px;border:1px solid currentColor}
+.chip.a{color:var(--a)} .chip.b{color:var(--b)} .chip.c{color:var(--c)}
+.time{font-size:13px;color:var(--muted)}
+h2{font:600 clamp(24px,3.4vw,30px)/1.2 var(--display);letter-spacing:-.02em;margin:0 0 16px;text-wrap:balance}
+h3{font:600 18px/1.35 var(--body);margin:36px 0 8px;text-wrap:balance}
+p{margin:0 0 14px;max-width:66ch}
+ul.plain{padding-left:20px;margin:0 0 14px;display:flex;flex-direction:column;gap:6px}
+
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:20px 0 0;display:flex;flex-direction:column;gap:26px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:34px minmax(0,1fr);gap:4px 12px}
+ol.steps>li::before{content:counter(s);font:500 13px/26px var(--mono);width:26px;height:26px;text-align:center;border-radius:50%;background:var(--accent-soft);color:var(--accent)}
+ol.steps>li>*{grid-column:2;min-width:0}
+ol.steps>li>p:last-child{margin-bottom:0}
+.step-title{font-weight:600;margin:0 0 6px;line-height:1.6}
+
+.code{margin:10px 0 14px;border-radius:8px;background:var(--code-bg);overflow:hidden}
+.code-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 8px 6px 14px;border-bottom:1px solid var(--rule);font:500 12.5px var(--mono);color:var(--muted)}
+.copy{font:500 12.5px var(--body);border:1px solid var(--rule);background:var(--surface);color:var(--ink);padding:4px 10px;border-radius:6px;cursor:pointer}
+.copy:hover{border-color:var(--accent);color:var(--accent)}
+.code pre{margin:0;padding:14px;overflow-x:auto;font:400 13.5px/1.6 var(--mono);color:var(--code-ink);tab-size:4}
+.code pre .cm{color:var(--muted)}
+
+.note{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;margin:14px 0;font-size:15px}
+.note p:last-child{margin-bottom:0}
+.note.warn{background:var(--warn-soft);border-color:transparent}
+.note .label{display:block;margin-bottom:4px}
+.note.warn .label{color:var(--warn)}
+
+.check{margin-top:30px;padding:16px 18px;border:1px solid var(--c);border-radius:8px;display:flex;flex-direction:column;gap:8px}
+.check .label{color:var(--c)}
+.check p{margin:0}
+.check label{display:flex;gap:10px;align-items:center;font-weight:600;cursor:pointer;width:max-content}
+.check input{width:18px;height:18px;accent-color:var(--c)}
+
+.diagram{overflow-x:auto;margin:22px 0 10px;background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:14px}
+.diagram svg{display:block;width:100%;min-width:660px;height:auto}
+.d-box{fill:var(--surface);stroke:var(--rule);stroke-width:1.5}
+.d-host{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}
+.d-srv{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.d-line{stroke:var(--muted);stroke-width:1.4;fill:none}
+.d-head{fill:var(--muted)}
+.d-t{fill:var(--ink);font:500 14px var(--body)}
+.d-tb{fill:var(--ink);font:600 15px var(--body)}
+.d-s{fill:var(--muted);font:400 12px var(--mono)}
+.d-l{fill:var(--muted);font:500 11px var(--body)}
+.d-num circle{fill:var(--surface);stroke:var(--accent);stroke-width:1.4;stroke-dasharray:3 2}
+.d-num text{fill:var(--accent);font:600 12px var(--mono);text-anchor:middle;dominant-baseline:central}
+
+dl.parts{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px 10px;margin:18px 0 0}
+dl.parts dt{font:600 13px/24px var(--mono);color:var(--accent);text-align:center;border:1.4px dashed var(--accent);border-radius:50%;width:24px;height:24px}
+dl.parts dd{margin:0}
+
+.trace{list-style:none;padding:0;margin:14px 0;display:flex;flex-direction:column;gap:0;border-left:2px solid var(--rule);padding-left:18px}
+.trace li{padding:6px 0;font-size:15px}
+.trace code{background:none;padding:0;color:var(--accent);font-weight:500}
+
+.table{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;padding:8px 12px 8px 0;border-bottom:1px solid var(--rule)}
+td{padding:10px 12px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+td:first-child{font-weight:500}
+
+.prompts{display:flex;flex-direction:column;gap:8px;margin:12px 0 16px;padding:0;list-style:none}
+.prompts li{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:10px 14px;font-size:15px}
+.prompts li::before{content:"Вы → ";color:var(--muted);font:500 12px var(--mono)}
+
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--rule);color:var(--muted);font-size:14px}
+
+@media (max-width:860px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:28px;padding-block:28px 72px}
+  nav.toc{position:static;padding-bottom:20px;border-bottom:1px solid var(--rule)}
+  .toc ol{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<nav class="toc" aria-label="Содержание">
+  <div class="brand">Claude под ключ</div>
+  <div class="os">
+    <span class="label">Мой компьютер</span>
+    <div class="seg" role="group" aria-label="Операционная система">
+      <button type="button" id="os-win" data-os="win" aria-pressed="true">Windows</button>
+      <button type="button" id="os-mac" data-os="mac" aria-pressed="false">macOS</button>
+    </div>
+  </div>
+  <div>
+    <span class="label">Уроки</span>
+    <ol>
+      <li><a href="#how"><span class="n">·</span>Как это устроено</a></li>
+      <li><a href="#l1" data-lesson="1"><span class="n"><span>1</span></span>Установка</a></li>
+      <li><a href="#l2" data-lesson="2"><span class="n"><span>2</span></span>Задачи на компьютере</a></li>
+      <li><a href="#l3" data-lesson="3"><span class="n"><span>3</span></span>GitHub</a></li>
+      <li><a href="#l4" data-lesson="4"><span class="n"><span>4</span></span>Telegram, Календарь, Диск</a></li>
+      <li><a href="#l5" data-lesson="5"><span class="n"><span>5</span></span>Всё вместе</a></li>
+      <li><a href="#l6" data-lesson="6"><span class="n"><span>6</span></span>Каждый день</a></li>
+      <li><a href="#fix"><span class="n">?</span>Если не работает</a></li>
+    </ol>
+  </div>
+  <div class="progress" id="progress">Пройдено 0 из 6</div>
+</nav>
+
+<main>
+<header class="hero">
+  <h1>Claude под ключ</h1>
+  <p class="lead">За один вечер вы подключите к Claude свой список задач, GitHub, Google Календарь, Google Диск и Telegram. Программировать не придётся: весь код готов, его нужно только скопировать в файлы.</p>
+  <div class="meta"><span>6 уроков</span><span>около 3 часов</span><span>Windows и macOS</span><span>Python, но знать его не нужно</span></div>
+</header>
+
+<section id="how">
+  <h2>Как это устроено</h2>
+  <p>Сам по себе Claude умеет только разговаривать. Чтобы он мог смотреть ваш календарь или записывать задачи, к нему подключают маленьких помощников, которые называются <b>MCP-серверами</b>. Каждый помощник знает один сервис и умеет делать с ним несколько простых действий. Claude решает, кого из них позвать, а вы разрешаете или запрещаете каждое действие.</p>
+
+  <div class="diagram">
+  <svg viewBox="0 0 780 330" role="img" aria-label="Схема: Claude Desktop через три клиента связан с серверами A, B и C, которые работают с интернет-сервисами, GitHub и локальной базой задач">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-head" d="M0 0 L10 5 L0 10 z"/></marker>
+    </defs>
+    <rect class="d-host" x="8" y="16" width="150" height="298" rx="10"/>
+    <text class="d-l" x="26" y="50">ХОСТ</text>
+    <text class="d-tb" x="26" y="74">Claude</text>
+    <text class="d-tb" x="26" y="94">Desktop</text>
+    <text class="d-s" x="26" y="284">или Cursor,</text>
+    <text class="d-s" x="26" y="300">Windsurf</text>
+
+    <rect class="d-box" x="118" y="62" width="100" height="36" rx="6"/><text class="d-t" x="168" y="85" text-anchor="middle">клиент</text>
+    <rect class="d-box" x="118" y="147" width="100" height="36" rx="6"/><text class="d-t" x="168" y="170" text-anchor="middle">клиент</text>
+    <rect class="d-box" x="118" y="232" width="100" height="36" rx="6"/><text class="d-t" x="168" y="255" text-anchor="middle">клиент</text>
+
+    <line class="d-line" x1="220" y1="80" x2="298" y2="80" marker-start="url(#ah)" marker-end="url(#ah)"/><text class="d-l" x="259" y="72" text-anchor="middle">MCP</text>
+    <line class="d-line" x1="220" y1="165" x2="298" y2="165" marker-start="url(#ah)" marker-end="url(#ah)"/><text class="d-l" x="259" y="157" text-anchor="middle">MCP</text>
+    <line class="d-line" x1="220" y1="250" x2="298" y2="250" marker-start="url(#ah)" marker-end="url(#ah)"/><text class="d-l" x="259" y="242" text-anchor="middle">MCP</text>
+
+    <rect class="d-srv" x="300" y="54" width="190" height="52" rx="6"/><text class="d-tb" x="316" y="77">Сервер A</text><text class="d-s" x="316" y="95">internet.py</text>
+    <rect class="d-srv" x="300" y="139" width="190" height="52" rx="6"/><text class="d-tb" x="316" y="162">Сервер B</text><text class="d-s" x="316" y="180">github.py</text>
+    <rect class="d-srv" x="300" y="224" width="190" height="52" rx="6"/><text class="d-tb" x="316" y="247">Сервер C</text><text class="d-s" x="316" y="265">tasks.py</text>
+
+    <line class="d-line" x1="492" y1="80" x2="578" y2="80" marker-start="url(#ah)" marker-end="url(#ah)"/><text class="d-l" x="535" y="72" text-anchor="middle">Web API</text>
+    <line class="d-line" x1="492" y1="165" x2="578" y2="165" marker-start="url(#ah)" marker-end="url(#ah)"/><text class="d-l" x="535" y="157" text-anchor="middle">Web API</text>
+    <line class="d-line" x1="492" y1="250" x2="578" y2="250" marker-start="url(#ah)" marker-end="url(#ah)"/><text class="d-l" x="535" y="242" text-anchor="middle">SQLite</text>
+
+    <rect class="d-box" x="580" y="54" width="192" height="52" rx="6"/><text class="d-t" x="596" y="77">Календарь · Диск</text><text class="d-s" x="596" y="95">Telegram, интернет</text>
+    <rect class="d-box" x="580" y="139" width="192" height="52" rx="6"/><text class="d-t" x="596" y="162">GitHub</text><text class="d-s" x="596" y="180">онлайн-сервис</text>
+    <rect class="d-box" x="580" y="224" width="192" height="52" rx="6"/><text class="d-t" x="596" y="247">tasks.db</text><text class="d-s" x="596" y="265">файл на компьютере</text>
+
+    <g class="d-num"><circle cx="24" cy="18" r="11"/><text x="24" y="18">1</text></g>
+    <g class="d-num"><circle cx="259" cy="270" r="11"/><text x="259" y="270">2</text></g>
+    <g class="d-num"><circle cx="300" cy="224" r="11"/><text x="300" y="224">3</text></g>
+    <g class="d-num"><circle cx="580" cy="276" r="11"/><text x="580" y="276">4</text></g>
+    <g class="d-num"><circle cx="580" cy="54" r="11"/><text x="580" y="54">5</text></g>
+    <g class="d-num"><circle cx="580" cy="139" r="11"/><text x="580" y="139">5</text></g>
+  </svg>
+  </div>
+
+  <dl class="parts">
+    <dt>1</dt><dd><b>Хост.</b> Программа, в которой вы общаетесь с Claude. Мы используем Claude Desktop.</dd>
+    <dt>2</dt><dd><b>Клиент и протокол MCP.</b> Встроены в хост, настраивать их не нужно. На каждого помощника приходится своя «линия связи».</dd>
+    <dt>3</dt><dd><b>Сервер.</b> Помощник: файл на Python, который мы создадим. Он сообщает Claude, что умеет, и выполняет просьбы.</dd>
+    <dt>4</dt><dd><b>Локальные данные.</b> Файлы на вашем компьютере. Помощник C хранит задачи в файле <code>tasks.db</code>.</dd>
+    <dt>5</dt><dd><b>Онлайн-сервисы.</b> Google, Telegram, GitHub. Помощники A и B ходят к ним через интернет по вашим ключам доступа.</dd>
+  </dl>
+  <p style="margin-top:18px">Мы соберём систему по шагам, от простого к сложному: сначала C, потом B, потом A. После каждого урока система работает, и это можно проверить.</p>
+</section>
+
+<section id="l1">
+  <div class="eyebrow"><span class="label">Урок 1</span><span class="time">45 минут</span></div>
+  <h2>Установка</h2>
+  <p>На этом уроке установим всё, что нужно системе. После каждой установки сразу проверяем её одной командой: так ошибка не всплывёт через час в неожиданном месте.</p>
+
+  <div class="table"><table>
+    <thead><tr><th>Что</th><th>Зачем</th><th>Как проверить</th></tr></thead>
+    <tbody>
+      <tr><td>Python 3.13</td><td>Язык, на котором написаны помощники</td><td><code class="win">python --version</code><code class="mac">python3 --version</code></td></tr>
+      <tr><td>uv</td><td>Скачивает библиотеки для помощников и запускает их</td><td><code>uv --version</code></td></tr>
+      <tr><td>SQLite</td><td>База данных для задач. Уже встроена в Python</td><td>команда в части 4</td></tr>
+      <tr><td>DB Browser for SQLite</td><td>Посмотреть, что лежит в базе</td><td>программа открывается</td></tr>
+      <tr><td>Claude Desktop</td><td>Здесь вы общаетесь с Claude</td><td>вы вошли в аккаунт</td></tr>
+      <tr><td>VS Code</td><td>Редактор для файлов с кодом</td><td>программа открывается</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Часть 1. Терминал</h3>
+  <p>Терминал — окно, куда вводят команды. Через него мы будем устанавливать и проверять программы.</p>
+  <p class="win">Нажмите <kbd>Пуск</kbd>, наберите <b>PowerShell</b> и откройте его.</p>
+  <p class="mac">Нажмите <kbd>⌘</kbd> + <kbd>Пробел</kbd>, наберите <b>Терминал</b> и откройте его.</p>
+  <p>Команды со страницы вставляйте в терминал целиком и нажимайте <kbd>Enter</kbd>. Если в описании сказано «откройте терминал заново», закройте окно и откройте новое: только так терминал узнает о только что установленной программе.</p>
+
+  <h3>Часть 2. Python</h3>
+  <ol class="steps win">
+    <li><p class="step-title">Скачайте установщик</p>
+      <p>Откройте <a href="https://www.python.org/downloads/windows/">python.org/downloads/windows</a>. В списке найдите последнюю версию <b>Python 3.13</b> и нажмите <b>Windows installer (64-bit)</b>.</p></li>
+    <li><p class="step-title">Отметьте «Add python.exe to PATH»</p>
+      <p>Запустите скачанный файл. Внизу первого окна поставьте галочку <b>Add python.exe to PATH</b>. Это самый важный шаг: без галочки терминал не найдёт Python. Затем нажмите <b>Install Now</b>.</p></li>
+    <li><p class="step-title">Снимите ограничение длины путей</p>
+      <p>Если в конце установки появится кнопка <b>Disable path length limit</b>, нажмите её. Затем <b>Close</b>.</p></li>
+    <li><p class="step-title">Проверьте</p>
+      <p>Откройте PowerShell заново и выполните:</p>
+      <div class="code"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>python --version</code></pre></div>
+      <p>Ответ должен быть вида <code>Python 3.13.9</code>. Если вместо этого открылся Microsoft Store, загляните в раздел <a href="#fix">«Если не работает»</a>.</p></li>
+  </ol>
+  <ol class="steps mac">
+    <li><p class="step-title">Скачайте установщик</p>
+      <p>Откройте <a href="https://www.python.org/downloads/macos/">python.org/downloads/macos</a>. В списке найдите последнюю версию <b>Python 3.13</b> и нажмите <b>macOS 64-bit universal2 installer</b>.</p></li>
+    <li><p class="step-title">Установите</p>
+      <p>Откройте скачанный файл <code>.pkg</code> и нажимайте <b>Продолжить</b>, затем <b>Установить</b>. macOS попросит пароль от компьютера.</p></li>
+    <li><p class="step-title">Установите сертификаты</p>
+      <p>В Finder откройте <b>Программы → Python 3.13</b> и дважды щёлкните файл <b>Install Certificates.command</b>. Откроется терминал, дождитесь слова <code>completed</code>. Без этого шага Python не сможет подключаться к Google и Telegram.</p></li>
+    <li><p class="step-title">Проверьте</p>
+      <p>Откройте Терминал заново и выполните:</p>
+      <div class="code"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>python3 --version</code></pre></div>
+      <p>Ответ должен быть вида <code>Python 3.13.9</code>. На Mac команда пишется с тройкой: <code>python3</code>.</p></li>
+  </ol>
+
+  <h3>Часть 3. uv</h3>
+  <p>uv скачивает библиотеки, которые нужны помощникам (например, для связи с Google), и запускает помощников. Он сам найдёт установленный Python.</p>
+  <ol class="steps">
+    <li><p class="step-title">Установите uv</p>
+      <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</code></pre></div>
+      <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre></div>
+      <p>Когда установка закончится, откройте терминал заново.</p></li>
+    <li><p class="step-title">Проверьте и запишите адрес uv</p>
+      <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>uv --version
+uv python find
+where.exe uv</code></pre></div>
+      <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>uv --version
+uv python find
+which uv</code></pre></div>
+      <p>Первая строка ответа покажет версию uv. Вторая покажет, какой Python он нашёл: в адресе должно быть <code>Python313</code><span class="mac"> или <code>3.13</code></span>. Третья покажет полный адрес uv, например <code class="win">C:\Users\Anna\.local\bin\uv.exe</code><code class="mac">/Users/anna/.local/bin/uv</code>. Скопируйте его в заметки, он понадобится в каждом уроке.</p></li>
+  </ol>
+
+  <h3>Часть 4. База данных</h3>
+  <p>Задачи будут храниться в базе данных <b>SQLite</b>. Это не отдельная программа-сервер, которую нужно запускать и настраивать. Вся база — один файл <code>tasks.db</code>, а умение с ним работать уже встроено в Python. Поэтому устанавливать саму базу не нужно, достаточно убедиться, что она на месте.</p>
+  <ol class="steps">
+    <li><p class="step-title">Проверьте SQLite</p>
+      <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>python -c "import sqlite3; print('SQLite', sqlite3.sqlite_version)"</code></pre></div>
+      <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>python3 -c "import sqlite3; print('SQLite', sqlite3.sqlite_version)"</code></pre></div>
+      <p>Ответ вида <code>SQLite 3.49.1</code> значит, что всё в порядке. Сам файл базы помощник создаст при первой задаче в уроке 2.</p></li>
+    <li><p class="step-title">Установите DB Browser for SQLite</p>
+      <p>Это бесплатная программа, чтобы смотреть содержимое базы как таблицу. Скачайте её с <a href="https://sqlitebrowser.org/dl/">sqlitebrowser.org/dl</a>.</p>
+      <p class="win">Выберите <b>Standard installer for 64-bit Windows</b>, запустите и нажимайте <b>Next</b> до конца.</p>
+      <p class="mac">Выберите версию для macOS (<b>Universal</b>), откройте файл <code>.dmg</code> и перетащите DB Browser в папку «Программы». Если при первом запуске macOS скажет, что разработчик не проверен, нажмите на программу правой кнопкой и выберите <b>Открыть</b>.</p></li>
+  </ol>
+  <div class="note"><span class="label">А если нужна «настоящая» база?</span><p>Для личного помощника SQLite хватает с запасом: она спокойно хранит миллионы записей. Серверные базы вроде PostgreSQL нужны, когда с данными одновременно работает много людей.</p></div>
+
+  <h3>Часть 5. Claude Desktop и VS Code</h3>
+  <ol class="steps">
+    <li><p class="step-title">Установите Claude Desktop</p><p>Скачайте с <a href="https://claude.ai/download">claude.ai/download</a>, установите и войдите в свой аккаунт.</p></li>
+    <li><p class="step-title">Установите VS Code</p><p>Бесплатно, с <a href="https://code.visualstudio.com">code.visualstudio.com</a>. В нём удобно создавать файлы с кодом.<span class="win"> Обычный Блокнот тоже подойдёт, но при сохранении в нём легко ошибиться с расширением файла.</span><span class="mac"> TextEdit не подходит: он портит кавычки в коде.</span></p></li>
+  </ol>
+
+  <h3>Часть 6. Аккаунты</h3>
+  <ul class="plain">
+    <li><b>Google</b> для Календаря и Диска. Подойдёт обычный Gmail.</li>
+    <li><b>Telegram</b> на телефоне или компьютере.</li>
+    <li><b>GitHub</b>, если хотите пройти урок 3. Регистрация на <a href="https://github.com/signup">github.com/signup</a>.</li>
+  </ul>
+
+  <h3>Часть 7. Рабочая папка</h3>
+  <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>mkdir C:\mcp</code></pre></div>
+  <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>mkdir ~/mcp</code></pre></div>
+  <p>Откройте её в VS Code: <b>File → Open Folder</b> и выберите папку <code>mcp</code>. Здесь будут лежать все помощники и файл базы.</p>
+
+  <div class="check">
+    <span class="label">Проверка</span>
+    <p>Все три команды отвечают без ошибок: версия Python, версия uv и версия SQLite. Адрес uv записан, DB Browser открывается, папка <code>mcp</code> открыта в VS Code.</p>
+    <label><input type="checkbox" id="done-1" data-lesson="1"> Получилось</label>
+  </div>
+</section>
+
+<section id="l2">
+  <div class="eyebrow"><span class="label">Урок 2</span><span class="chip c">Сервер C</span><span class="time">20 минут</span></div>
+  <h2>Задачи на компьютере</h2>
+  <p>Первый помощник ведёт список задач. Он хранит его в файле <code>tasks.db</code> рядом с собой, интернет ему не нужен. На этом уроке вы пройдёте весь путь подключения, а дальше он будет повторяться.</p>
+  <ol class="steps">
+    <li><p class="step-title">Создайте файл tasks.py</p>
+      <p>В VS Code нажмите <b>File → New File</b>, назовите файл <code>tasks.py</code>, вставьте код и сохраните (<kbd class="win">Ctrl</kbd><kbd class="mac">⌘</kbd> + <kbd>S</kbd>).</p>
+      <div class="code"><div class="code-head"><span>tasks.py</span><button class="copy" type="button">Копировать</button></div><pre><code><span class="cm"># /// script
+# dependencies = ["mcp"]
+# requires-python = ">=3.12"
+# ///</span>
+import sqlite3
+from pathlib import Path
+from mcp.server.fastmcp import FastMCP
+
+DB = Path(__file__).with_name("tasks.db")
+mcp = FastMCP("Задачи")
+
+
+def db():
+    con = sqlite3.connect(DB)
+    con.row_factory = sqlite3.Row
+    con.execute("""CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
+        due TEXT,
+        done INTEGER NOT NULL DEFAULT 0)""")
+    return con
+
+
+@mcp.tool()
+def add_task(title: str, due: str = "") -> str:
+    """Добавить задачу. due — срок в формате ГГГГ-ММ-ДД, можно оставить пустым."""
+    with db() as con:
+        cur = con.execute("INSERT INTO tasks (title, due) VALUES (?, ?)", (title, due or None))
+    return f"Задача #{cur.lastrowid} добавлена"
+
+
+@mcp.tool()
+def list_tasks(include_done: bool = False) -> list[dict]:
+    """Список задач. По умолчанию только невыполненные, ближайшие сроки сверху."""
+    where = "" if include_done else " WHERE done = 0"
+    with db() as con:
+        rows = con.execute("SELECT * FROM tasks" + where + " ORDER BY due IS NULL, due")
+        return [dict(r) for r in rows]
+
+
+@mcp.tool()
+def complete_task(task_id: int) -> str:
+    """Отметить задачу выполненной по её номеру."""
+    with db() as con:
+        changed = con.execute("UPDATE tasks SET done = 1 WHERE id = ?", (task_id,)).rowcount
+    return "Готово" if changed else f"Задачи #{task_id} нет"
+
+
+if __name__ == "__main__":
+    mcp.run()</code></pre></div>
+      <p>Разбираться в коде не обязательно, но устроен он просто. Каждая функция с пометкой <code>@mcp.tool()</code> становится инструментом, который увидит Claude. Текст в тройных кавычках подсказывает Claude, когда этот инструмент нужен.</p></li>
+    <li><p class="step-title">Запустите помощника один раз вручную</p>
+      <p>При первом запуске uv скачивает библиотеку <code>mcp</code>. Это занимает до минуты, и Claude может не дождаться. Поэтому первый запуск делаем сами:</p>
+      <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>uv run C:\mcp\tasks.py</code></pre></div>
+      <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>uv run ~/mcp/tasks.py</code></pre></div>
+      <p>Когда загрузка закончится, терминал замолчит. Так и должно быть: помощник ждёт, когда к нему обратится Claude. Остановите его клавишами <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p></li>
+    <li><p class="step-title">Пропишите помощника в настройках Claude</p>
+      <p>В Claude Desktop откройте <b>Settings → Developer → Edit Config</b> (в русском интерфейсе <b>Настройки → Разработчик</b>). Откроется файл <code>claude_desktop_config.json</code>. Замените всё его содержимое на это:</p>
+      <div class="code win"><div class="code-head"><span>claude_desktop_config.json</span><button class="copy" type="button">Копировать</button></div><pre><code>{
+  "mcpServers": {
+    "tasks": {
+      "command": "C:\\Users\\ИМЯ\\.local\\bin\\uv.exe",
+      "args": ["run", "C:\\mcp\\tasks.py"]
+    }
+  }
+}</code></pre></div>
+      <div class="code mac"><div class="code-head"><span>claude_desktop_config.json</span><button class="copy" type="button">Копировать</button></div><pre><code>{
+  "mcpServers": {
+    "tasks": {
+      "command": "/Users/ИМЯ/.local/bin/uv",
+      "args": ["run", "/Users/ИМЯ/mcp/tasks.py"]
+    }
+  }
+}</code></pre></div>
+      <p>В строке <code>command</code> укажите адрес uv, который вы записали в уроке 1.<span class="win"> Обратите внимание: в этом файле каждая обратная косая черта пишется дважды, <code>\\</code>.</span><span class="mac"> Вместо <code>ИМЯ</code> подставьте имя пользователя, оно есть в том же адресе.</span> Сохраните файл.</p></li>
+    <li><p class="step-title">Полностью перезапустите Claude</p>
+      <p class="win">Закрыть окно недостаточно. Найдите значок Claude возле часов в правом нижнем углу, нажмите на него правой кнопкой и выберите <b>Quit</b>. Затем откройте Claude снова.</p>
+      <p class="mac">Нажмите <kbd>⌘</kbd> + <kbd>Q</kbd>, чтобы Claude закрылся полностью, и откройте его снова.</p></li>
+    <li><p class="step-title">Попросите Claude поработать с задачами</p>
+      <ul class="prompts">
+        <li>Добавь задачу «Купить билеты в Казань» на 25 октября</li>
+        <li>Добавь задачу «Позвонить в банк» на завтра</li>
+        <li>Какие у меня задачи?</li>
+      </ul>
+      <p>Перед первым действием Claude спросит разрешения на инструмент <code>add_task</code>. Так работает защита: без вашего согласия помощник ничего не сделает. Нажмите «Разрешить».</p></li>
+    <li><p class="step-title">Загляните в базу данных</p>
+      <p>Откройте DB Browser for SQLite, нажмите <b>Open Database</b> и выберите файл <code class="win">C:\mcp\tasks.db</code><code class="mac">tasks.db</code><span class="mac"> в папке <code>mcp</code></span>. На вкладке <b>Browse Data</b> выберите таблицу <code>tasks</code>: там будут ваши задачи. Колонка <code>done</code> показывает, выполнена ли задача (1) или нет (0).</p>
+      <p>Если вы что-то поменяли в таблице руками, нажмите <b>Write Changes</b>. Пока изменения не сохранены, база занята, и Claude не сможет в неё записывать. Закончив, закройте DB Browser.</p></li>
+  </ol>
+  <div class="check">
+    <span class="label">Проверка</span>
+    <p>Claude показывает список из двух задач со сроками, и те же задачи видны в DB Browser.</p>
+    <label><input type="checkbox" id="done-2" data-lesson="2"> Получилось</label>
+  </div>
+</section>
+
+<section id="l3">
+  <div class="eyebrow"><span class="label">Урок 3</span><span class="chip b">Сервер B</span><span class="time">20 минут</span></div>
+  <h2>GitHub</h2>
+  <p>Второй помощник работает с онлайн-сервисом. Мы взяли GitHub, где команды ведут задачи по проектам. Если вы им не пользуетесь, урок можно пропустить: любой другой сервис подключается так же, через ключ доступа и пару функций.</p>
+  <ol class="steps">
+    <li><p class="step-title">Получите ключ доступа (токен)</p>
+      <p>На github.com нажмите на свой аватар и откройте <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b>. Заполните:</p>
+      <ul class="plain">
+        <li><b>Token name</b>: Claude</li>
+        <li><b>Expiration</b>: 90 days</li>
+        <li><b>Repository access</b>: Only select repositories, выберите один репозиторий</li>
+        <li><b>Permissions → Issues</b>: Read and write</li>
+      </ul>
+      <p>Нажмите <b>Generate token</b> и сразу скопируйте токен в заметки: GitHub покажет его только один раз.</p>
+      <div class="note warn"><span class="label">Важно</span><p>Токен работает как пароль. Не пересылайте его и не публикуйте на скриншотах.</p></div></li>
+    <li><p class="step-title">Создайте файл github.py</p>
+      <div class="code"><div class="code-head"><span>github.py</span><button class="copy" type="button">Копировать</button></div><pre><code><span class="cm"># /// script
+# dependencies = ["mcp", "httpx"]
+# requires-python = ">=3.12"
+# ///</span>
+import os
+import httpx
+from mcp.server.fastmcp import FastMCP
+
+REPO = os.environ["GITHUB_REPO"]
+gh = httpx.Client(
+    base_url="https://api.github.com",
+    headers={
+        "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+        "Accept": "application/vnd.github+json",
+    },
+    timeout=30,
+)
+mcp = FastMCP("GitHub")
+
+
+@mcp.tool()
+def list_issues(state: str = "open") -> list[dict]:
+    """Список issues в репозитории. state: open, closed или all."""
+    r = gh.get(f"/repos/{REPO}/issues", params={"state": state, "per_page": 30})
+    r.raise_for_status()
+    return [
+        {"number": i["number"], "title": i["title"], "state": i["state"], "url": i["html_url"]}
+        for i in r.json()
+        if "pull_request" not in i
+    ]
+
+
+@mcp.tool()
+def create_issue(title: str, body: str = "") -> str:
+    """Создать issue в репозитории. Возвращает ссылку на него."""
+    r = gh.post(f"/repos/{REPO}/issues", json={"title": title, "body": body})
+    r.raise_for_status()
+    return r.json()["html_url"]
+
+
+if __name__ == "__main__":
+    mcp.run()</code></pre></div>
+      <p>Токен и название репозитория не записаны в коде. Помощник получит их из настроек Claude, поэтому файлом можно делиться без риска.</p></li>
+    <li><p class="step-title">Запустите один раз вручную</p>
+      <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>$env:GITHUB_TOKEN="x"; $env:GITHUB_REPO="x"; uv run C:\mcp\github.py</code></pre></div>
+      <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>GITHUB_TOKEN=x GITHUB_REPO=x uv run ~/mcp/github.py</code></pre></div>
+      <p>Здесь подставлены временные значения, нам нужна только загрузка библиотек. Дождитесь тишины и нажмите <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p></li>
+    <li><p class="step-title">Обновите настройки Claude</p>
+      <p>Снова откройте <b>Settings → Developer → Edit Config</b> и замените содержимое целиком:</p>
+      <div class="code win"><div class="code-head"><span>claude_desktop_config.json</span><button class="copy" type="button">Копировать</button></div><pre><code>{
+  "mcpServers": {
+    "tasks": {
+      "command": "C:\\Users\\ИМЯ\\.local\\bin\\uv.exe",
+      "args": ["run", "C:\\mcp\\tasks.py"]
+    },
+    "github": {
+      "command": "C:\\Users\\ИМЯ\\.local\\bin\\uv.exe",
+      "args": ["run", "C:\\mcp\\github.py"],
+      "env": {
+        "GITHUB_TOKEN": "github_pat_ВАШ_ТОКЕН",
+        "GITHUB_REPO": "ваш-логин/название-репозитория"
+      }
+    }
+  }
+}</code></pre></div>
+      <div class="code mac"><div class="code-head"><span>claude_desktop_config.json</span><button class="copy" type="button">Копировать</button></div><pre><code>{
+  "mcpServers": {
+    "tasks": {
+      "command": "/Users/ИМЯ/.local/bin/uv",
+      "args": ["run", "/Users/ИМЯ/mcp/tasks.py"]
+    },
+    "github": {
+      "command": "/Users/ИМЯ/.local/bin/uv",
+      "args": ["run", "/Users/ИМЯ/mcp/github.py"],
+      "env": {
+        "GITHUB_TOKEN": "github_pat_ВАШ_ТОКЕН",
+        "GITHUB_REPO": "ваш-логин/название-репозитория"
+      }
+    }
+  }
+}</code></pre></div>
+      <p>Название репозитория берётся из его адреса: для <code>github.com/anna/site</code> это <code>anna/site</code>. Сохраните файл и полностью перезапустите Claude, как в уроке 2.</p></li>
+    <li><p class="step-title">Проверьте</p>
+      <ul class="prompts">
+        <li>Какие открытые issues в моём репозитории?</li>
+        <li>Создай issue «Обновить контакты на сайте» с описанием: новый телефон офиса</li>
+      </ul></li>
+  </ol>
+  <div class="check">
+    <span class="label">Проверка</span>
+    <p>Claude прислал ссылку на новый issue, и он открывается на GitHub.</p>
+    <label><input type="checkbox" id="done-3" data-lesson="3"> Получилось</label>
+  </div>
+</section>
+
+<section id="l4">
+  <div class="eyebrow"><span class="label">Урок 4</span><span class="chip a">Сервер A</span><span class="time">45 минут</span></div>
+  <h2>Telegram, Календарь и Диск</h2>
+  <p>Самый полезный помощник: он смотрит и создаёт события в Google Календаре, ищет файлы на Google Диске и присылает вам сообщения в Telegram. Ему нужны два ключа: от Telegram-бота и от Google. Это самый длинный урок, зато дальше всё будет просто.</p>
+
+  <h3>Часть 1. Бот в Telegram</h3>
+  <ol class="steps">
+    <li><p class="step-title">Создайте бота</p>
+      <p>Найдите в Telegram <b>@BotFather</b>, отправьте ему <code>/newbot</code>, придумайте название и имя, которое заканчивается на <code>bot</code>. В ответ придёт токен вида <code>7412345678:AAH...</code>. Сохраните его в заметки.</p></li>
+    <li><p class="step-title">Напишите своему боту</p>
+      <p>Откройте бота по ссылке от BotFather, нажмите <b>Start</b> и отправьте любое сообщение. Без этого бот не сможет писать вам первым.</p></li>
+    <li><p class="step-title">Узнайте номер своего чата</p>
+      <p>Откройте в браузере адрес ниже, подставив свой токен:</p>
+      <div class="code"><div class="code-head"><span>Адрес в браузере</span><button class="copy" type="button">Копировать</button></div><pre><code>https://api.telegram.org/botВАШ_ТОКЕН/getUpdates</code></pre></div>
+      <p>Найдите на странице фрагмент <code>"chat":{"id":123456789</code>. Это число и есть номер чата. Сохраните его.</p></li>
+  </ol>
+
+  <h3>Часть 2. Доступ к Google</h3>
+  <p>Google выдаёт доступ к Календарю и Диску только «приложениям», поэтому мы зарегистрируем своё маленькое приложение. Это бесплатно.</p>
+  <ol class="steps">
+    <li><p class="step-title">Создайте проект</p>
+      <p>Откройте <a href="https://console.cloud.google.com">console.cloud.google.com</a>, войдите под своим Google-аккаунтом и создайте проект с названием «Claude помощник».</p></li>
+    <li><p class="step-title">Включите Календарь и Диск</p>
+      <p>В меню слева выберите <b>APIs &amp; Services → Library</b>. Найдите <b>Google Calendar API</b> и нажмите <b>Enable</b>. Затем так же включите <b>Google Drive API</b>.</p></li>
+    <li><p class="step-title">Опишите приложение</p>
+      <p>Откройте <b>Google Auth Platform</b> (в старом интерфейсе <b>OAuth consent screen</b>) и нажмите <b>Get started</b>. Название: «Claude помощник», почта: ваша, Audience: <b>External</b>. Завершите мастер.</p></li>
+    <li><p class="step-title">Добавьте себя в тестировщики</p>
+      <p>В разделе <b>Audience</b> найдите <b>Test users → Add users</b> и впишите свой Gmail. Без этого Google не пустит вас в собственное приложение.</p></li>
+    <li><p class="step-title">Скачайте ключ</p>
+      <p>В разделе <b>Clients</b> нажмите <b>Create client</b>, тип приложения <b>Desktop app</b>, затем <b>Create</b> и <b>Download JSON</b>. Переименуйте скачанный файл в <code>credentials.json</code> и положите в папку <code>mcp</code>.</p></li>
+  </ol>
+
+  <h3>Часть 3. Помощник</h3>
+  <ol class="steps">
+    <li><p class="step-title">Создайте файл internet.py</p>
+      <div class="code"><div class="code-head"><span>internet.py</span><button class="copy" type="button">Копировать</button></div><pre><code><span class="cm"># /// script
+# dependencies = ["mcp", "httpx", "google-api-python-client", "google-auth-oauthlib"]
+# requires-python = ">=3.12"
+# ///</span>
+import os
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+
+import httpx
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from mcp.server.fastmcp import FastMCP
+
+HERE = Path(__file__).parent
+TOKEN = HERE / "google_token.json"
+SCOPES = [
+    "https://www.googleapis.com/auth/calendar.events",
+    "https://www.googleapis.com/auth/drive.readonly",
+]
+mcp = FastMCP("Интернет")
+
+
+def google(service, version):
+    if not TOKEN.exists():
+        raise RuntimeError("Нет входа в Google. Выполните в терминале: uv run internet.py login")
+    creds = Credentials.from_authorized_user_file(str(TOKEN), SCOPES)
+    if not creds.valid:
+        creds.refresh(Request())
+        TOKEN.write_text(creds.to_json())
+    return build(service, version, credentials=creds)
+
+
+@mcp.tool()
+def upcoming_events(days: int = 7) -> list[dict]:
+    """События из Google Календаря на ближайшие дни."""
+    now = datetime.now().astimezone()
+    items = google("calendar", "v3").events().list(
+        calendarId="primary",
+        timeMin=now.isoformat(),
+        timeMax=(now + timedelta(days=days)).isoformat(),
+        singleEvents=True,
+        orderBy="startTime",
+    ).execute().get("items", [])
+    return [
+        {"title": e.get("summary", ""), "start": e["start"].get("dateTime", e["start"].get("date"))}
+        for e in items
+    ]
+
+
+@mcp.tool()
+def create_event(title: str, start: str, minutes: int = 60) -> str:
+    """Создать событие в Google Календаре. start — дата и время, например 2026-10-20T15:00."""
+    begin = datetime.fromisoformat(start).astimezone()
+    event = {
+        "summary": title,
+        "start": {"dateTime": begin.isoformat()},
+        "end": {"dateTime": (begin + timedelta(minutes=minutes)).isoformat()},
+    }
+    return google("calendar", "v3").events().insert(calendarId="primary", body=event).execute()["htmlLink"]
+
+
+@mcp.tool()
+def search_drive(text: str) -> list[dict]:
+    """Найти файлы на Google Диске по словам в названии или тексте."""
+    safe = text.replace("\\", "\\\\").replace("'", "\\'")
+    return google("drive", "v3").files().list(
+        q=f"fullText contains '{safe}' and trashed = false",
+        pageSize=10,
+        fields="files(name, webViewLink, modifiedTime)",
+    ).execute()["files"]
+
+
+@mcp.tool()
+def send_telegram(text: str) -> str:
+    """Отправить сообщение владельцу в Telegram."""
+    r = httpx.post(
+        f"https://api.telegram.org/bot{os.environ['TELEGRAM_TOKEN']}/sendMessage",
+        json={"chat_id": os.environ["TELEGRAM_CHAT_ID"], "text": text},
+        timeout=30,
+    )
+    r.raise_for_status()
+    return "Отправлено"
+
+
+if __name__ == "__main__":
+    if sys.argv[1:] == ["login"]:
+        flow = InstalledAppFlow.from_client_secrets_file(str(HERE / "credentials.json"), SCOPES)
+        TOKEN.write_text(flow.run_local_server(port=0).to_json())
+        print("Вход выполнен, ключ сохранён в google_token.json")
+    else:
+        mcp.run()</code></pre></div>
+      <p>Доступ к Диску здесь только на чтение: помощник может искать файлы, но не может их менять или удалять.</p></li>
+    <li><p class="step-title">Войдите в Google</p>
+      <p>Эта команда заодно скачает библиотеки, так что отдельный ручной запуск не нужен:</p>
+      <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>uv run C:\mcp\internet.py login</code></pre></div>
+      <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>uv run ~/mcp/internet.py login</code></pre></div>
+      <p>Откроется браузер. Выберите свой аккаунт. Google предупредит, что приложение не проверено: это ваше собственное приложение, нажмите <b>Continue</b> и разрешите доступ. В терминале появится «Вход выполнен».</p></li>
+    <li><p class="step-title">Пропишите всех трёх помощников</p>
+      <p>Это итоговый файл настроек. Замените содержимое целиком и подставьте свои значения:</p>
+      <div class="code win"><div class="code-head"><span>claude_desktop_config.json</span><button class="copy" type="button">Копировать</button></div><pre><code>{
+  "mcpServers": {
+    "tasks": {
+      "command": "C:\\Users\\ИМЯ\\.local\\bin\\uv.exe",
+      "args": ["run", "C:\\mcp\\tasks.py"]
+    },
+    "github": {
+      "command": "C:\\Users\\ИМЯ\\.local\\bin\\uv.exe",
+      "args": ["run", "C:\\mcp\\github.py"],
+      "env": {
+        "GITHUB_TOKEN": "github_pat_ВАШ_ТОКЕН",
+        "GITHUB_REPO": "ваш-логин/название-репозитория"
+      }
+    },
+    "internet": {
+      "command": "C:\\Users\\ИМЯ\\.local\\bin\\uv.exe",
+      "args": ["run", "C:\\mcp\\internet.py"],
+      "env": {
+        "TELEGRAM_TOKEN": "ТОКЕН_ОТ_BOTFATHER",
+        "TELEGRAM_CHAT_ID": "НОМЕР_ЧАТА"
+      }
+    }
+  }
+}</code></pre></div>
+      <div class="code mac"><div class="code-head"><span>claude_desktop_config.json</span><button class="copy" type="button">Копировать</button></div><pre><code>{
+  "mcpServers": {
+    "tasks": {
+      "command": "/Users/ИМЯ/.local/bin/uv",
+      "args": ["run", "/Users/ИМЯ/mcp/tasks.py"]
+    },
+    "github": {
+      "command": "/Users/ИМЯ/.local/bin/uv",
+      "args": ["run", "/Users/ИМЯ/mcp/github.py"],
+      "env": {
+        "GITHUB_TOKEN": "github_pat_ВАШ_ТОКЕН",
+        "GITHUB_REPO": "ваш-логин/название-репозитория"
+      }
+    },
+    "internet": {
+      "command": "/Users/ИМЯ/.local/bin/uv",
+      "args": ["run", "/Users/ИМЯ/mcp/internet.py"],
+      "env": {
+        "TELEGRAM_TOKEN": "ТОКЕН_ОТ_BOTFATHER",
+        "TELEGRAM_CHAT_ID": "НОМЕР_ЧАТА"
+      }
+    }
+  }
+}</code></pre></div>
+      <p>Если урок 3 вы пропустили, удалите блок <code>"github"</code> вместе с запятой после него. Сохраните файл и полностью перезапустите Claude.</p></li>
+    <li><p class="step-title">Проверьте каждую возможность</p>
+      <ul class="prompts">
+        <li>Что у меня в календаре на этой неделе?</li>
+        <li>Поставь в календарь «Созвон с Мариной» в четверг в 15:00 на полчаса</li>
+        <li>Найди на Диске файлы со словом «договор»</li>
+        <li>Пришли мне в Telegram «Проверка связи»</li>
+      </ul></li>
+  </ol>
+  <div class="check">
+    <span class="label">Проверка</span>
+    <p>Событие появилось в Google Календаре, а бот прислал вам сообщение в Telegram.</p>
+    <label><input type="checkbox" id="done-4" data-lesson="4"> Получилось</label>
+  </div>
+</section>
+
+<section id="l5">
+  <div class="eyebrow"><span class="label">Урок 5</span><span class="time">15 минут</span></div>
+  <h2>Всё вместе</h2>
+  <p>Теперь самое интересное. Можно дать Claude задание, для которого нужны несколько помощников сразу. Он сам решит, в каком порядке их позвать. Попробуйте:</p>
+  <ul class="prompts">
+    <li>Посмотри мои невыполненные задачи. Для тех, у которых срок на этой неделе, найди свободный час в календаре до обеда, поставь туда событие и пришли мне в Telegram короткую сводку.</li>
+  </ul>
+  <p>Claude сделает примерно так, и на каждый шаг спросит разрешения:</p>
+  <ol class="trace">
+    <li><code>list_tasks</code> получает задачи из файла на компьютере</li>
+    <li><code>upcoming_events</code> смотрит, что уже занято в календаре</li>
+    <li><code>create_event</code> ставит событие для каждой срочной задачи</li>
+    <li><code>send_telegram</code> присылает сводку вам в телефон</li>
+  </ol>
+  <p>Ещё несколько заданий для практики:</p>
+  <ul class="prompts">
+    <li>Найди на Диске документ «План запуска», составь по нему список задач и добавь их с датами</li>
+    <li>Для каждой моей задачи со словом «сайт» создай issue в GitHub и отметь задачу выполненной</li>
+    <li>Что у меня завтра в календаре и какие задачи горят? Пришли одним сообщением в Telegram</li>
+  </ul>
+  <div class="note"><span class="label">Не только Claude Desktop</span><p>Те же помощники работают в Cursor и Windsurf. Туда переносится тот же блок <code>mcpServers</code> из файла настроек.</p></div>
+  <div class="check">
+    <span class="label">Проверка</span>
+    <p>Хотя бы одно задание выполнилось целиком: события в календаре и сводка в Telegram.</p>
+    <label><input type="checkbox" id="done-5" data-lesson="5"> Получилось</label>
+  </div>
+</section>
+
+<section id="l6">
+  <div class="eyebrow"><span class="label">Урок 6</span><span class="time">10 минут</span></div>
+  <h2>Как пользоваться каждый день</h2>
+
+  <h3>Как формулировать просьбы</h3>
+  <ul class="plain">
+    <li><b>Называйте сервис</b>, если просьба двусмысленная: «в календарь», «в задачи», «в GitHub».</li>
+    <li><b>Указывайте даты конкретно.</b> «В четверг в 15:00» надёжнее, чем «на днях после обеда».</li>
+    <li><b>Для больших заданий просите сначала план</b>: «Сначала покажи, что собираешься сделать, а потом жди моего ОК».</li>
+    <li><b>Проверяйте результат по ссылкам.</b> Помощники возвращают ссылки на события и issues, по ним легко убедиться, что всё создано правильно.</li>
+  </ul>
+
+  <h3>Шпаргалка</h3>
+  <div class="table"><table>
+    <thead><tr><th>Помощник</th><th>Что умеет</th><th>Пример просьбы</th></tr></thead>
+    <tbody>
+      <tr><td>C · tasks</td><td>Добавить задачу, показать список, отметить выполненной</td><td>«Отметь задачу 3 выполненной»</td></tr>
+      <tr><td>B · github</td><td>Показать issues, создать issue</td><td>«Какие issues закрыли на этой неделе?»</td></tr>
+      <tr><td>A · internet</td><td>Календарь: смотреть и создавать события</td><td>«Когда у меня свободно в пятницу?»</td></tr>
+      <tr><td>A · internet</td><td>Диск: искать файлы</td><td>«Найди последнюю версию презентации»</td></tr>
+      <tr><td>A · internet</td><td>Telegram: прислать сообщение вам</td><td>«Напомни в Telegram список покупок»</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Разрешения</h3>
+  <p>Claude спрашивает разрешение на каждый инструмент. Для чтения (<code>list_tasks</code>, <code>upcoming_events</code>, <code>search_drive</code>) можно выбрать «Разрешать всегда». Для действий, которые что-то меняют или отправляют (<code>create_event</code>, <code>create_issue</code>, <code>send_telegram</code>), лучше разрешать каждый раз отдельно.</p>
+
+  <h3>Безопасность</h3>
+  <ul class="plain">
+    <li>В файле <code>claude_desktop_config.json</code> и в <code>google_token.json</code> лежат ваши ключи. Никому их не пересылайте.</li>
+    <li>Подключайте только тех помощников, которым доверяете. Помощник работает на вашем компьютере с вашими правами.</li>
+    <li>Текст из интернета, например из файла на Диске или из issue, может содержать скрытые указания для Claude. Если Claude вдруг просит разрешения на действие, о котором вы не просили, нажмите «Запретить».</li>
+    <li>Если ключ утёк, отзовите его: токен GitHub удаляется в настройках GitHub, токен бота меняется командой <code>/revoke</code> у BotFather.</li>
+  </ul>
+
+  <h3>Как научить помощника новому</h3>
+  <p>Попросите Claude дописать функцию. Например: «Вот мой tasks.py, допиши инструмент, который удаляет задачу по номеру». Вставьте ответ в файл, сохраните и перезапустите Claude.</p>
+  <div class="check">
+    <span class="label">Проверка</span>
+    <p>Вы знаете, где лежат ключи, и решили, каким инструментам разрешать всегда.</p>
+    <label><input type="checkbox" id="done-6" data-lesson="6"> Получилось</label>
+  </div>
+</section>
+
+<section id="fix">
+  <h2>Если что-то не работает</h2>
+  <div class="table"><table>
+    <thead><tr><th>Что видно</th><th>Причина</th><th>Что сделать</th></tr></thead>
+    <tbody>
+      <tr><td class="win"><code>python</code> не найден или открывается Microsoft Store</td><td class="win">При установке не отмечена галочка Add python.exe to PATH</td><td class="win">Удалите Python через «Параметры → Приложения» и установите заново с галочкой. Затем в «Параметры → Приложения → Дополнительные параметры → Псевдонимы выполнения приложений» выключите python.exe и python3.exe</td></tr>
+      <tr><td class="mac"><code>python3 --version</code> показывает 3.9 или предлагает установить инструменты разработчика</td><td class="mac">Терминал видит системный Python, а не установленный</td><td class="mac">Откройте Терминал заново. Если не помогло, переустановите Python с python.org</td></tr>
+      <tr><td class="mac">CERTIFICATE_VERIFY_FAILED</td><td class="mac">Не установлены сертификаты</td><td class="mac">Запустите Install Certificates.command из урока 1</td></tr>
+      <tr><td><code>uv</code> не найден</td><td>Терминал открыт до установки uv</td><td>Закройте терминал и откройте заново</td></tr>
+      <tr><td>database is locked</td><td>В DB Browser остались несохранённые изменения</td><td>Нажмите Write Changes или закройте DB Browser</td></tr>
+      <tr><td>Помощника нет в списке инструментов</td><td>Claude не перезапущен полностью</td><td><span class="win">Закройте через значок возле часов → Quit</span><span class="mac">Закройте через ⌘ + Q</span> и откройте снова</td></tr>
+      <tr><td>При запуске Claude ругается на файл настроек</td><td>Ошибка в JSON: пропущена запятая или кавычка</td><td>Сравните файл с образцом построчно.<span class="win"> Проверьте, что обратные косые черты удвоены: <code>\\</code></span></td></tr>
+      <tr><td><code>spawn uv ENOENT</code></td><td>Claude не нашёл uv</td><td>Укажите в <code>command</code> полный адрес uv из урока 1</td></tr>
+      <tr><td>Server disconnected</td><td>Ошибка в файле помощника или неверный путь</td><td>Запустите помощника в терминале командой из урока: текст ошибки будет виден там</td></tr>
+      <tr><td>Первый запуск зависает</td><td>uv ещё скачивает библиотеки</td><td>Сделайте ручной запуск из урока и дождитесь тишины</td></tr>
+      <tr><td>GitHub: 401 или 404</td><td>Неверный токен, название репозитория или у токена нет доступа к нему</td><td>Проверьте <code>GITHUB_REPO</code> и настройки токена на GitHub</td></tr>
+      <tr><td>Telegram: chat not found</td><td>Вы не написали боту первым или номер чата неверный</td><td>Нажмите Start у бота и заново откройте getUpdates</td></tr>
+      <tr><td>«Нет входа в Google»</td><td>Не выполнен вход</td><td>Выполните команду <code>login</code> из урока 4</td></tr>
+      <tr><td>Google: invalid_grant через неделю</td><td>Приложение в тестовом режиме, ключ живёт 7 дней</td><td>Повторите <code>login</code> или в Google Auth Platform → Audience нажмите Publish app</td></tr>
+      <tr><td>Google: access_denied в браузере</td><td>Вас нет в тестировщиках</td><td>Добавьте свой Gmail в Audience → Test users</td></tr>
+    </tbody>
+  </table></div>
+  <p>Подробные журналы ошибок лежат в папке <code class="win">%APPDATA%\Claude\logs</code><code class="mac">~/Library/Logs/Claude</code>, в файлах <code>mcp-server-ИМЯ_ПОМОЩНИКА.log</code>. Если застряли, откройте нужный файл, скопируйте последние строки и покажите их Claude: он подскажет, что не так.</p>
+</section>
+
+<footer>Схема по мотивам архитектуры Model Context Protocol. Код помощников рассчитан на личное использование на одном компьютере.</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  var KEY = "claude-pod-klyuch";
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  function setOS(os){
+    document.documentElement.setAttribute("data-os", os);
+    document.querySelectorAll(".seg button").forEach(function(b){
+      b.setAttribute("aria-pressed", String(b.dataset.os === os));
+    });
+    state.os = os; save();
+  }
+  var guess = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? "mac" : "win";
+  setOS(state.os || guess);
+  document.querySelectorAll(".seg button").forEach(function(b){
+    b.addEventListener("click", function(){ setOS(b.dataset.os); });
+  });
+
+  state.done = state.done || {};
+  function renderProgress(){
+    var n = 0;
+    document.querySelectorAll(".toc a[data-lesson]").forEach(function(a){
+      var d = !!state.done[a.dataset.lesson];
+      a.classList.toggle("done", d);
+      if (d) n++;
+    });
+    document.getElementById("progress").textContent = "Пройдено " + n + " из 6";
+  }
+  document.querySelectorAll(".check input").forEach(function(cb){
+    cb.checked = !!state.done[cb.dataset.lesson];
+    cb.addEventListener("change", function(){
+      state.done[cb.dataset.lesson] = cb.checked; save(); renderProgress();
+    });
+  });
+  renderProgress();
+
+  document.querySelectorAll(".copy").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var pre = btn.closest(".code").querySelector("pre");
+      var text = pre.innerText;
+      function done(msg){ btn.textContent = msg; setTimeout(function(){ btn.textContent = "Копировать"; }, 1800); }
+      function fallback(){
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+        done("Выделено, нажмите Ctrl+C");
+      }
+      try {
+        navigator.clipboard.writeText(text).then(function(){ done("Скопировано"); }, fallback);
+      } catch (e) { fallback(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
