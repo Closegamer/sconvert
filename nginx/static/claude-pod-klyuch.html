@@ -13,6 +13,7 @@
 :root{
   --bg:#F4F5F8; --surface:#FFFFFF; --ink:#1A1B26; --muted:#5C5F72; --rule:#DADBE5;
   --accent:#5236D6; --accent-soft:#ECE8FD; --code-bg:#EFEEF6; --code-ink:#24203A;
+  --hl:#E8590C; --hl-soft:#FFE6D5; --term-bg:#17161F; --term-bar:#23222D; --term-ink:#E7E4F7; --term-dim:#8E8BA3; --term-ok:#6FD49A;
   --a:#2563C9; --b:#454B5B; --c:#1C8656; --warn:#9A5600; --warn-soft:#FFF2DE;
   --display:"Unbounded","Arial Black",system-ui,sans-serif;
   --body:"Onest","Segoe UI",system-ui,-apple-system,sans-serif;
@@ -23,14 +24,14 @@
     color-scheme:dark;
     --bg:#121219; --surface:#1A1A24; --ink:#E7E7F0; --muted:#9B9DB2; --rule:#2C2C3A;
     --accent:#A390FF; --accent-soft:#272143; --code-bg:#1F1D2C; --code-ink:#E4E0FA;
-    --a:#6FA1F5; --b:#A9AFBF; --c:#4CC48A; --warn:#F2A54A; --warn-soft:#2C2214;
+    --hl:#FF8A3D; --hl-soft:#3A2414; --a:#6FA1F5; --b:#A9AFBF; --c:#4CC48A; --warn:#F2A54A; --warn-soft:#2C2214;
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
   --bg:#121219; --surface:#1A1A24; --ink:#E7E7F0; --muted:#9B9DB2; --rule:#2C2C3A;
   --accent:#A390FF; --accent-soft:#272143; --code-bg:#1F1D2C; --code-ink:#E4E0FA;
-  --a:#6FA1F5; --b:#A9AFBF; --c:#4CC48A; --warn:#F2A54A; --warn-soft:#2C2214;
+  --hl:#FF8A3D; --hl-soft:#3A2414; --a:#6FA1F5; --b:#A9AFBF; --c:#4CC48A; --warn:#F2A54A; --warn-soft:#2C2214;
 }
 html[data-os="win"] .mac, html[data-os="mac"] .win{display:none !important}
 
@@ -141,6 +142,61 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--rule);color:v
   nav.toc{position:static;padding-bottom:20px;border-bottom:1px solid var(--rule)}
   .toc ol{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
 }
+.shot{margin:12px 0 4px;max-width:560px}
+.shot>.frame{border:1px solid var(--rule);border-radius:10px;background:var(--surface);overflow:hidden}
+.bar{display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--bg);border-bottom:1px solid var(--rule);font:500 12px/1.3 var(--body);color:var(--muted)}
+.bar i{width:9px;height:9px;border-radius:50%;background:var(--rule);flex:none}
+.bar>span{margin-left:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .url{flex:1;background:var(--surface);border:1px solid var(--rule);border-radius:5px;padding:3px 8px;font:400 12px var(--mono)}
+.scr{padding:14px 16px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;line-height:1.45;min-width:0}
+.scr .h{font-weight:600;font-size:15px}
+.scr .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.scr .sep{border-top:1px solid var(--rule)}
+.scr .muted{color:var(--muted)}
+.scr .mono{font-family:var(--mono);font-size:12.5px}
+.scr .lnk{color:var(--a);text-decoration:underline;text-underline-offset:2px}
+.b{display:inline-block;padding:5px 12px;border:1px solid var(--rule);border-radius:6px;background:var(--bg);font-size:13px;color:var(--ink);white-space:nowrap}
+.b.p{background:var(--a);border-color:var(--a);color:#fff}
+.hl{outline:2.5px solid var(--hl);outline-offset:3px;border-radius:5px}
+.tag{font:600 12px var(--body);color:var(--hl)}
+.ck,.rd{display:flex;align-items:center;gap:8px}
+.ck::before,.rd::before{content:"";flex:none;width:14px;height:14px;border:1.5px solid var(--muted);border-radius:3px;box-sizing:border-box}
+.rd::before{border-radius:50%}
+.ck.on::before{background:var(--a);border-color:var(--a);box-shadow:inset 0 0 0 2px var(--surface)}
+.rd.on::before{background:var(--a);border-color:var(--a);box-shadow:inset 0 0 0 3px var(--surface)}
+.fld{display:grid;gap:3px;max-width:320px}
+.fld>span{font-size:12px;color:var(--muted)}
+.fld>b{font-weight:400;border:1px solid var(--rule);border-radius:5px;padding:5px 8px;background:var(--bg)}
+.list{display:flex;flex-direction:column;gap:2px}
+.list>span{padding:6px 8px;border-radius:5px}
+.split{display:grid;grid-template-columns:minmax(96px,32%) minmax(0,1fr);margin:-14px -16px;min-height:120px}
+.split>.nav{border-right:1px solid var(--rule);padding:10px 8px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted);background:var(--bg)}
+.split>.nav>span{padding:4px 8px;border-radius:5px;overflow:hidden;text-overflow:ellipsis}
+.split>.nav>.cap{font-size:11px;letter-spacing:.07em;font-weight:600}
+.split>.nav>.on{background:var(--accent-soft);color:var(--ink)}
+.split>.pane{padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ed{font:400 12.5px/1.6 var(--mono);white-space:pre;overflow-x:auto;color:var(--code-ink);background:var(--code-bg);border-radius:6px;padding:8px 10px}
+.ed .hlr{background:var(--hl-soft);outline:1.5px solid var(--hl);border-radius:3px}
+.msg{max-width:88%;padding:8px 12px;border-radius:12px;font-size:13.5px}
+.msg.me{align-self:flex-end;background:var(--accent-soft)}
+.msg.bot{align-self:flex-start;background:var(--bg);border:1px solid var(--rule)}
+.chip{align-self:flex-start;font:500 12px var(--mono);border:1px solid var(--rule);border-radius:999px;padding:3px 10px;color:var(--muted)}
+.chip::before{content:"↳ "}
+.card{border:1px solid var(--rule);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.tw{overflow-x:auto}
+.scr table.ut{min-width:0;width:100%;font:400 12.5px var(--mono)}
+.scr .ut th,.scr .ut td{border:1px solid var(--rule);padding:4px 8px;text-transform:none;letter-spacing:0;font-size:12.5px;color:var(--ink);font-weight:400}
+.scr .ut th{background:var(--bg);font-weight:600}
+.shot.t>.frame{background:var(--term-bg);border-color:var(--term-bg)}
+.shot.t .bar{background:var(--term-bar);border-color:var(--term-bar);color:var(--term-dim)}
+.shot.t .bar i{background:var(--term-dim)}
+.shot.t .scr{font:400 12.5px/1.6 var(--mono);color:var(--term-ink);gap:2px;overflow-x:auto}
+.shot.t .scr>div{white-space:pre-wrap;overflow-wrap:anywhere}
+.shot.t .pr,.shot.t .dim{color:var(--term-dim)}
+.shot.t .ok{color:var(--term-ok)}
+.shot.t .hl{outline-offset:2px}
+.cur{display:inline-block;width:8px;height:15px;background:var(--term-ink);vertical-align:-3px}
+.shot figcaption{font-size:13px;color:var(--muted);margin-top:6px;max-width:60ch}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 </style>
 </head>
@@ -238,6 +294,7 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--rule);color:v
   <div class="eyebrow"><span class="label">Урок 1</span><span class="time">45 минут</span></div>
   <h2>Установка</h2>
   <p>На этом уроке установим всё, что нужно системе. После каждой установки сразу проверяем её одной командой: так ошибка не всплывёт через час в неожиданном месте.</p>
+  <div class="note"><span class="label">Про картинки</span><p>Картинки в уроках — упрощённые схемы окон. Оранжевой рамкой отмечено, куда нажать. Настоящие окна могут выглядеть немного иначе, но нужные кнопки называются так же.</p></div>
 
   <div class="table"><table>
     <thead><tr><th>Что</th><th>Зачем</th><th>Как проверить</th></tr></thead>
@@ -255,32 +312,44 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--rule);color:v
   <p>Терминал — окно, куда вводят команды. Через него мы будем устанавливать и проверять программы.</p>
   <p class="win">Нажмите <kbd>Пуск</kbd>, наберите <b>PowerShell</b> и откройте его.</p>
   <p class="mac">Нажмите <kbd>⌘</kbd> + <kbd>Пробел</kbd>, наберите <b>Терминал</b> и откройте его.</p>
+      <figure class="shot win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Поиск</span></div><div class="scr"><div class="fld"><span>Поиск</span><b>PowerShell</b></div><div class="row"><span class="b hl">Windows PowerShell</span><span class="tag">← откройте</span></div></div></div><figcaption>Пуск → поиск «PowerShell».</figcaption></figure>
+      <figure class="shot mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Spotlight</span></div><div class="scr"><div class="fld"><span>Spotlight</span><b>Терминал</b></div><div class="row"><span class="b hl">Терминал</span><span class="tag">← нажмите Enter</span></div></div></div><figcaption>⌘ + Пробел → «Терминал».</figcaption></figure>
+      <figure class="shot t win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Windows PowerShell</span></div><div class="scr"><div><span class="pr">PS C:\Users\Anna&gt;</span> <span class="cur"></span></div></div></div><figcaption>Так выглядит терминал. Команду вставляют после значка &gt; и нажимают Enter.</figcaption></figure>
+      <figure class="shot t mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Терминал</span></div><div class="scr"><div><span class="pr">anna@MacBook ~ %</span> <span class="cur"></span></div></div></div><figcaption>Так выглядит терминал. Команду вставляют после значка % и нажимают Enter.</figcaption></figure>
   <p>Команды со страницы вставляйте в терминал целиком и нажимайте <kbd>Enter</kbd>. Если в описании сказано «откройте терминал заново», закройте окно и откройте новое: только так терминал узнает о только что установленной программе.</p>
 
   <h3>Часть 2. Python</h3>
   <ol class="steps win">
     <li><p class="step-title">Скачайте установщик</p>
-      <p>Откройте <a href="https://www.python.org/downloads/windows/">python.org/downloads/windows</a>. В списке найдите последнюю версию <b>Python 3.13</b> и нажмите <b>Windows installer (64-bit)</b>.</p></li>
+      <p>Откройте <a href="https://www.python.org/downloads/windows/">python.org/downloads/windows</a>. В списке найдите последнюю версию <b>Python 3.13</b> и нажмите <b>Windows installer (64-bit)</b>.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">python.org/downloads/windows</span></div><div class="scr"><div class="h">Python 3.13.9</div><div class="list"><span class="lnk hl">Download Windows installer (64-bit)</span><span class="lnk">Download Windows installer (ARM64)</span><span class="lnk">Download Windows embeddable package (64-bit)</span></div></div></div><figcaption>Нужна первая ссылка. Номер версии у вас может быть новее.</figcaption></figure></li>
     <li><p class="step-title">Отметьте «Add python.exe to PATH»</p>
-      <p>Запустите скачанный файл. Внизу первого окна поставьте галочку <b>Add python.exe to PATH</b>. Это самый важный шаг: без галочки терминал не найдёт Python. Затем нажмите <b>Install Now</b>.</p></li>
+      <p>Запустите скачанный файл. Внизу первого окна поставьте галочку <b>Add python.exe to PATH</b>. Это самый важный шаг: без галочки терминал не найдёт Python. Затем нажмите <b>Install Now</b>.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Python 3.13.9 (64-bit) Setup</span></div><div class="scr"><div class="h">Install Python 3.13.9 (64-bit)</div><div class="row"><span class="b p">→ Install Now</span><span class="tag">② потом сюда</span></div><div class="row"><span class="b">→ Customize installation</span></div><div class="sep"></div><div class="ck">Use admin privileges when installing py.exe</div><div class="row"><span class="ck on hl">Add python.exe to PATH</span><span class="tag">① сначала галочка</span></div></div></div><figcaption>Сначала галочка внизу, потом Install Now.</figcaption></figure></li>
     <li><p class="step-title">Снимите ограничение длины путей</p>
-      <p>Если в конце установки появится кнопка <b>Disable path length limit</b>, нажмите её. Затем <b>Close</b>.</p></li>
+      <p>Если в конце установки появится кнопка <b>Disable path length limit</b>, нажмите её. Затем <b>Close</b>.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Python 3.13.9 (64-bit) Setup</span></div><div class="scr"><div class="h">Setup was successful</div><div class="row"><span class="b hl">Disable path length limit</span></div><div class="row"><span class="b">Close</span></div></div></div><figcaption>Если такой кнопки нет — просто Close.</figcaption></figure></li>
     <li><p class="step-title">Проверьте</p>
       <p>Откройте PowerShell заново и выполните:</p>
       <div class="code"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>python --version</code></pre></div>
-      <p>Ответ должен быть вида <code>Python 3.13.9</code>. Если вместо этого открылся Microsoft Store, загляните в раздел <a href="#fix">«Если не работает»</a>.</p></li>
+      <p>Ответ должен быть вида <code>Python 3.13.9</code>. Если вместо этого открылся Microsoft Store, загляните в раздел <a href="#fix">«Если не работает»</a>.</p>
+      <figure class="shot t win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Windows PowerShell</span></div><div class="scr"><div><span class="pr">PS C:\Users\Anna&gt;</span> python --version</div><div><span class="hl">Python 3.13.9</span></div></div></div><figcaption>Python установлен.</figcaption></figure></li>
   </ol>
   <ol class="steps mac">
     <li><p class="step-title">Скачайте установщик</p>
-      <p>Откройте <a href="https://www.python.org/downloads/macos/">python.org/downloads/macos</a>. В списке найдите последнюю версию <b>Python 3.13</b> и нажмите <b>macOS 64-bit universal2 installer</b>.</p></li>
+      <p>Откройте <a href="https://www.python.org/downloads/macos/">python.org/downloads/macos</a>. В списке найдите последнюю версию <b>Python 3.13</b> и нажмите <b>macOS 64-bit universal2 installer</b>.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">python.org/downloads/macos</span></div><div class="scr"><div class="h">Python 3.13.9</div><div class="list"><span class="lnk hl">Download macOS 64-bit universal2 installer</span></div></div></div><figcaption>Номер версии у вас может быть новее.</figcaption></figure></li>
     <li><p class="step-title">Установите</p>
-      <p>Откройте скачанный файл <code>.pkg</code> и нажимайте <b>Продолжить</b>, затем <b>Установить</b>. macOS попросит пароль от компьютера.</p></li>
+      <p>Откройте скачанный файл <code>.pkg</code> и нажимайте <b>Продолжить</b>, затем <b>Установить</b>. macOS попросит пароль от компьютера.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Установка Python</span></div><div class="scr"><div class="split"><div class="nav"><span>Введение</span><span>Прочти меня</span><span>Лицензия</span><span>Размещение</span><span class="on">Установка</span></div><div class="pane">Установка займёт около минуты.<div class="row"><span class="b">Назад</span><span class="b p hl">Продолжить</span></div></div></div></div></div><figcaption>На шаге «Лицензия» нажмите «Принимаю».</figcaption></figure></li>
     <li><p class="step-title">Установите сертификаты</p>
-      <p>В Finder откройте <b>Программы → Python 3.13</b> и дважды щёлкните файл <b>Install Certificates.command</b>. Откроется терминал, дождитесь слова <code>completed</code>. Без этого шага Python не сможет подключаться к Google и Telegram.</p></li>
+      <p>В Finder откройте <b>Программы → Python 3.13</b> и дважды щёлкните файл <b>Install Certificates.command</b>. Откроется терминал, дождитесь слова <code>completed</code>. Без этого шага Python не сможет подключаться к Google и Telegram.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Python 3.13</span></div><div class="scr"><div class="list"><span>IDLE.app</span><span class="hl">Install Certificates.command</span><span>Python Launcher.app</span><span>Update Shell Profile.command</span></div></div></div><figcaption>Finder → Программы → Python 3.13.</figcaption></figure></li>
     <li><p class="step-title">Проверьте</p>
       <p>Откройте Терминал заново и выполните:</p>
       <div class="code"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>python3 --version</code></pre></div>
-      <p>Ответ должен быть вида <code>Python 3.13.9</code>. На Mac команда пишется с тройкой: <code>python3</code>.</p></li>
+      <p>Ответ должен быть вида <code>Python 3.13.9</code>. На Mac команда пишется с тройкой: <code>python3</code>.</p>
+      <figure class="shot t mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Терминал</span></div><div class="scr"><div><span class="pr">anna@MacBook ~ %</span> python3 --version</div><div><span class="hl">Python 3.13.9</span></div></div></div><figcaption>Python установлен.</figcaption></figure></li>
   </ol>
 
   <h3>Часть 3. uv</h3>
@@ -289,7 +358,9 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--rule);color:v
     <li><p class="step-title">Установите uv</p>
       <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</code></pre></div>
       <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre></div>
-      <p>Когда установка закончится, откройте терминал заново.</p></li>
+      <p>Когда установка закончится, откройте терминал заново.</p>
+      <figure class="shot t win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Windows PowerShell</span></div><div class="scr"><div><span class="pr">PS C:\Users\Anna&gt;</span> powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</div><div class="dim">Downloading uv 0.9.2 (x86_64-pc-windows-msvc)</div><div class="dim">Installing to C:\Users\Anna\.local\bin</div><div class="ok">everything's installed!</div></div></div><figcaption>Последняя строка — признак успешной установки.</figcaption></figure>
+      <figure class="shot t mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Терминал</span></div><div class="scr"><div><span class="pr">anna@MacBook ~ %</span> curl -LsSf https://astral.sh/uv/install.sh | sh</div><div class="dim">downloading uv 0.9.2 aarch64-apple-darwin</div><div class="dim">installing to /Users/anna/.local/bin</div><div class="ok">everything's installed!</div></div></div><figcaption>Последняя строка — признак успешной установки.</figcaption></figure></li>
     <li><p class="step-title">Проверьте и запишите адрес uv</p>
       <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>uv --version
 uv python find
@@ -297,7 +368,9 @@ where.exe uv</code></pre></div>
       <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>uv --version
 uv python find
 which uv</code></pre></div>
-      <p>Первая строка ответа покажет версию uv. Вторая покажет, какой Python он нашёл: в адресе должно быть <code>Python313</code><span class="mac"> или <code>3.13</code></span>. Третья покажет полный адрес uv, например <code class="win">C:\Users\Anna\.local\bin\uv.exe</code><code class="mac">/Users/anna/.local/bin/uv</code>. Скопируйте его в заметки, он понадобится в каждом уроке.</p></li>
+      <p>Первая строка ответа покажет версию uv. Вторая покажет, какой Python он нашёл: в адресе должно быть <code>Python313</code><span class="mac"> или <code>3.13</code></span>. Третья покажет полный адрес uv, например <code class="win">C:\Users\Anna\.local\bin\uv.exe</code><code class="mac">/Users/anna/.local/bin/uv</code>. Скопируйте его в заметки, он понадобится в каждом уроке.</p>
+      <figure class="shot t win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Windows PowerShell</span></div><div class="scr"><div><span class="pr">PS C:\Users\Anna&gt;</span> uv --version</div><div>uv 0.9.2</div><div><span class="pr">PS C:\Users\Anna&gt;</span> uv python find</div><div>C:\Users\Anna\AppData\Local\Programs\Python\Python313\python.exe</div><div><span class="pr">PS C:\Users\Anna&gt;</span> where.exe uv</div><div><span class="hl">C:\Users\Anna\.local\bin\uv.exe</span></div></div></div><figcaption>Выделенную строку скопируйте в заметки.</figcaption></figure>
+      <figure class="shot t mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Терминал</span></div><div class="scr"><div><span class="pr">anna@MacBook ~ %</span> uv --version</div><div>uv 0.9.2</div><div><span class="pr">anna@MacBook ~ %</span> uv python find</div><div>/Library/Frameworks/Python.framework/Versions/3.13/bin/python3</div><div><span class="pr">anna@MacBook ~ %</span> which uv</div><div><span class="hl">/Users/anna/.local/bin/uv</span></div></div></div><figcaption>Выделенную строку скопируйте в заметки.</figcaption></figure></li>
   </ol>
 
   <h3>Часть 4. База данных</h3>
@@ -306,18 +379,26 @@ which uv</code></pre></div>
     <li><p class="step-title">Проверьте SQLite</p>
       <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>python -c "import sqlite3; print('SQLite', sqlite3.sqlite_version)"</code></pre></div>
       <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>python3 -c "import sqlite3; print('SQLite', sqlite3.sqlite_version)"</code></pre></div>
-      <p>Ответ вида <code>SQLite 3.49.1</code> значит, что всё в порядке. Сам файл базы помощник создаст при первой задаче в уроке 2.</p></li>
+      <p>Ответ вида <code>SQLite 3.49.1</code> значит, что всё в порядке. Сам файл базы помощник создаст при первой задаче в уроке 2.</p>
+      <figure class="shot t win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Windows PowerShell</span></div><div class="scr"><div><span class="pr">PS C:\Users\Anna&gt;</span> python -c "import sqlite3; print('SQLite', sqlite3.sqlite_version)"</div><div><span class="hl">SQLite 3.49.1</span></div></div></div><figcaption>Номер версии может отличаться — это нормально.</figcaption></figure>
+      <figure class="shot t mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Терминал</span></div><div class="scr"><div><span class="pr">anna@MacBook ~ %</span> python3 -c "import sqlite3; print('SQLite', sqlite3.sqlite_version)"</div><div><span class="hl">SQLite 3.49.1</span></div></div></div><figcaption>Номер версии может отличаться — это нормально.</figcaption></figure></li>
     <li><p class="step-title">Установите DB Browser for SQLite</p>
       <p>Это бесплатная программа, чтобы смотреть содержимое базы как таблицу. Скачайте её с <a href="https://sqlitebrowser.org/dl/">sqlitebrowser.org/dl</a>.</p>
       <p class="win">Выберите <b>Standard installer for 64-bit Windows</b>, запустите и нажимайте <b>Next</b> до конца.</p>
-      <p class="mac">Выберите версию для macOS (<b>Universal</b>), откройте файл <code>.dmg</code> и перетащите DB Browser в папку «Программы». Если при первом запуске macOS скажет, что разработчик не проверен, нажмите на программу правой кнопкой и выберите <b>Открыть</b>.</p></li>
+      <p class="mac">Выберите версию для macOS (<b>Universal</b>), откройте файл <code>.dmg</code> и перетащите DB Browser в папку «Программы». Если при первом запуске macOS скажет, что разработчик не проверен, нажмите на программу правой кнопкой и выберите <b>Открыть</b>.</p>
+      <figure class="shot win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">sqlitebrowser.org/dl</span></div><div class="scr"><div class="h">Windows</div><div class="list"><span class="lnk hl">DB Browser for SQLite - Standard installer for 64-bit Windows</span><span class="lnk">DB Browser for SQLite - .zip (no installer) for 64-bit Windows</span></div></div></div><figcaption>Нужен установщик (installer).</figcaption></figure>
+      <figure class="shot mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">sqlitebrowser.org/dl</span></div><div class="scr"><div class="h">macOS</div><div class="list"><span class="lnk hl">DB Browser for SQLite (Universal)</span></div></div></div><figcaption>Подходит и для Intel, и для Apple Silicon.</figcaption></figure></li>
   </ol>
   <div class="note"><span class="label">А если нужна «настоящая» база?</span><p>Для личного помощника SQLite хватает с запасом: она спокойно хранит миллионы записей. Серверные базы вроде PostgreSQL нужны, когда с данными одновременно работает много людей.</p></div>
 
   <h3>Часть 5. Claude Desktop и VS Code</h3>
   <ol class="steps">
-    <li><p class="step-title">Установите Claude Desktop</p><p>Скачайте с <a href="https://claude.ai/download">claude.ai/download</a>, установите и войдите в свой аккаунт.</p></li>
-    <li><p class="step-title">Установите VS Code</p><p>Бесплатно, с <a href="https://code.visualstudio.com">code.visualstudio.com</a>. В нём удобно создавать файлы с кодом.<span class="win"> Обычный Блокнот тоже подойдёт, но при сохранении в нём легко ошибиться с расширением файла.</span><span class="mac"> TextEdit не подходит: он портит кавычки в коде.</span></p></li>
+    <li><p class="step-title">Установите Claude Desktop</p><p>Скачайте с <a href="https://claude.ai/download">claude.ai/download</a>, установите и войдите в свой аккаунт.</p>
+      <figure class="shot win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">claude.ai/download</span></div><div class="scr"><div class="h">Claude для компьютера</div><div class="row"><span class="b p hl">Download for Windows</span></div></div></div><figcaption>Сайт сам предложит версию для вашей системы.</figcaption></figure>
+      <figure class="shot mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">claude.ai/download</span></div><div class="scr"><div class="h">Claude для компьютера</div><div class="row"><span class="b p hl">Download for macOS</span></div></div></div><figcaption>Сайт сам предложит версию для вашей системы.</figcaption></figure></li>
+    <li><p class="step-title">Установите VS Code</p><p>Бесплатно, с <a href="https://code.visualstudio.com">code.visualstudio.com</a>. В нём удобно создавать файлы с кодом.<span class="win"> Обычный Блокнот тоже подойдёт, но при сохранении в нём легко ошибиться с расширением файла.</span><span class="mac"> TextEdit не подходит: он портит кавычки в коде.</span></p>
+      <figure class="shot win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">code.visualstudio.com</span></div><div class="scr"><div class="h">Visual Studio Code</div><div class="row"><span class="b p hl">Download for Windows</span></div></div></div><figcaption>Установщик — Next до конца.</figcaption></figure>
+      <figure class="shot mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">code.visualstudio.com</span></div><div class="scr"><div class="h">Visual Studio Code</div><div class="row"><span class="b p hl">Download for macOS</span></div></div></div><figcaption>Перетащите VS Code в «Программы».</figcaption></figure></li>
   </ol>
 
   <h3>Часть 6. Аккаунты</h3>
@@ -331,6 +412,7 @@ which uv</code></pre></div>
   <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>mkdir C:\mcp</code></pre></div>
   <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>mkdir ~/mcp</code></pre></div>
   <p>Откройте её в VS Code: <b>File → Open Folder</b> и выберите папку <code>mcp</code>. Здесь будут лежать все помощники и файл базы.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Visual Studio Code</span></div><div class="scr"><div class="row"><span class="b hl">File</span><span class="b">Edit</span><span class="b">View</span></div><div class="list"><span>New File…</span><span class="hl">Open Folder…</span><span>Save</span></div></div></div><figcaption>File → Open Folder… → папка mcp.</figcaption></figure>
 
   <div class="check">
     <span class="label">Проверка</span>
@@ -396,12 +478,21 @@ def complete_task(task_id: int) -> str:
 
 if __name__ == "__main__":
     mcp.run()</code></pre></div>
-      <p>Разбираться в коде не обязательно, но устроен он просто. Каждая функция с пометкой <code>@mcp.tool()</code> становится инструментом, который увидит Claude. Текст в тройных кавычках подсказывает Claude, когда этот инструмент нужен.</p></li>
+      <p>Разбираться в коде не обязательно, но устроен он просто. Каждая функция с пометкой <code>@mcp.tool()</code> становится инструментом, который увидит Claude. Текст в тройных кавычках подсказывает Claude, когда этот инструмент нужен.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Visual Studio Code</span></div><div class="scr"><div class="split"><div class="nav"><span class="cap">MCP</span><span class="on">tasks.py</span></div><div class="pane"><div class="ed"># /// script
+# dependencies = ["mcp"]
+...
+mcp = FastMCP("Задачи")
+
+@mcp.tool()
+def add_task(title, due=""):</div></div></div></div></div><figcaption>Файл tasks.py в папке mcp. Слева — список файлов, справа — код.</figcaption></figure></li>
     <li><p class="step-title">Запустите помощника один раз вручную</p>
       <p>При первом запуске uv скачивает библиотеку <code>mcp</code>. Это занимает до минуты, и Claude может не дождаться. Поэтому первый запуск делаем сами:</p>
       <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>uv run C:\mcp\tasks.py</code></pre></div>
       <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>uv run ~/mcp/tasks.py</code></pre></div>
-      <p>Когда загрузка закончится, терминал замолчит. Так и должно быть: помощник ждёт, когда к нему обратится Claude. Остановите его клавишами <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p></li>
+      <p>Когда загрузка закончится, терминал замолчит. Так и должно быть: помощник ждёт, когда к нему обратится Claude. Остановите его клавишами <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p>
+      <figure class="shot t win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Windows PowerShell</span></div><div class="scr"><div><span class="pr">PS C:\Users\Anna&gt;</span> uv run C:\mcp\tasks.py</div><div class="dim">Installed 30 packages in 1.9s</div><div><span class="cur"></span> <span class="tag">← тишина: помощник ждёт. Ctrl + C</span></div></div></div><figcaption>Строка Installed появляется только при первом запуске.</figcaption></figure>
+      <figure class="shot t mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Терминал</span></div><div class="scr"><div><span class="pr">anna@MacBook ~ %</span> uv run ~/mcp/tasks.py</div><div class="dim">Installed 30 packages in 1.9s</div><div><span class="cur"></span> <span class="tag">← тишина: помощник ждёт. Ctrl + C</span></div></div></div><figcaption>Строка Installed появляется только при первом запуске.</figcaption></figure></li>
     <li><p class="step-title">Пропишите помощника в настройках Claude</p>
       <p>В Claude Desktop откройте <b>Settings → Developer → Edit Config</b> (в русском интерфейсе <b>Настройки → Разработчик</b>). Откроется файл <code>claude_desktop_config.json</code>. Замените всё его содержимое на это:</p>
       <div class="code win"><div class="code-head"><span>claude_desktop_config.json</span><button class="copy" type="button">Копировать</button></div><pre><code>{
@@ -420,20 +511,41 @@ if __name__ == "__main__":
     }
   }
 }</code></pre></div>
-      <p>В строке <code>command</code> укажите адрес uv, который вы записали в уроке 1.<span class="win"> Обратите внимание: в этом файле каждая обратная косая черта пишется дважды, <code>\\</code>.</span><span class="mac"> Вместо <code>ИМЯ</code> подставьте имя пользователя, оно есть в том же адресе.</span> Сохраните файл.</p></li>
+      <p>В строке <code>command</code> укажите адрес uv, который вы записали в уроке 1.<span class="win"> Обратите внимание: в этом файле каждая обратная косая черта пишется дважды, <code>\\</code>.</span><span class="mac"> Вместо <code>ИМЯ</code> подставьте имя пользователя, оно есть в том же адресе.</span> Сохраните файл.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Claude — Settings</span></div><div class="scr"><div class="split"><div class="nav"><span>General</span><span>Account</span><span>Privacy</span><span class="on hl">Developer</span></div><div class="pane"><div class="h">Local MCP servers</div>Пока нет подключённых серверов.<div class="row"><span class="b p hl">Edit Config</span></div></div></div></div></div><figcaption>Settings → Developer → Edit Config. Откроется папка или редактор с файлом claude_desktop_config.json.</figcaption></figure>
+      <figure class="shot win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>claude_desktop_config.json</span></div><div class="scr"><div class="ed">{
+  "mcpServers": {
+    "tasks": {
+<span class="hlr">      "command": "C:\\Users\\Anna\\.local\\bin\\uv.exe",</span>
+      "args": ["run", "C:\\mcp\\tasks.py"]
+    }
+  }
+}</div></div></div><figcaption>Выделенная строка — ваш адрес uv из урока 1.</figcaption></figure>
+      <figure class="shot mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>claude_desktop_config.json</span></div><div class="scr"><div class="ed">{
+  "mcpServers": {
+    "tasks": {
+<span class="hlr">      "command": "/Users/anna/.local/bin/uv",</span>
+      "args": ["run", "/Users/anna/mcp/tasks.py"]
+    }
+  }
+}</div></div></div><figcaption>Выделенная строка — ваш адрес uv из урока 1.</figcaption></figure></li>
     <li><p class="step-title">Полностью перезапустите Claude</p>
       <p class="win">Закрыть окно недостаточно. Найдите значок Claude возле часов в правом нижнем углу, нажмите на него правой кнопкой и выберите <b>Quit</b>. Затем откройте Claude снова.</p>
-      <p class="mac">Нажмите <kbd>⌘</kbd> + <kbd>Q</kbd>, чтобы Claude закрылся полностью, и откройте его снова.</p></li>
+      <p class="mac">Нажмите <kbd>⌘</kbd> + <kbd>Q</kbd>, чтобы Claude закрылся полностью, и откройте его снова.</p>
+      <figure class="shot win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Панель задач</span></div><div class="scr"><div class="list"><span>Open Claude</span><span>Settings…</span><span class="hl">Quit</span></div><div class="row"><span class="tag">правый клик по значку Claude возле часов</span></div></div></div><figcaption>Значок может прятаться под стрелкой ^ рядом с часами.</figcaption></figure>
+      <figure class="shot mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Claude</span></div><div class="scr"><div class="list"><span>About Claude</span><span>Settings…</span><span class="hl">Quit Claude &nbsp;⌘Q</span></div></div></div><figcaption>Меню Claude в верхней строке экрана.</figcaption></figure></li>
     <li><p class="step-title">Попросите Claude поработать с задачами</p>
       <ul class="prompts">
         <li>Добавь задачу «Купить билеты в Казань» на 25 октября</li>
         <li>Добавь задачу «Позвонить в банк» на завтра</li>
         <li>Какие у меня задачи?</li>
       </ul>
-      <p>Перед первым действием Claude спросит разрешения на инструмент <code>add_task</code>. Так работает защита: без вашего согласия помощник ничего не сделает. Нажмите «Разрешить».</p></li>
+      <p>Перед первым действием Claude спросит разрешения на инструмент <code>add_task</code>. Так работает защита: без вашего согласия помощник ничего не сделает. Нажмите «Разрешить».</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Claude</span></div><div class="scr"><div class="msg me">Добавь задачу «Купить билеты в Казань» на 25 октября</div><div class="card"><div><b>Claude хочет использовать инструмент</b><br><span class="mono">add_task</span> <span class="muted">из tasks</span></div><div class="row"><span class="b">Always allow</span><span class="b p hl">Allow once</span><span class="b">Deny</span></div></div></div></div><figcaption>Окно разрешения. Кнопки могут называться по-русски: «Разрешить один раз», «Разрешать всегда», «Запретить».</figcaption></figure></li>
     <li><p class="step-title">Загляните в базу данных</p>
       <p>Откройте DB Browser for SQLite, нажмите <b>Open Database</b> и выберите файл <code class="win">C:\mcp\tasks.db</code><code class="mac">tasks.db</code><span class="mac"> в папке <code>mcp</code></span>. На вкладке <b>Browse Data</b> выберите таблицу <code>tasks</code>: там будут ваши задачи. Колонка <code>done</code> показывает, выполнена ли задача (1) или нет (0).</p>
-      <p>Если вы что-то поменяли в таблице руками, нажмите <b>Write Changes</b>. Пока изменения не сохранены, база занята, и Claude не сможет в неё записывать. Закончив, закройте DB Browser.</p></li>
+      <p>Если вы что-то поменяли в таблице руками, нажмите <b>Write Changes</b>. Пока изменения не сохранены, база занята, и Claude не сможет в неё записывать. Закончив, закройте DB Browser.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>DB Browser for SQLite — tasks.db</span></div><div class="scr"><div class="row"><span class="b">Open Database</span><span class="b">Write Changes</span></div><div class="row"><span class="b">Database Structure</span><span class="b hl">Browse Data</span><span class="b">Execute SQL</span></div><div class="row"><span class="muted">Table:</span><span class="b">tasks ▾</span></div><div class="tw"><table class="ut"><tr><th>id</th><th>title</th><th>due</th><th>done</th></tr><tr><td>1</td><td>Купить билеты в Казань</td><td>2026-10-25</td><td>0</td></tr><tr><td>2</td><td>Позвонить в банк</td><td>2026-10-19</td><td>0</td></tr></table></div></div></div><figcaption>Вкладка Browse Data, таблица tasks.</figcaption></figure></li>
   </ol>
   <div class="check">
     <span class="label">Проверка</span>
@@ -456,6 +568,7 @@ if __name__ == "__main__":
         <li><b>Permissions → Issues</b>: Read and write</li>
       </ul>
       <p>Нажмите <b>Generate token</b> и сразу скопируйте токен в заметки: GitHub покажет его только один раз.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">github.com/settings/personal-access-tokens/new</span></div><div class="scr"><div class="fld"><span>Token name</span><b>Claude</b></div><div class="fld"><span>Expiration</span><b>90 days ▾</b></div><div class="fld"><span>Repository access</span></div><div class="rd">All repositories</div><div class="rd on hl">Only select repositories</div><div class="row"><span class="muted">Permissions → Issues</span><span class="b hl">Read and write ▾</span></div><div class="row"><span class="b p">Generate token</span></div></div></div><figcaption>Главное — один репозиторий и доступ к Issues.</figcaption></figure>
       <div class="note warn"><span class="label">Важно</span><p>Токен работает как пароль. Не пересылайте его и не публикуйте на скриншотах.</p></div></li>
     <li><p class="step-title">Создайте файл github.py</p>
       <div class="code"><div class="code-head"><span>github.py</span><button class="copy" type="button">Копировать</button></div><pre><code><span class="cm"># /// script
@@ -500,11 +613,17 @@ def create_issue(title: str, body: str = "") -> str:
 
 if __name__ == "__main__":
     mcp.run()</code></pre></div>
-      <p>Токен и название репозитория не записаны в коде. Помощник получит их из настроек Claude, поэтому файлом можно делиться без риска.</p></li>
+      <p>Токен и название репозитория не записаны в коде. Помощник получит их из настроек Claude, поэтому файлом можно делиться без риска.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Visual Studio Code</span></div><div class="scr"><div class="split"><div class="nav"><span class="cap">MCP</span><span class="on">github.py</span><span class="">tasks.db</span><span class="">tasks.py</span></div><div class="pane"><div class="ed"># /// script
+# dependencies = ["mcp", "httpx"]
+...
+REPO = os.environ["GITHUB_REPO"]</div></div></div></div></div><figcaption>Новый файл рядом с tasks.py.</figcaption></figure></li>
     <li><p class="step-title">Запустите один раз вручную</p>
       <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>$env:GITHUB_TOKEN="x"; $env:GITHUB_REPO="x"; uv run C:\mcp\github.py</code></pre></div>
       <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>GITHUB_TOKEN=x GITHUB_REPO=x uv run ~/mcp/github.py</code></pre></div>
-      <p>Здесь подставлены временные значения, нам нужна только загрузка библиотек. Дождитесь тишины и нажмите <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p></li>
+      <p>Здесь подставлены временные значения, нам нужна только загрузка библиотек. Дождитесь тишины и нажмите <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p>
+      <figure class="shot t win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Windows PowerShell</span></div><div class="scr"><div><span class="pr">PS C:\Users\Anna&gt;</span> $env:GITHUB_TOKEN="x"; $env:GITHUB_REPO="x"; uv run C:\mcp\github.py</div><div class="dim">Installed 31 packages in 2.0s</div><div><span class="cur"></span> <span class="tag">← Ctrl + C</span></div></div></div><figcaption>Тишина после загрузки — всё в порядке.</figcaption></figure>
+      <figure class="shot t mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Терминал</span></div><div class="scr"><div><span class="pr">anna@MacBook ~ %</span> GITHUB_TOKEN=x GITHUB_REPO=x uv run ~/mcp/github.py</div><div class="dim">Installed 31 packages in 2.0s</div><div><span class="cur"></span> <span class="tag">← Ctrl + C</span></div></div></div><figcaption>Тишина после загрузки — всё в порядке.</figcaption></figure></li>
     <li><p class="step-title">Обновите настройки Claude</p>
       <p>Снова откройте <b>Settings → Developer → Edit Config</b> и замените содержимое целиком:</p>
       <div class="code win"><div class="code-head"><span>claude_desktop_config.json</span><button class="copy" type="button">Копировать</button></div><pre><code>{
@@ -539,12 +658,21 @@ if __name__ == "__main__":
     }
   }
 }</code></pre></div>
-      <p>Название репозитория берётся из его адреса: для <code>github.com/anna/site</code> это <code>anna/site</code>. Сохраните файл и полностью перезапустите Claude, как в уроке 2.</p></li>
+      <p>Название репозитория берётся из его адреса: для <code>github.com/anna/site</code> это <code>anna/site</code>. Сохраните файл и полностью перезапустите Claude, как в уроке 2.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>claude_desktop_config.json</span></div><div class="scr"><div class="ed">    "github": {
+      "command": "…uv…",
+      "args": ["run", "…github.py"],
+      "env": {
+<span class="hlr">        "GITHUB_TOKEN": "github_pat_11ABCD…",</span>
+<span class="hlr">        "GITHUB_REPO": "anna/site"</span>
+      }
+    }</div></div></div><figcaption>Подставьте свои токен и репозиторий в выделенные строки.</figcaption></figure></li>
     <li><p class="step-title">Проверьте</p>
       <ul class="prompts">
         <li>Какие открытые issues в моём репозитории?</li>
         <li>Создай issue «Обновить контакты на сайте» с описанием: новый телефон офиса</li>
-      </ul></li>
+      </ul>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Claude</span></div><div class="scr"><div class="msg me">Создай issue «Обновить контакты на сайте»</div><span class="chip">github · create_issue</span><div class="msg bot">Готово: <span class="lnk">github.com/anna/site/issues/12</span></div></div></div><figcaption>Под ответом видно, какой инструмент вызывал Claude.</figcaption></figure></li>
   </ol>
   <div class="check">
     <span class="label">Проверка</span>
@@ -561,28 +689,40 @@ if __name__ == "__main__":
   <h3>Часть 1. Бот в Telegram</h3>
   <ol class="steps">
     <li><p class="step-title">Создайте бота</p>
-      <p>Найдите в Telegram <b>@BotFather</b>, отправьте ему <code>/newbot</code>, придумайте название и имя, которое заканчивается на <code>bot</code>. В ответ придёт токен вида <code>7412345678:AAH...</code>. Сохраните его в заметки.</p></li>
+      <p>Найдите в Telegram <b>@BotFather</b>, отправьте ему <code>/newbot</code>, придумайте название и имя, которое заканчивается на <code>bot</code>. В ответ придёт токен вида <code>7412345678:AAH...</code>. Сохраните его в заметки.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Telegram — BotFather</span></div><div class="scr"><div class="msg me">/newbot</div><div class="msg bot">Alright, a new bot. How are we going to call it?</div><div class="msg me">Claude помощник</div><div class="msg bot">Good. Now let's choose a username for your bot. It must end in `bot`.</div><div class="msg me">anna_claude_bot</div><div class="msg bot">Done! … Use this token to access the HTTP API:<br><span class="mono hl">7412345678:AAH…</span></div></div></div><figcaption>Токен — строка из цифр, двоеточия и букв.</figcaption></figure></li>
     <li><p class="step-title">Напишите своему боту</p>
-      <p>Откройте бота по ссылке от BotFather, нажмите <b>Start</b> и отправьте любое сообщение. Без этого бот не сможет писать вам первым.</p></li>
+      <p>Откройте бота по ссылке от BotFather, нажмите <b>Start</b> и отправьте любое сообщение. Без этого бот не сможет писать вам первым.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Telegram — Claude помощник</span></div><div class="scr"><div class="muted">What can this bot do?</div><div class="row"><span class="b p hl">START</span></div><div class="msg me">привет</div></div></div><figcaption>Нажмите START и отправьте любое сообщение.</figcaption></figure></li>
     <li><p class="step-title">Узнайте номер своего чата</p>
       <p>Откройте в браузере адрес ниже, подставив свой токен:</p>
       <div class="code"><div class="code-head"><span>Адрес в браузере</span><button class="copy" type="button">Копировать</button></div><pre><code>https://api.telegram.org/botВАШ_ТОКЕН/getUpdates</code></pre></div>
-      <p>Найдите на странице фрагмент <code>"chat":{"id":123456789</code>. Это число и есть номер чата. Сохраните его.</p></li>
+      <p>Найдите на странице фрагмент <code>"chat":{"id":123456789</code>. Это число и есть номер чата. Сохраните его.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">api.telegram.org/bot7412345678:AAH…/getUpdates</span></div><div class="scr"><div class="ed">{"ok":true,"result":[{"update_id":51234,
+ "message":{"message_id":2,
+<span class="hlr">  "chat":{"id":123456789,"first_name":"Anna","type":"private"},</span>
+  "text":"привет"}}]}</div></div></div><figcaption>Нужно число после "chat":{"id":. Если result пустой — напишите боту ещё раз и обновите страницу.</figcaption></figure></li>
   </ol>
 
   <h3>Часть 2. Доступ к Google</h3>
   <p>Google выдаёт доступ к Календарю и Диску только «приложениям», поэтому мы зарегистрируем своё маленькое приложение. Это бесплатно.</p>
   <ol class="steps">
     <li><p class="step-title">Создайте проект</p>
-      <p>Откройте <a href="https://console.cloud.google.com">console.cloud.google.com</a>, войдите под своим Google-аккаунтом и создайте проект с названием «Claude помощник».</p></li>
+      <p>Откройте <a href="https://console.cloud.google.com">console.cloud.google.com</a>, войдите под своим Google-аккаунтом и создайте проект с названием «Claude помощник».</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">console.cloud.google.com/projectcreate</span></div><div class="scr"><div class="h">New Project</div><div class="fld"><span>Project name</span><b>Claude помощник</b></div><div class="row"><span class="b p hl">Create</span></div></div></div><figcaption>Выбор проекта — вверху слева, рядом с логотипом Google Cloud.</figcaption></figure></li>
     <li><p class="step-title">Включите Календарь и Диск</p>
-      <p>В меню слева выберите <b>APIs &amp; Services → Library</b>. Найдите <b>Google Calendar API</b> и нажмите <b>Enable</b>. Затем так же включите <b>Google Drive API</b>.</p></li>
+      <p>В меню слева выберите <b>APIs &amp; Services → Library</b>. Найдите <b>Google Calendar API</b> и нажмите <b>Enable</b>. Затем так же включите <b>Google Drive API</b>.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">console.cloud.google.com/apis/library</span></div><div class="scr"><div class="fld"><span>Search</span><b>Google Calendar API</b></div><div class="h">Google Calendar API</div><div class="row"><span class="b p hl">Enable</span></div></div></div><figcaption>То же самое для Google Drive API.</figcaption></figure></li>
     <li><p class="step-title">Опишите приложение</p>
-      <p>Откройте <b>Google Auth Platform</b> (в старом интерфейсе <b>OAuth consent screen</b>) и нажмите <b>Get started</b>. Название: «Claude помощник», почта: ваша, Audience: <b>External</b>. Завершите мастер.</p></li>
+      <p>Откройте <b>Google Auth Platform</b> (в старом интерфейсе <b>OAuth consent screen</b>) и нажмите <b>Get started</b>. Название: «Claude помощник», почта: ваша, Audience: <b>External</b>. Завершите мастер.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">console.cloud.google.com/auth/overview</span></div><div class="scr"><div class="fld"><span>App name</span><b>Claude помощник</b></div><div class="fld"><span>User support email</span><b>anna@gmail.com</b></div><div class="fld"><span>Audience</span></div><div class="rd">Internal</div><div class="rd on hl">External</div><div class="row"><span class="b p">Create</span></div></div></div><figcaption>Мастер из четырёх шагов: App Information → Audience → Contact Information → Finish.</figcaption></figure></li>
     <li><p class="step-title">Добавьте себя в тестировщики</p>
-      <p>В разделе <b>Audience</b> найдите <b>Test users → Add users</b> и впишите свой Gmail. Без этого Google не пустит вас в собственное приложение.</p></li>
+      <p>В разделе <b>Audience</b> найдите <b>Test users → Add users</b> и впишите свой Gmail. Без этого Google не пустит вас в собственное приложение.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">console.cloud.google.com/auth/audience</span></div><div class="scr"><div class="h">Test users</div><div class="row"><span class="b hl">+ Add users</span></div><div class="list"><span>anna@gmail.com</span></div></div></div><figcaption>Впишите тот же Gmail, с которого будете входить.</figcaption></figure></li>
     <li><p class="step-title">Скачайте ключ</p>
-      <p>В разделе <b>Clients</b> нажмите <b>Create client</b>, тип приложения <b>Desktop app</b>, затем <b>Create</b> и <b>Download JSON</b>. Переименуйте скачанный файл в <code>credentials.json</code> и положите в папку <code>mcp</code>.</p></li>
+      <p>В разделе <b>Clients</b> нажмите <b>Create client</b>, тип приложения <b>Desktop app</b>, затем <b>Create</b> и <b>Download JSON</b>. Переименуйте скачанный файл в <code>credentials.json</code> и положите в папку <code>mcp</code>.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">console.cloud.google.com/auth/clients/create</span></div><div class="scr"><div class="fld hl"><span>Application type</span><b>Desktop app ▾</b></div><div class="fld"><span>Name</span><b>Desktop client 1</b></div><div class="row"><span class="b p">Create</span></div></div></div><figcaption>Тип приложения — Desktop app.</figcaption></figure>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>OAuth client created</span></div><div class="scr">Клиент создан.<div class="row"><span class="b p hl">Download JSON</span><span class="b">OK</span></div></div></div><figcaption>Скачанный файл переименуйте в credentials.json.</figcaption></figure></li>
   </ol>
 
   <h3>Часть 3. Помощник</h3>
@@ -682,12 +822,19 @@ if __name__ == "__main__":
         print("Вход выполнен, ключ сохранён в google_token.json")
     else:
         mcp.run()</code></pre></div>
-      <p>Доступ к Диску здесь только на чтение: помощник может искать файлы, но не может их менять или удалять.</p></li>
+      <p>Доступ к Диску здесь только на чтение: помощник может искать файлы, но не может их менять или удалять.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Visual Studio Code</span></div><div class="scr"><div class="split"><div class="nav"><span class="cap">MCP</span><span class=" hl">credentials.json</span><span class="">github.py</span><span class="on">internet.py</span><span class="">tasks.db</span><span class="">tasks.py</span></div><div class="pane"><div class="ed"># /// script
+# dependencies = ["mcp", "httpx", ...]
+...
+mcp = FastMCP("Интернет")</div></div></div></div></div><figcaption>credentials.json и internet.py должны лежать в одной папке.</figcaption></figure></li>
     <li><p class="step-title">Войдите в Google</p>
       <p>Эта команда заодно скачает библиотеки, так что отдельный ручной запуск не нужен:</p>
       <div class="code win"><div class="code-head"><span>PowerShell</span><button class="copy" type="button">Копировать</button></div><pre><code>uv run C:\mcp\internet.py login</code></pre></div>
       <div class="code mac"><div class="code-head"><span>Терминал</span><button class="copy" type="button">Копировать</button></div><pre><code>uv run ~/mcp/internet.py login</code></pre></div>
-      <p>Откроется браузер. Выберите свой аккаунт. Google предупредит, что приложение не проверено: это ваше собственное приложение, нажмите <b>Continue</b> и разрешите доступ. В терминале появится «Вход выполнен».</p></li>
+      <p>Откроется браузер. Выберите свой аккаунт. Google предупредит, что приложение не проверено: это ваше собственное приложение. Нажмите <b>Continue</b> (или <b>Advanced → Go to Claude помощник (unsafe)</b>), отметьте все галочки и разрешите доступ. В терминале появится «Вход выполнен».</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span class="url">accounts.google.com</span></div><div class="scr"><div class="h">Google hasn’t verified this app</div><div class="muted">The app is requesting access to sensitive info in your Google Account…</div><div class="row"><span class="b">Back to safety</span><span class="b hl">Continue</span></div></div></div><figcaption>Если кнопки Continue нет: Advanced → Go to Claude помощник (unsafe). Затем отметьте все галочки доступа.</figcaption></figure>
+      <figure class="shot t win"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Windows PowerShell</span></div><div class="scr"><div><span class="pr">PS C:\Users\Anna&gt;</span> uv run C:\mcp\internet.py login</div><div class="dim">Installed 52 packages in 4.1s</div><div class="ok">Вход выполнен, ключ сохранён в google_token.json</div></div></div><figcaption>После входа в папке mcp появится google_token.json.</figcaption></figure>
+      <figure class="shot t mac"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Терминал</span></div><div class="scr"><div><span class="pr">anna@MacBook ~ %</span> uv run ~/mcp/internet.py login</div><div class="dim">Installed 52 packages in 4.1s</div><div class="ok">Вход выполнен, ключ сохранён в google_token.json</div></div></div><figcaption>После входа в папке mcp появится google_token.json.</figcaption></figure></li>
     <li><p class="step-title">Пропишите всех трёх помощников</p>
       <p>Это итоговый файл настроек. Замените содержимое целиком и подставьте свои значения:</p>
       <div class="code win"><div class="code-head"><span>claude_desktop_config.json</span><button class="copy" type="button">Копировать</button></div><pre><code>{
@@ -738,14 +885,23 @@ if __name__ == "__main__":
     }
   }
 }</code></pre></div>
-      <p>Если урок 3 вы пропустили, удалите блок <code>"github"</code> вместе с запятой после него. Сохраните файл и полностью перезапустите Claude.</p></li>
+      <p>Если урок 3 вы пропустили, удалите блок <code>"github"</code> вместе с запятой после него. Сохраните файл и полностью перезапустите Claude.</p>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>claude_desktop_config.json</span></div><div class="scr"><div class="ed">    "internet": {
+      "command": "…uv…",
+      "args": ["run", "…internet.py"],
+      "env": {
+<span class="hlr">        "TELEGRAM_TOKEN": "7412345678:AAH…",</span>
+<span class="hlr">        "TELEGRAM_CHAT_ID": "123456789"</span>
+      }
+    }</div></div></div><figcaption>Токен бота и номер чата из части 1.</figcaption></figure></li>
     <li><p class="step-title">Проверьте каждую возможность</p>
       <ul class="prompts">
         <li>Что у меня в календаре на этой неделе?</li>
         <li>Поставь в календарь «Созвон с Мариной» в четверг в 15:00 на полчаса</li>
         <li>Найди на Диске файлы со словом «договор»</li>
         <li>Пришли мне в Telegram «Проверка связи»</li>
-      </ul></li>
+      </ul>
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Telegram — Claude помощник</span></div><div class="scr"><div class="msg bot">Проверка связи</div></div></div><figcaption>Так сообщение выглядит в Telegram.</figcaption></figure></li>
   </ol>
   <div class="check">
     <span class="label">Проверка</span>
@@ -768,6 +924,8 @@ if __name__ == "__main__":
     <li><code>create_event</code> ставит событие для каждой срочной задачи</li>
     <li><code>send_telegram</code> присылает сводку вам в телефон</li>
   </ol>
+  
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Claude</span></div><div class="scr"><div class="msg me">Посмотри мои невыполненные задачи. Для тех, у которых срок на этой неделе, найди свободный час в календаре и пришли сводку в Telegram.</div><span class="chip">tasks · list_tasks</span><span class="chip">internet · upcoming_events</span><span class="chip">internet · create_event</span><span class="chip">internet · create_event</span><span class="chip">internet · send_telegram</span><div class="msg bot">Готово. Поставил «Купить билеты в Казань» на пн 10:00 и «Позвонить в банк» на вт 11:00, сводка в Telegram.</div></div></div><figcaption>Каждая плашка — вызов одного инструмента. На каждый Claude спросит разрешение.</figcaption></figure>
   <p>Ещё несколько заданий для практики:</p>
   <ul class="prompts">
     <li>Найди на Диске документ «План запуска», составь по нему список задач и добавь их с датами</li>
@@ -808,6 +966,8 @@ if __name__ == "__main__":
 
   <h3>Разрешения</h3>
   <p>Claude спрашивает разрешение на каждый инструмент. Для чтения (<code>list_tasks</code>, <code>upcoming_events</code>, <code>search_drive</code>) можно выбрать «Разрешать всегда». Для действий, которые что-то меняют или отправляют (<code>create_event</code>, <code>create_issue</code>, <code>send_telegram</code>), лучше разрешать каждый раз отдельно.</p>
+  
+      <figure class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>Claude</span></div><div class="scr"><div class="card"><div><b>Claude хочет использовать инструмент</b><br><span class="mono">add_task</span> <span class="muted">из tasks</span></div><div class="row"><span class="b">Always allow</span><span class="b p hl">Allow once</span><span class="b">Deny</span></div></div></div></div><figcaption>Allow once — разрешить один раз, Always allow — разрешать всегда, Deny — запретить.</figcaption></figure>
 
   <h3>Безопасность</h3>
   <ul class="plain">
