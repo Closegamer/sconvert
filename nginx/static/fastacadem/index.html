@@ -80,6 +80,41 @@
     text-align: center; color: var(--muted);
   }
   .stub .ic { font-size: 3rem; }
+  .lesson { max-width: 780px; }
+  .kicker { margin: 0 0 6px; color: var(--accent); font-weight: 800; font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; }
+  .meta { color: var(--muted); font-size: .9rem; margin: -8px 0 0; }
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 0; padding: 0; list-style: none; }
+  .toc button { font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; }
+  .toc button:hover { border-color: var(--accent); }
+  .lesson h2 { font-size: clamp(1.4rem, 3.4vw, 1.9rem); margin: 56px 0 12px; letter-spacing: -.01em; scroll-margin-top: 140px; }
+  .lesson h3 { margin: 32px 0 8px; font-size: 1.12rem; }
+  .lesson h3 .n { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 8px; border-radius: 8px; font-size: .85rem; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2)); vertical-align: 2px; }
+  .lesson ul { padding-left: 1.2em; }
+  .lesson li { margin: 6px 0; }
+  .lesson :not(pre) > code { font-family: ui-monospace, Consolas, monospace; font-size: .9em; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; overflow-wrap: anywhere; }
+  .code { display: flex; flex-direction: column-reverse; margin: 12px 0; background: #0f1220; border: 1px solid #262a3a; border-radius: 12px; }
+  .code pre { margin: 0; padding: 4px 18px 16px; overflow-x: auto; font: .9rem/1.65 ui-monospace, Consolas, monospace; color: #e6e8f2; }
+  .copy { align-self: flex-end; margin: 8px 8px 0; font: inherit; font-size: .78rem; font-weight: 600; cursor: pointer; color: #c9cde0; background: #1c2133; border: 1px solid #2f3550; border-radius: 8px; padding: 4px 10px; }
+  .copy:hover { color: #fff; }
+  .callout { margin: 16px 0; padding: 14px 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent-2); }
+  .callout.warn { border-left-color: #f5a524; }
+  .callout p { margin: 4px 0; }
+  .flow { display: flex; align-items: center; gap: 8px; margin: 16px 0; }
+  .flow div { flex: 1 1 0; padding: 14px; text-align: center; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); font-weight: 600; }
+  .flow div small { display: block; color: var(--muted); font-weight: 400; }
+  .flow span { color: var(--accent); font-family: ui-monospace, Consolas, monospace; font-size: .8rem; font-weight: 700; white-space: nowrap; }
+  .tbl { overflow-x: auto; margin: 12px 0; border: 1px solid var(--border); border-radius: 12px; }
+  .tbl table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+  .tbl td, .tbl th { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .tbl tr:last-child td { border-bottom: 0; }
+  .tbl th { background: var(--surface); }
+  .tbl td:first-child { white-space: nowrap; font-family: ui-monospace, Consolas, monospace; font-size: .88rem; color: var(--accent); }
+  .next { display: block; margin-top: 56px; padding: 26px; border-radius: 18px; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2)); transition: transform .2s, box-shadow .2s; }
+  .next:hover { transform: translateY(-3px); box-shadow: 0 14px 36px var(--glow); }
+  .next h3 { margin: 0 0 6px; font-size: 1.3rem; }
+  .next p { margin: 0; opacity: .92; }
+  .back { display: inline-block; margin-bottom: 20px; color: var(--muted); font-weight: 600; }
+  .back:hover { color: var(--accent); }
   @media (max-width: 640px) {
     .bar { gap: 10px; padding-block: 10px; }
     .logo { font-size: 1rem; }
@@ -95,6 +130,10 @@
     .cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); margin-top: 28px; gap: 12px; }
     .card { padding: 18px; }
     .stub { padding: 28px 18px; }
+    .flow { flex-direction: column; align-items: stretch; text-align: center; }
+    .tbl td { display: block; }
+    .tbl td:first-child { padding-bottom: 0; border-bottom: 0; white-space: normal; overflow-wrap: anywhere; }
+    .tbl tr:has(th) { display: none; }
   }
   @media (min-width: 1600px) { .wrap { max-width: 1320px; } body { font-size: 17px; } }
   @media (hover: none) { .card:hover { transform: none; } }
@@ -147,8 +186,200 @@ let theme = store('theme') || (matchMedia('(prefers-color-scheme: dark)').matche
 
 $('#nav').innerHTML = Object.entries(PAGES).map(([id, [t]]) => `<a href="#/${id}" data-id="${id}">${t}</a>`).join('');
 
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const code = s => `<div class="code"><pre>${esc(s.trim())}</pre><button class="copy">Копировать</button></div>`;
+const by = o => o[os];
+
+const LESSONS = {
+  git: () => `
+  <article class="lesson">
+    <p class="kicker">Гит · Урок 1</p>
+    <h1>🌿 Git: основы</h1>
+    <p class="meta"><span class="brief">≈ 5 минут · только суть и команды</span><span class="full">≈ 20 минут · с объяснениями и разбором ошибок</span></p>
+    <ul class="toc">
+      <li><button data-go="what">Что это</button></li>
+      <li><button data-go="why">Зачем это вам</button></li>
+      <li><button data-go="how">Как пользоваться</button></li>
+      <li><button data-go="cheat">Шпаргалка</button></li>
+    </ul>
+
+    <h2 id="what">Что это</h2>
+    <p class="brief"><b>Git</b> — программа, которая хранит историю изменений файлов в папке проекта.
+      Каждое сохранение (<b>коммит</b>) — снимок всех файлов, к которому можно вернуться в любой момент.</p>
+    <div class="full">
+      <p>Знакомо: <code>отчёт_финал.docx</code>, <code>отчёт_финал_2.docx</code>, <code>отчёт_финал_ТОЧНО_последний.docx</code>?
+        <b>Git</b> делает то же самое, только правильно: в папке лежит одна актуальная версия файлов,
+        а вся история аккуратно хранится в скрытой папке <code>.git</code>.</p>
+      <p>Git — система контроля версий. Он работает на вашем компьютере, без интернета и бесплатно.
+        Каждый раз, когда вы решаете «вот это состояние стоит запомнить», вы делаете <b>коммит</b> —
+        снимок всех файлов с подписью: кто, когда и зачем изменил.</p>
+      <div class="tbl"><table>
+        <tr><th>Слово</th><th>Что значит</th></tr>
+        <tr><td>Репозиторий</td><td>Папка проекта, за которой следит Git (внутри есть <code>.git</code>).</td></tr>
+        <tr><td>Коммит</td><td>Сохранённый снимок проекта с комментарием.</td></tr>
+        <tr><td>Индекс (stage)</td><td>«Корзина» изменений, которые войдут в следующий коммит.</td></tr>
+        <tr><td>Ветка</td><td>Параллельная линия истории. Основная называется <code>main</code>.</td></tr>
+        <tr><td>Remote</td><td>Копия репозитория на сервере, например на GitHub.</td></tr>
+      </table></div>
+      <p>Как изменения попадают в историю:</p>
+      <div class="flow">
+        <div>Рабочая папка<small>вы правите файлы</small></div><span>git add →</span>
+        <div>Индекс<small>отобрали, что сохранить</small></div><span>git commit →</span>
+        <div>История<small>снимок сохранён</small></div><span>git push →</span>
+        <div>GitHub<small>копия в облаке</small></div>
+      </div>
+    </div>
+    <div class="callout"><p><b>Git ≠ GitHub.</b> Git — программа на вашем компьютере.
+      GitHub (а также GitLab, Bitbucket) — сайт, где хранят копии репозиториев и работают над ними вместе.</p></div>
+
+    <h2 id="why">Зачем это вам</h2>
+    <ul>
+      <li><b>Машина времени.</b> Сломали — вернулись к рабочей версии за секунду.<span class="full"> Больше не страшно экспериментировать: любой эксперимент можно откатить.</span></li>
+      <li><b>История.</b> Видно, что, когда и зачем менялось.<span class="full"> Через полгода вы не вспомните, зачем писали эту строку, — а коммит помнит.</span></li>
+      <li><b>Бэкап.</b> Копия на GitHub переживёт поломку ноутбука.</li>
+      <li><b>Работа в команде.</b> Без пересылки архивов и вопроса «у кого последняя версия?».<span class="full"> Git сам сводит изменения нескольких людей в один проект.</span></li>
+      <li><b>Деплой.</b> Сервер обновляется по команде <code>git push</code>.<span class="full"> Так, например, обновляется и этот сайт.</span></li>
+      <li><b>Это база.</b> Боты, агенты, Docker, любые туториалы — везде используют Git.</li>
+    </ul>
+    <p class="full">Git полезен не только программистам: конфиги серверов, заметки в Markdown, документация,
+      тексты книг — всё, что состоит из файлов, удобно хранить в Git.</p>
+
+    <h2 id="how">Как пользоваться (база)</h2>
+
+    <h3><span class="n">1</span>Откройте терминал</h3>
+    <p>${by({
+      Windows: 'Нажмите <code>Win + X</code> → «Терминал» (или найдите <b>PowerShell</b> в меню Пуск).',
+      macOS: 'Нажмите <code>Cmd + Пробел</code>, введите «Терминал» и нажмите Enter.',
+      Linux: 'Нажмите <code>Ctrl + Alt + T</code> или найдите «Терминал» в меню приложений.',
+    })}</p>
+
+    <h3><span class="n">2</span>Установите Git</h3>
+    ${by({
+      Windows: code('winget install --id Git.Git -e --source winget'),
+      macOS: code('xcode-select --install'),
+      Linux: code('sudo apt install git      # Ubuntu, Debian, Mint\nsudo dnf install git      # Fedora\nsudo pacman -S git        # Arch'),
+    })}
+    <p class="full">${by({
+      Windows: 'Если <code>winget</code> не найден — скачайте установщик с <b>git-scm.com</b> и жмите «Next» со стандартными настройками. После установки <b>закройте и снова откройте терминал</b>, иначе команда <code>git</code> не найдётся.',
+      macOS: 'Откроется окно установки Command Line Tools — нажмите «Установить». Если у вас есть Homebrew, можно так: <code>brew install git</code>. Часто Git на Mac уже установлен — проверьте командой ниже.',
+      Linux: 'Во многих дистрибутивах Git уже есть. Команда спросит пароль пользователя — при вводе символы не отображаются, это нормально.',
+    })}</p>
+    <p>Проверьте, что всё работает:</p>
+    ${code('git --version')}
+
+    <h3><span class="n">3</span>Представьтесь Git (один раз)</h3>
+    ${code(`git config --global user.name "Иван Иванов"
+git config --global user.email "ivan@example.com"
+git config --global init.defaultBranch main`)}
+    <div class="full">
+      <p>Имя и почта подписывают каждый коммит. Укажите ту же почту, что на GitHub, — тогда коммиты привяжутся к вашему профилю.
+        Третья строка называет основную ветку <code>main</code> — так сейчас принято везде.</p>
+      ${by({
+        Windows: '<p>Windows и Linux/macOS по-разному обозначают конец строки (CRLF и LF). Чтобы не было путаницы в общих проектах:</p>' + code('git config --global core.autocrlf true'),
+        macOS: '<p>Чтобы концы строк не ломались в проектах, где работают люди с Windows:</p>' + code('git config --global core.autocrlf input'),
+        Linux: '<p>Чтобы концы строк не ломались в проектах, где работают люди с Windows:</p>' + code('git config --global core.autocrlf input'),
+      })}
+    </div>
+
+    <h3><span class="n">4</span>Создайте репозиторий</h3>
+    ${code(`mkdir my-project
+cd my-project
+git init`)}
+    <p class="full">Команда <code>git init</code> создаёт скрытую папку <code>.git</code> — в ней вся история.
+      Удалите <code>.git</code> — и история пропадёт, а сами файлы останутся. Чтобы подключить Git к уже существующему
+      проекту, перейдите в его папку через <code>cd</code> и выполните <code>git init</code>.</p>
+
+    <h3><span class="n">5</span>Главный цикл: изменили → add → commit</h3>
+    <p>Создайте файл:</p>
+    ${by({
+      Windows: code('Set-Content README.md "Привет, Git!"'),
+      macOS: code('echo "Привет, Git!" > README.md'),
+      Linux: code('echo "Привет, Git!" > README.md'),
+    })}
+    <p>И сохраните его в историю:</p>
+    ${code(`git status                      # что изменилось
+git add README.md               # или git add . — все изменения
+git commit -m "Добавил README"  # сохранить снимок`)}
+    <p>Дальше всегда одно и то же: поменяли файлы → <code>git add</code> → <code>git commit</code>.</p>
+    <div class="full">
+      <p><code>git status</code> — ваша главная команда: красным показаны изменения вне индекса, зелёным — те, что войдут в коммит.
+        Сомневаетесь — запускайте её.</p>
+      <p>Хорошее сообщение коммита отвечает на вопрос «что сделано»: <code>Добавил форму входа</code>, <code>Исправил расчёт цены</code>.
+        Плохое: <code>fix</code>, <code>123</code>, <code>правки</code>. Коммитьте часто и понемногу — одна законченная мысль на коммит.</p>
+    </div>
+
+    <h3><span class="n">6</span>История и откат</h3>
+    ${code(`git log --oneline       # список коммитов
+git diff                # что изменено и ещё не добавлено
+git restore README.md   # вернуть файл к последнему коммиту`)}
+    <div class="callout warn full"><p><b>Осторожно:</b> <code>git restore</code> безвозвратно удаляет правки, которые ещё не попали в коммит.
+      То, что уже закоммичено, Git не потеряет. Возврат к старым коммитам — в продвинутом курсе.</p></div>
+
+    <h3><span class="n">7</span>Скажите Git, что не сохранять</h3>
+    <p>Создайте в папке проекта файл <code>.gitignore</code> и перечислите в нём, что не должно попасть в историю:</p>
+    ${code(`.env
+node_modules/
+__pycache__/
+*.log`)}
+    <div class="callout warn"><p><b>Никогда не коммитьте пароли и токены.</b><span class="full"> Если это случилось и коммит ушёл на GitHub — считайте секрет украденным: смените пароль или токен, удаления из истории недостаточно.</span></p></div>
+
+    <h3><span class="n">8</span>Отправьте проект на GitHub</h3>
+    <p>На <b>github.com</b> нажмите <b>New repository</b>, придумайте имя и создайте <b>пустой</b> репозиторий (без README). Затем:</p>
+    ${code(`git remote add origin https://github.com/ВАШ_ЛОГИН/my-project.git
+git push -u origin main`)}
+    <p>Дальше: <code>git push</code> — отправить новые коммиты, <code>git pull</code> — забрать чужие,
+      <code>git clone ссылка</code> — скачать проект на другой компьютер.</p>
+    <div class="full">
+      <p>GitHub не принимает обычный пароль в терминале. ${by({
+        Windows: 'На Windows вместе с Git ставится Git Credential Manager: при первом <code>git push</code> откроется браузер — просто войдите в GitHub.',
+        macOS: 'Проще всего войти через GitHub CLI:',
+        Linux: 'Проще всего войти через GitHub CLI:',
+      })}</p>
+      ${by({
+        Windows: '',
+        macOS: code('brew install gh\ngh auth login'),
+        Linux: code('sudo apt install gh     # или: sudo dnf install gh\ngh auth login'),
+      })}
+      <h3>Частые ошибки</h3>
+      <div class="tbl"><table>
+        <tr><th>Сообщение</th><th>Что делать</th></tr>
+        <tr><td>not a git repository</td><td>Вы не в папке проекта. Перейдите в неё через <code>cd</code> или выполните <code>git init</code>.</td></tr>
+        <tr><td>Author identity unknown</td><td>Git не знает, кто вы. Выполните шаг 3.</td></tr>
+        <tr><td>nothing to commit</td><td>Нет изменений: файл не сохранён в редакторе или уже закоммичен.</td></tr>
+        <tr><td>src refspec main does not match any</td><td>Ещё нет ни одного коммита — сначала <code>git commit</code>, потом <code>git push</code>.</td></tr>
+        <tr><td>rejected … fetch first</td><td>На GitHub есть коммиты, которых нет у вас. Выполните <code>git pull</code>, затем <code>git push</code>.</td></tr>
+        <tr><td>LF will be replaced by CRLF</td><td>Не ошибка, а предупреждение про концы строк. См. шаг 3.</td></tr>
+      </table></div>
+    </div>
+
+    <h2 id="cheat">Шпаргалка</h2>
+    <div class="tbl"><table>
+      <tr><td>git init</td><td>Начать следить за папкой</td></tr>
+      <tr><td>git status</td><td>Что изменилось</td></tr>
+      <tr><td>git add .</td><td>Добавить все изменения в коммит</td></tr>
+      <tr><td>git commit -m "…"</td><td>Сохранить снимок</td></tr>
+      <tr><td>git log --oneline</td><td>История коммитов</td></tr>
+      <tr><td>git diff</td><td>Что именно изменилось</td></tr>
+      <tr><td>git restore файл</td><td>Отменить правки в файле</td></tr>
+      <tr><td>git clone ссылка</td><td>Скачать репозиторий</td></tr>
+      <tr><td>git pull</td><td>Забрать изменения с сервера</td></tr>
+      <tr><td>git push</td><td>Отправить коммиты на сервер</td></tr>
+    </table></div>
+
+    <a class="next" href="#/git/advanced">
+      <h3>Продвинутый Git →</h3>
+      <p>Ветки, слияние и конфликты, отмена коммитов, rebase, stash, pull request и автоматический деплой.</p>
+    </a>
+  </article>`,
+};
+
+const ADVANCED = {
+  git: ['Ветки и слияние', 'Конфликты и как их решать', 'Отмена коммитов: revert и reset', 'Rebase', 'Stash — отложить изменения',
+    'Теги и релизы', 'Pull request и код-ревью', 'GitHub Actions: автоматический деплой'],
+};
+
 function render() {
-  const id = location.hash.slice(2);
+  const [id, sub] = location.hash.slice(2).split('/');
   const page = PAGES[id];
   document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('active', a.dataset.id === id));
   $('#nav a.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -157,7 +388,17 @@ function render() {
   document.documentElement.dataset.mode = mode;
   const badge = `<span class="os-badge">Уроки для <b>${os}</b> · <b>${mode === 'brief' ? 'кратко' : 'развёрнуто'}</b></span>`;
 
-  $('#app').innerHTML = page ? `
+  $('#app').innerHTML = page && sub === 'advanced' && ADVANCED[id] ? `
+    <section class="hero">
+      <a class="back" href="#/${id}">← Основы</a><br>${badge}
+      <p class="kicker">${page[0]} · продвинутый уровень</p>
+      <h1>${page[1]} Продвинутый ${page[0].toLowerCase()}</h1>
+      <div class="stub"><div class="ic">🚧</div>
+        <h3>Уроки в разработке</h3>
+        <p>Скоро здесь появятся:</p>
+        <p>${ADVANCED[id].join(' · ')}</p>
+      </div>
+    </section>` : page && LESSONS[id] ? badge + LESSONS[id]() : page ? `
     <section class="hero">${badge}
       <h1>${page[1]} ${page[0]}</h1>
       <p class="lead">${page[2]}</p>
@@ -188,6 +429,14 @@ function applyTheme() {
 
 $('#theme').onclick = () => { theme = theme === 'dark' ? 'light' : 'dark'; store('theme', theme); applyTheme(); };
 $('#mode').onclick = e => { if (e.target.dataset.mode) { mode = e.target.dataset.mode; store('mode', mode); render(); } };
+$('#app').onclick = e => {
+  const go = e.target.closest('[data-go]');
+  if (go) document.getElementById(go.dataset.go).scrollIntoView({ behavior: 'smooth' });
+  const b = e.target.closest('.copy');
+  if (b) navigator.clipboard.writeText(b.previousElementSibling.textContent).then(() => {
+    b.textContent = 'Скопировано ✓'; setTimeout(() => b.textContent = 'Копировать', 1500);
+  });
+};
 $('#os').onclick = e => { if (e.target.dataset.os) { os = e.target.dataset.os; store('os', os); render(); } };
 addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 applyTheme(); render();
