@@ -208,6 +208,12 @@
     .stats { grid-template-columns: 1fr 1fr; }
     .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
   }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
+  .sig { font-family: ui-monospace, Consolas, monospace; color: var(--accent); }
+  #totop { position: fixed; right: 20px; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 20; width: 48px; height: 48px;
+    border-radius: 50%; border: 0; cursor: pointer; font-size: 1.3rem; font-weight: 800; color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 28px var(--glow); }
+  #totop:hover { transform: translateY(-2px); }
   @media (max-width: 640px) {
     .bar { gap: 10px; padding-block: 10px; }
     .logo { font-size: 1rem; }
@@ -258,7 +264,8 @@
 </header>
 <div id="zone" hidden></div>
 <main class="wrap" id="app"></main>
-<footer><div class="wrap">© FastAcadem — быстрое обучение для занятых людей</div></footer>
+<footer><div class="wrap foot"><span>© FastAcadem — быстрое обучение для занятых людей</span><code class="sig">writtenBy('Closegamer', 2026)</code></div></footer>
+<button id="totop" aria-label="Наверх" hidden>↑</button>
 
 <script>
 const PAGES = {
@@ -2648,6 +2655,8 @@ $('#app').onchange = e => {
   if (e.target.dataset.done) { store('done:' + e.target.dataset.done, e.target.checked ? '1' : ''); progress(); }
 };
 $('#os').onclick = e => { if (e.target.dataset.os) { os = e.target.dataset.os; store('os', os); render(); } };
+addEventListener('scroll', () => { $('#totop').hidden = scrollY < 600; }, { passive: true });
+$('#totop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
 addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 applyTheme(); render();
 </script>
