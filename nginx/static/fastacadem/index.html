@@ -11,11 +11,13 @@
     --bg: #f6f7fb; --surface: #ffffff; --text: #14161f; --muted: #5d6378;
     --border: #e3e6ef; --accent: #6c5ce7; --accent-2: #00b8d9;
     --glow: rgba(108, 92, 231, .18); color-scheme: light;
+    --zone-ok: rgba(34, 197, 94, .07); --zone-todo: rgba(239, 68, 68, .045);
   }
   [data-theme="dark"] {
     --bg: #0d0f17; --surface: #161925; --text: #eef0f7; --muted: #9aa1b8;
     --border: #262a3a; --accent: #8f7bff; --accent-2: #2fd3f0;
     --glow: rgba(143, 123, 255, .25); color-scheme: dark;
+    --zone-ok: rgba(34, 197, 94, .07); --zone-todo: rgba(239, 68, 68, .055);
   }
   * { box-sizing: border-box; }
   body {
@@ -109,6 +111,7 @@
   .done .t1, .done:has(input:checked) .t0 { display: none; }
   .done:has(input:checked) .t1 { display: inline; color: #16a34a; }
   .done:has(input:checked) { border-color: #22c55e; background: color-mix(in srgb, #22c55e 10%, var(--surface)); }
+  #zone { position: absolute; top: 0; left: 0; right: 0; z-index: -1; pointer-events: none; transition: background .4s; }
   .progress { margin: 20px 0 0; padding: 14px 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); }
   .progress-bar { height: 8px; border-radius: 99px; background: var(--border); overflow: hidden; margin: 8px 0 6px; }
   .progress-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #22c55e); transition: width .3s; }
@@ -179,6 +182,7 @@
     <nav id="nav"></nav>
   </div>
 </header>
+<div id="zone" hidden></div>
 <main class="wrap" id="app"></main>
 <footer><div class="wrap">© Академия быстрого обучения для занятых людей</div></footer>
 
@@ -210,8 +214,22 @@ const by = o => o[os];
 const out = (o, note = '') => `<div class="out"><b>Ожидаемый вывод</b>${o ? `<pre>${esc(o.trim())}</pre>` : '<p>Ничего не выводит — значит, всё прошло успешно.</p>'}${note ? `<small>${note}</small>` : ''}</div>`;
 const step = (lesson, n) => `<span class="n" data-n="${lesson}-${n}">${n}</span>`;
 const done = (lesson, n) => `<label class="done"><input type="checkbox" data-done="${lesson}-${n}"><span class="t0">Отметить прохождение</span><span class="t1">Пройдено</span></label>`;
+// Фон урока: выше последнего отмеченного шага — лёгкий зелёный, ниже — лёгкий красный, граница — мягкий градиент
+function zone() {
+  const z = $('#zone'), boxes = [...document.querySelectorAll('#app [data-done]')];
+  z.hidden = !boxes.length;
+  if (!boxes.length) return;
+  z.style.height = 0;
+  const h = document.documentElement.scrollHeight, last = boxes.filter(b => b.checked).pop();
+  const y = !last ? -200 : boxes.every(b => b.checked) ? h + 200 : last.closest('label').getBoundingClientRect().bottom + scrollY + 40;
+  z.style.height = h + 'px';
+  z.style.background = `linear-gradient(to bottom, var(--zone-ok) ${y - 100}px, var(--zone-todo) ${y + 100}px)`;
+}
+new ResizeObserver(zone).observe($('#app'));
+
 function progress() {
   const boxes = [...document.querySelectorAll('#app [data-done]')], p = $('#app .progress');
+  zone();
   if (!p) return;
   boxes.forEach(b => document.querySelector(`#app [data-n="${b.dataset.done}"]`)?.classList.toggle('ok', b.checked));
   const done = boxes.filter(b => b.checked).length;
