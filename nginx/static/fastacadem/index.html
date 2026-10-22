@@ -100,7 +100,7 @@
   .copy { align-self: flex-end; margin: 8px 8px 0; font: inherit; font-size: .78rem; font-weight: 600; cursor: pointer; color: #c9cde0; background: #1c2133; border: 1px solid #2f3550; border-radius: 8px; padding: 4px 10px; }
   .copy:hover { color: #fff; }
   .out { margin: -6px 0 16px; border: 1px dashed var(--border); border-top: 0; border-radius: 0 0 12px 12px; padding: 8px 18px 12px; }
-  .out b { display: block; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .out > b { display: block; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
   .out pre { margin: 0; overflow-x: auto; font: .82rem/1.6 ui-monospace, Consolas, monospace; color: var(--muted); }
   .out p { margin: 0; color: var(--muted); font-size: .9rem; }
   .out small { display: block; margin-top: 6px; color: var(--muted); font-size: .82rem; }
@@ -550,11 +550,256 @@ To https://github.com/ВАШ_ЛОГИН/my-project.git
       <p>Ветки, слияние и конфликты, отмена коммитов, rebase, stash, pull request и автоматический деплой.</p>
     </a>
   </article>`,
+  docker: () => `
+  <article class="lesson">
+    <p class="kicker">Докер · Урок 1</p>
+    <h1>🐳 Docker: основы</h1>
+    <p class="meta"><span class="brief">≈ 10 минут · только суть и команды</span><span class="full">≈ 30 минут · с объяснениями и разбором ошибок</span></p>
+    <ul class="toc">
+      <li><button data-go="what">Что это</button></li>
+      <li><button data-go="why">Зачем это вам</button></li>
+      <li><button data-go="how">Как пользоваться</button></li>
+      <li><button data-go="cheat">Шпаргалка</button></li>
+    </ul>
+    <div class="progress"><span></span><div class="progress-bar"><i></i></div>
+      <small>Отмечайте пройденные шаги галочкой «Отметить прохождение» внизу каждого шага. Прогресс сохраняется в этом браузере.</small></div>
+
+    <h2 id="what">Что это</h2>
+    <p class="brief"><b>Docker</b> запускает программы в <b>контейнерах</b> — изолированных «коробках», где уже есть всё нужное:
+      сама программа, библиотеки и настройки. Одна команда — и у вас работает база данных, веб-сервер или бот, без ручной установки.</p>
+    <div class="full">
+      <p>Знакомо: «у меня всё работает, а у тебя нет»? Программе нужна правильная версия языка, библиотек, настроек —
+        и на каждом компьютере всё немного по-разному. <b>Docker</b> решает это так: программу упаковывают вместе со всем,
+        что ей нужно, в один <b>образ</b>. Из образа запускается <b>контейнер</b> — и он работает одинаково на любом компьютере и сервере.</p>
+      <p>Это как морской контейнер: неважно, что внутри — мебель или бананы, его одинаково грузят на любой корабль, поезд или грузовик.</p>
+      <div class="tbl"><table>
+        <tr><th>Слово</th><th>Что значит</th></tr>
+        <tr><td>Образ (image)</td><td>Шаблон: программа + всё, что ей нужно. Только для чтения.</td></tr>
+        <tr><td>Контейнер</td><td>Запущенный экземпляр образа. Из одного образа можно запустить много контейнеров.</td></tr>
+        <tr><td>Docker Hub</td><td>Каталог готовых образов: nginx, postgres, redis, python и тысячи других.</td></tr>
+        <tr><td>Dockerfile</td><td>Рецепт, по которому собирают свой образ.</td></tr>
+        <tr><td>Том (volume)</td><td>Папка для данных, которая переживает удаление контейнера.</td></tr>
+        <tr><td>Compose</td><td>Файл, описывающий несколько контейнеров сразу, — и запуск всех одной командой.</td></tr>
+      </table></div>
+      <p>Как это связано:</p>
+      <div class="flow">
+        <div>Docker Hub<small>каталог образов</small></div><span>docker pull →</span>
+        <div>Образ<small>шаблон</small></div><span>docker run →</span>
+        <div>Контейнер<small>работает</small></div>
+      </div>
+    </div>
+    <div class="callout"><p><b>Контейнер ≠ виртуальная машина.</b> Виртуальная машина эмулирует целый компьютер со своей ОС и запускается минутами.
+      Контейнер использует ядро вашей системы, весит мегабайты и стартует за секунду.</p></div>
+
+    <h2 id="why">Зачем это вам</h2>
+    <ul>
+      <li><b>Что угодно — одной командой.</b> PostgreSQL, Redis, n8n, WordPress — без установщиков и настройки.<span class="full"> Нужна база для бота? Одна строка — и через 10 секунд она работает.</span></li>
+      <li><b>Конец «у меня работает».</b> Контейнер ведёт себя одинаково на вашем ноутбуке, у коллеги и на сервере.</li>
+      <li><b>Чистая система.</b> Удалили контейнер — от программы не осталось следов.<span class="full"> Можно держать рядом PostgreSQL 14 и 17 для разных проектов, и они не мешают друг другу.</span></li>
+      <li><b>Простой деплой.</b> То, что работает у вас в Docker, так же запустится на сервере.<span class="full"> Этот сайт, например, тоже работает в Docker-контейнере.</span></li>
+      <li><b>Это база.</b> Боты, агенты, базы данных и почти любой сервер сегодня запускают в Docker.</li>
+    </ul>
+
+    <h2 id="how">Как пользоваться (база)</h2>
+
+    <h3>${step("docker", 1)}Установите Docker</h3>
+    ${by({
+      Windows: code('winget install -e --id Docker.DockerDesktop'),
+      macOS: '<p>Скачайте <b>Docker Desktop</b> с сайта <b>docker.com</b> (кнопка Download for Mac — выберите <b>Apple Silicon</b> или <b>Intel</b>; какой у вас, видно в меню Apple → «Об этом Mac»). Откройте .dmg и перетащите Docker в «Программы». Затем запустите:</p>' + code('open -a Docker'),
+      Linux: code('curl -fsSL https://get.docker.com | sudo sh\nsudo usermod -aG docker $USER'),
+    })}
+    ${by({
+      Windows: out(`Найдено Docker Desktop [Docker.DockerDesktop] Версия 4.48.0
+Скачивание https://desktop.docker.com/win/main/amd64/.../Docker%20Desktop%20Installer.exe
+  ██████████████████████████████   560 MB /  560 MB
+Успешно проверен хэш установщика
+Запуск установки пакета...
+Успешно установлено`, 'После установки <b>перезагрузите компьютер</b>, запустите <b>Docker Desktop</b> из меню Пуск и примите соглашение. Готово, когда внизу слева в окне Docker Desktop написано <b>Engine running</b>.'),
+      macOS: out('', 'Docker Desktop откроется и попросит пароль Mac для установки компонентов. Готово, когда в строке меню вверху появился кит 🐳 и он перестал «шевелиться».'),
+      Linux: out(`# Executing docker install script, commit: ...
++ sh -c apt-get -qq update
++ sh -c DEBIAN_FRONTEND=noninteractive apt-get -y -qq install docker-ce docker-ce-cli containerd.io docker-compose-plugin ...
+...
+Server: Docker Engine - Community
+ Engine:
+  Version:          28.5.1
+================================================================================
+To run Docker as a non-privileged user, consider setting up the
+Docker daemon in rootless mode for your user: ...`, 'Вторая команда (<code>usermod</code>) ничего не выводит — она разрешает вам запускать docker без <code>sudo</code>. Чтобы она подействовала, <b>выйдите из системы и войдите снова</b> (или перезагрузитесь).'),
+    })}
+    <div class="full">${by({
+      Windows: '<p>Docker Desktop работает через <b>WSL 2</b> — встроенный в Windows Linux. Если при запуске он просит установить или обновить WSL, выполните в терминале <code>wsl --install</code> (или <code>wsl --update</code>) и перезагрузитесь. Нужны 64-битная Windows 10/11 и включённая виртуализация в BIOS — на большинстве современных компьютеров она уже включена.</p><p>Docker Desktop должен быть запущен, пока вы работаете с контейнерами: его значок с китом живёт в трее рядом с часами.</p>',
+      macOS: '<p>Docker Desktop должен быть запущен, пока вы работаете с контейнерами. Если используете Homebrew, Docker Desktop можно поставить и через него — но скачать с сайта надёжнее.</p>',
+      Linux: '<p>Скрипт <code>get.docker.com</code> — официальный способ от Docker: он сам подключает репозиторий и ставит Docker Engine вместе с Compose на Ubuntu, Debian, Fedora, CentOS и их родственниках. На Arch: <code>sudo pacman -S docker docker-compose</code>, затем <code>sudo systemctl enable --now docker</code>. На Linux Docker Desktop не нужен — Docker работает как системная служба и запускается сам.</p>',
+    })}</div>
+    ${done("docker", 1)}
+
+    <h3>${step("docker", 2)}Проверьте установку</h3>
+    ${code(`docker --version
+docker run hello-world`)}
+    ${out(`Docker version 28.5.1, build e180ab8
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+17eec7bbc9d7: Pull complete
+Digest: sha256:a0dfb02aac212703bfcb339d77d47ec32c8706ff250850ecc0e19c8737b18567
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+...`, 'Главное — строка <code>Hello from Docker!</code>. Номера версий и хэши у вас будут другими. Если видите <code>Cannot connect to the Docker daemon</code> или <code>error during connect</code> — ' + by({ Windows: 'Docker Desktop не запущен.', macOS: 'Docker Desktop не запущен.', Linux: 'служба не запущена: <code>sudo systemctl start docker</code>. А <code>permission denied</code> — значит, вы ещё не перелогинились после шага 1.' }))}
+    <p class="full">Что произошло: Docker не нашёл образ <code>hello-world</code> у вас, сам скачал его из Docker Hub, запустил контейнер,
+      тот напечатал приветствие и завершился. Повторный запуск будет мгновенным — образ уже скачан.</p>
+    ${done("docker", 2)}
+
+    <h3>${step("docker", 3)}Запустите настоящий сервис</h3>
+    <p>Запустим веб-сервер <b>nginx</b>:</p>
+    ${code('docker run -d --name web -p 8080:80 nginx')}
+    ${out(`Unable to find image 'nginx:latest' locally
+latest: Pulling from library/nginx
+5c32499ab806: Pull complete
+...
+Status: Downloaded newer image for nginx:latest
+3f4e8a9c1b2d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f`, 'Последняя длинная строка — ID нового контейнера. Теперь откройте в браузере <b>http://localhost:8080</b> — появится страница <b>Welcome to nginx!</b>')}
+    <div class="full">
+      <div class="tbl"><table>
+        <tr><th>Часть</th><th>Что значит</th></tr>
+        <tr><td>-d</td><td>Запустить в фоне и вернуть терминал.</td></tr>
+        <tr><td>--name web</td><td>Дать контейнеру понятное имя, чтобы потом им управлять.</td></tr>
+        <tr><td>-p 8080:80</td><td>Порт 8080 на вашем компьютере → порт 80 внутри контейнера.</td></tr>
+        <tr><td>nginx</td><td>Имя образа из Docker Hub. Можно указать версию: <code>nginx:1.27</code>.</td></tr>
+      </table></div>
+    </div>
+    ${done("docker", 3)}
+
+    <h3>${step("docker", 4)}Посмотрите, что запущено</h3>
+    ${code(`docker ps
+docker logs web`)}
+    ${out(`CONTAINER ID   IMAGE   COMMAND                  CREATED          STATUS         PORTS                                     NAMES
+3f4e8a9c1b2d   nginx   "/docker-entrypoint.…"   30 seconds ago   Up 29 seconds  0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   web
+/docker-entrypoint.sh: Configuration complete; ready for start up
+172.17.0.1 - - [22/Oct/2026:10:00:00 +0000] "GET / HTTP/1.1" 200 615 "-" "Mozilla/5.0 ..."`, 'Первые строки — таблица <code>docker ps</code>: контейнер <code>web</code> работает (<code>Up</code>). Ниже — логи nginx: последняя строка появилась, когда вы открыли страницу в браузере.')}
+    <div class="full">
+      <p><code>docker ps</code> показывает только работающие контейнеры, <code>docker ps -a</code> — все, включая остановленные (там будет и <code>hello-world</code>).
+        <code>docker logs -f web</code> показывает логи в реальном времени — выход по <code>Ctrl + C</code>.</p>
+      <p>Можно «зайти» внутрь контейнера и осмотреться — как будто это отдельный маленький Linux:</p>
+      ${code('docker exec -it web sh')}
+      ${out('#', 'Появилось приглашение <code>#</code> — вы внутри контейнера. Попробуйте <code>ls</code>, а для выхода наберите <code>exit</code>.')}
+    </div>
+    ${done("docker", 4)}
+
+    <h3>${step("docker", 5)}Остановите и удалите контейнер</h3>
+    ${code(`docker stop web     # остановить
+docker start web    # запустить снова
+docker rm -f web    # остановить и удалить`)}
+    ${out(`web
+web
+web`, 'Каждая команда отвечает именем контейнера — значит, сработало. Страница на localhost:8080 больше не открывается.')}
+    <p class="full">Удалился только контейнер — образ <code>nginx</code> остался, и следующий запуск будет мгновенным.
+      Список образов: <code>docker images</code>, удалить образ: <code>docker rmi nginx</code>.
+      Всё, что было записано внутри контейнера, при удалении пропадает — поэтому важные данные хранят снаружи, в томах (следующий шаг).</p>
+    ${done("docker", 5)}
+
+    <h3>${step("docker", 6)}Подключите свои файлы</h3>
+    <p>Покажем в nginx собственную страницу из папки на вашем компьютере:</p>
+    ${by({
+      Windows: code('mkdir docker-lesson\ncd docker-lesson\nmkdir site\nSet-Content site/index.html "<meta charset=utf-8><h1>Привет из Docker!</h1>" -Encoding utf8\ndocker run -d --name mysite -p 8080:80 -v ${PWD}/site:/usr/share/nginx/html:ro nginx'),
+      macOS: code('mkdir docker-lesson\ncd docker-lesson\nmkdir site\necho "<meta charset=utf-8><h1>Привет из Docker!</h1>" > site/index.html\ndocker run -d --name mysite -p 8080:80 -v "$(pwd)/site":/usr/share/nginx/html:ro nginx'),
+      Linux: code('mkdir docker-lesson\ncd docker-lesson\nmkdir site\necho "<meta charset=utf-8><h1>Привет из Docker!</h1>" > site/index.html\ndocker run -d --name mysite -p 8080:80 -v "$(pwd)/site":/usr/share/nginx/html:ro nginx'),
+    })}
+    ${out('b7d2e1f0a9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2', 'ID контейнера — всё запустилось.' + by({ Windows: ' <code>mkdir</code> перед этим выведет таблицу с новой папкой — это нормально.', macOS: '', Linux: '' }) + ' Откройте <b>http://localhost:8080</b> — там «Привет из Docker!».')}
+    <div class="full">
+      <p><code>-v папка_на_компьютере:папка_в_контейнере</code> — «пробросить» папку внутрь. <code>:ro</code> — только чтение, контейнер её не испортит.
+        Поменяйте текст в <code>site/index.html</code> и обновите страницу — изменения видны сразу, без перезапуска.</p>
+      <p>Так же поступают с данными баз: папка с базой лежит на диске, а контейнер можно удалять и обновлять — данные останутся.</p>
+    </div>
+    <div class="callout warn"><p>Ошибка <code>port is already allocated</code> — порт 8080 занят: скорее всего, не удалён контейнер <code>web</code> из шага 3. Выполните <code>docker rm -f web</code>.</p></div>
+    ${done("docker", 6)}
+
+    <h3>${step("docker", 7)}Docker Compose: всё в одном файле</h3>
+    <p>Длинные команды <code>docker run</code> неудобно запоминать. Опишем то же самое в файле.
+      Создайте в папке <code>docker-lesson</code> файл <code>compose.yaml</code> ${by({ Windows: '(например, командой <code>notepad compose.yaml</code>)', macOS: '(например, командой <code>nano compose.yaml</code>; сохранить — Ctrl + O, Enter, выйти — Ctrl + X)', Linux: '(например, командой <code>nano compose.yaml</code>; сохранить — Ctrl + O, Enter, выйти — Ctrl + X)' })}:</p>
+    ${code(`services:
+  web:
+    image: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./site:/usr/share/nginx/html:ro`)}
+    <p>Удалите контейнер из прошлого шага и запустите через Compose:</p>
+    ${code(`docker rm -f mysite
+docker compose up -d`)}
+    ${out(`mysite
+[+] Running 2/2
+ ✔ Network docker-lesson_default  Created
+ ✔ Container docker-lesson-web-1  Started`, 'Откройте <b>http://localhost:8080</b> — та же страница. Остановить и удалить всё, что описано в файле: <code>docker compose down</code>.')}
+    <div class="full">
+      <p>В YAML важны <b>отступы — только пробелы</b>, по два на уровень. Ошибка в отступе — самая частая причина <code>yaml: line …</code>.</p>
+      <p>Compose — это то, как запускают реальные проекты: бот + база данных + Redis описываются в одном <code>compose.yaml</code>,
+        файл лежит в Git, и на любом компьютере или сервере проект поднимается одной командой <code>docker compose up -d</code>.</p>
+      ${code('docker compose down')}
+      ${out(`[+] Running 2/2
+ ✔ Container docker-lesson-web-1  Removed
+ ✔ Network docker-lesson_default  Removed`)}
+    </div>
+    ${done("docker", 7)}
+
+    <h3>${step("docker", 8)}Наведите порядок</h3>
+    <p>Образы и остановленные контейнеры занимают место на диске. Убрать всё неиспользуемое:</p>
+    ${code('docker system prune')}
+    ${out(`WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all dangling images
+  - unused build cache
+
+Are you sure you want to continue? [y/N] y
+Deleted Containers:
+4a1b2c3d4e5f...
+Total reclaimed space: 12.4kB`, 'На вопрос ответьте <code>y</code> и Enter. Работающие контейнеры и их образы не трогаются.')}
+    <p class="full">Посмотреть, сколько места занимает Docker: <code>docker system df</code>. Удалить ещё и все неиспользуемые образы: <code>docker system prune -a</code> — потом их придётся скачивать заново.</p>
+    ${done("docker", 8)}
+
+    <div class="full">
+      <h3>Частые ошибки</h3>
+      <div class="tbl"><table>
+        <tr><th>Сообщение</th><th>Что делать</th></tr>
+        <tr><td>Cannot connect to the Docker daemon / error during connect</td><td>${by({ Windows: 'Запустите Docker Desktop и дождитесь Engine running.', macOS: 'Запустите Docker Desktop и дождитесь, пока кит в строке меню успокоится.', Linux: 'Запустите службу: <code>sudo systemctl start docker</code>.' })}</td></tr>
+        <tr><td>permission denied … docker.sock</td><td>Linux: вы не в группе docker. Выполните <code>sudo usermod -aG docker $USER</code> и перелогиньтесь.</td></tr>
+        <tr><td>port is already allocated</td><td>Порт занят другим контейнером или программой. <code>docker ps</code> → удалите лишний контейнер или возьмите другой порт: <code>-p 8081:80</code>.</td></tr>
+        <tr><td>The container name "/web" is already in use</td><td>Контейнер с таким именем уже есть (может быть, остановленный). <code>docker rm -f web</code>.</td></tr>
+        <tr><td>WSL 2 installation is incomplete</td><td>Windows: выполните <code>wsl --install</code> или <code>wsl --update</code> и перезагрузитесь.</td></tr>
+        <tr><td>Virtualization support not detected</td><td>Windows: включите виртуализацию (Intel VT-x / AMD-V, SVM) в BIOS.</td></tr>
+        <tr><td>localhost:8080 не открывается</td><td>Проверьте <code>docker ps</code>: контейнер должен быть <code>Up</code>, а в PORTS — <code>8080-&gt;80</code>. Смотрите <code>docker logs имя</code>.</td></tr>
+      </table></div>
+    </div>
+
+    <h2 id="cheat">Шпаргалка</h2>
+    <div class="tbl"><table>
+      <tr><td>docker run -d --name имя -p 8080:80 образ</td><td>Запустить контейнер в фоне</td></tr>
+      <tr><td>docker ps</td><td>Работающие контейнеры (<code>-a</code> — все)</td></tr>
+      <tr><td>docker logs -f имя</td><td>Логи контейнера</td></tr>
+      <tr><td>docker exec -it имя sh</td><td>Зайти внутрь контейнера</td></tr>
+      <tr><td>docker stop / start имя</td><td>Остановить / запустить</td></tr>
+      <tr><td>docker rm -f имя</td><td>Удалить контейнер</td></tr>
+      <tr><td>docker images</td><td>Скачанные образы</td></tr>
+      <tr><td>docker pull образ</td><td>Скачать образ</td></tr>
+      <tr><td>docker compose up -d</td><td>Поднять всё из compose.yaml</td></tr>
+      <tr><td>docker compose down</td><td>Остановить и удалить всё из compose.yaml</td></tr>
+      <tr><td>docker system prune</td><td>Убрать мусор</td></tr>
+    </table></div>
+
+    <a class="next" href="#/docker/advanced">
+      <h3>Продвинутый Docker →</h3>
+      <p>Свой образ через Dockerfile, тома и бэкапы, сети, Compose с базой данных, переменные окружения и деплой на сервер.</p>
+    </a>
+  </article>`,
 };
 
 const ADVANCED = {
   git: ['Ветки и слияние', 'Конфликты и как их решать', 'Отмена коммитов: revert и reset', 'Rebase', 'Stash — отложить изменения',
     'Теги и релизы', 'Pull request и код-ревью', 'GitHub Actions: автоматический деплой'],
+  docker: ['Dockerfile: свой образ', 'Многоэтапная сборка и лёгкие образы', 'Тома и бэкапы данных', 'Сети между контейнерами',
+    'Compose: приложение + база данных', 'Переменные окружения и .env', 'Публикация образа: Docker Hub и GHCR', 'Docker на сервере: деплой и автообновление'],
 };
 
 function render() {
