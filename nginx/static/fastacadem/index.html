@@ -82,9 +82,10 @@
     text-align: center; color: var(--muted);
   }
   .stub .ic { font-size: 3rem; }
-  .lesson { max-width: 780px; }
+  .narrow { max-width: 780px; margin-inline: auto; }
   .kicker { margin: 0 0 6px; color: var(--accent); font-weight: 800; font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; }
   .meta { color: var(--muted); font-size: .9rem; margin: -8px 0 0; }
+  .lesson .toc { padding: 0; }
   .toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 0; padding: 0; list-style: none; }
   .toc button { font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; }
   .toc button:hover { border-color: var(--accent); }
@@ -575,7 +576,7 @@ function render() {
         <p>Скоро здесь появятся:</p>
         <p>${ADVANCED[id].join(' · ')}</p>
       </div>
-    </section>` : page && LESSONS[id] ? badge + LESSONS[id]() : page ? `
+    </section>` : page && LESSONS[id] ? `<div class="narrow">${badge}${LESSONS[id]()}</div>` : page ? `
     <section class="hero">${badge}
       <h1>${page[1]} ${page[0]}</h1>
       <p class="lead">${page[2]}</p>
