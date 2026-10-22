@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Академия быстрого обучения</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f7fb; --surface: #ffffff; --text: #14161f; --muted: #5d6378;
+    --border: #e3e6ef; --accent: #6c5ce7; --accent-2: #00b8d9;
+    --glow: rgba(108, 92, 231, .18); color-scheme: light;
+  }
+  [data-theme="dark"] {
+    --bg: #0d0f17; --surface: #161925; --text: #eef0f7; --muted: #9aa1b8;
+    --border: #262a3a; --accent: #8f7bff; --accent-2: #2fd3f0;
+    --glow: rgba(143, 123, 255, .25); color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: Manrope, system-ui, sans-serif; background: var(--bg);
+    color: var(--text); line-height: 1.6; transition: background .3s, color .3s;
+    background-image: radial-gradient(60rem 30rem at 85% -10%, var(--glow), transparent 70%);
+    min-height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding-inline: 20px; }
+
+  header {
+    position: sticky; top: 0; z-index: 10; backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 75%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .bar { display: flex; align-items: center; gap: 16px; padding-block: 14px; flex-wrap: wrap; }
+  .logo { font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+  .logo i {
+    width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff;
+  }
+  .tools { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+  .seg { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 3px; }
+  .seg button, .icon-btn {
+    border: 0; background: none; color: var(--muted); font: inherit; font-size: .85rem;
+    padding: 6px 12px; border-radius: 999px; cursor: pointer; font-weight: 600;
+  }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .icon-btn { border: 1px solid var(--border); background: var(--surface); font-size: 1rem; padding: 6px 10px; }
+
+  nav { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+  nav a {
+    white-space: nowrap; padding: 7px 14px; border-radius: 10px; color: var(--muted);
+    font-weight: 600; font-size: .92rem; transition: .2s;
+  }
+  nav a:hover { color: var(--text); background: var(--surface); }
+  nav a.active { color: var(--accent); background: var(--surface); box-shadow: inset 0 0 0 1px var(--border); }
+
+  main { padding-block: 56px 80px; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.1; margin: 0 0 20px; letter-spacing: -.02em; }
+  .grad { background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { font-size: 1.15rem; color: var(--muted); max-width: 680px; }
+  .os-badge {
+    display: inline-block; margin-bottom: 18px; padding: 5px 12px; border-radius: 999px; font-size: .85rem;
+    font-weight: 600; background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+  }
+  .os-badge b { color: var(--accent); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; margin-top: 44px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 10px 30px var(--glow); }
+  .card .ic { font-size: 1.6rem; }
+  .card h3 { margin: 8px 0 4px; }
+  .card p { margin: 0; color: var(--muted); font-size: .92rem; }
+  .stub {
+    margin-top: 32px; padding: 40px; border: 2px dashed var(--border); border-radius: 18px;
+    text-align: center; color: var(--muted);
+  }
+  .stub .ic { font-size: 3rem; }
+  footer { border-top: 1px solid var(--border); padding-block: 24px; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="bar">
+      <a href="#/" class="logo"><i>⚡</i>Академия быстрого обучения</a>
+      <div class="tools">
+        <div class="seg" id="os" role="group" aria-label="Операционная система">
+          <button data-os="Windows">Windows</button>
+          <button data-os="Linux">Linux</button>
+          <button data-os="macOS">macOS</button>
+        </div>
+        <button class="icon-btn" id="theme" aria-label="Переключить тему">🌙</button>
+      </div>
+    </div>
+    <nav id="nav"></nav>
+  </div>
+</header>
+<main class="wrap" id="app"></main>
+<footer><div class="wrap">© Академия быстрого обучения для занятых людей</div></footer>
+
+<script>
+const PAGES = {
+  accounts:     ['Аккаунты', '🔐', 'Регистрация и настройка нужных сервисов без лишней бюрократии.'],
+  bots:         ['Боты', '🤖', 'Свой Telegram-бот за вечер: от токена до запуска.'],
+  agents:       ['Агенты', '🧠', 'ИИ-агенты, которые делают рутину за вас.'],
+  databases:    ['Базы данных', '🗄️', 'Хранить, искать и не терять данные.'],
+  integrations: ['Интеграции', '🔗', 'Связываем сервисы между собой через API.'],
+  git:          ['Гит', '🌿', 'Версии кода без страха что-то сломать.'],
+  docker:       ['Докер', '🐳', 'Запуск чего угодно одной командой.'],
+  contacts:     ['Контакты', '✉️', 'Напишите нам — ответим быстро.'],
+};
+const $ = s => document.querySelector(s);
+const store = (k, v) => { try { return v === undefined ? localStorage.getItem(k) : localStorage.setItem(k, v); } catch { } };
+
+let os = store('os') || (/Mac/.test(navigator.platform) ? 'macOS' : /Linux/.test(navigator.platform) ? 'Linux' : 'Windows');
+let theme = store('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+$('#nav').innerHTML = Object.entries(PAGES).map(([id, [t]]) => `<a href="#/${id}" data-id="${id}">${t}</a>`).join('');
+
+function render() {
+  const id = location.hash.slice(2);
+  const page = PAGES[id];
+  document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('active', a.dataset.id === id));
+  document.querySelectorAll('#os button').forEach(b => b.setAttribute('aria-pressed', b.dataset.os === os));
+  const badge = `<span class="os-badge">Уроки для <b>${os}</b></span>`;
+
+  $('#app').innerHTML = page ? `
+    <section class="hero">${badge}
+      <h1>${page[1]} ${page[0]}</h1>
+      <p class="lead">${page[2]}</p>
+      <div class="stub"><div class="ic">🚧</div>
+        <h3>Раздел в разработке</h3>
+        <p>Скоро здесь появятся уроки и туториалы для ${os}.</p>
+      </div>
+    </section>` : `
+    <section class="hero">${badge}
+      <h1>Учитесь <span class="grad">быстро</span>.<br>Делайте то, что нужно.</h1>
+      <p class="lead">Академия быстрого обучения для занятых людей. Никакой воды и долгих курсов —
+        только короткие практические уроки, после которых вы сразу сделаете нужное дело:
+        заведёте аккаунт, запустите бота, настроите агента, базу данных или Docker.
+        Каждый урок — для Windows, Linux и macOS.</p>
+      <div class="cards">${Object.entries(PAGES).filter(([k]) => k !== 'contacts').map(([k, [t, ic, d]]) =>
+        `<a class="card" href="#/${k}"><div class="ic">${ic}</div><h3>${t}</h3><p>${d}</p></a>`).join('')}
+      </div>
+    </section>`;
+  document.title = (page ? page[0] + ' — ' : '') + 'Академия быстрого обучения';
+}
+
+function applyTheme() {
+  document.documentElement.dataset.theme = theme;
+  $('#theme').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+$('#theme').onclick = () => { theme = theme === 'dark' ? 'light' : 'dark'; store('theme', theme); applyTheme(); };
+$('#os').onclick = e => { if (e.target.dataset.os) { os = e.target.dataset.os; store('os', os); render(); } };
+addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
+applyTheme(); render();
+</script>
+</body>
+</html>
