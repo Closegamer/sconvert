@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Академия быстрого обучения</title>
+<title>FastAcadem</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -83,6 +83,10 @@
   }
   .stub .ic { font-size: 3rem; }
   .narrow { max-width: 780px; margin-inline: auto; }
+  .ltabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 24px; }
+  .ltabs a { padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: .9rem; color: var(--muted); background: var(--surface); border: 1px solid var(--border); }
+  .ltabs a:hover { color: var(--text); border-color: var(--accent); }
+  .ltabs a.active { color: #fff; background: var(--accent); border-color: var(--accent); }
   .kicker { margin: 0 0 6px; color: var(--accent); font-weight: 800; font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; }
   .meta { color: var(--muted); font-size: .9rem; margin: -8px 0 0; }
   .lesson .toc { padding: 0; }
@@ -169,7 +173,7 @@
 <header>
   <div class="wrap">
     <div class="bar">
-      <a href="#/" class="logo"><i>⚡</i>Академия быстрого обучения</a>
+      <a href="#/" class="logo"><i>⚡</i>FastAcadem</a>
       <div class="tools">
         <div class="seg" id="os" role="group" aria-label="Операционная система">
           <button data-os="Windows">Windows</button>
@@ -188,7 +192,7 @@
 </header>
 <div id="zone" hidden></div>
 <main class="wrap" id="app"></main>
-<footer><div class="wrap">© Академия быстрого обучения для занятых людей</div></footer>
+<footer><div class="wrap">© FastAcadem — быстрое обучение для занятых людей</div></footer>
 
 <script>
 const PAGES = {
@@ -1136,16 +1140,471 @@ local     pgdata`, 'Контейнеры удалены, а тома с данн
       <p>Связи и JOIN, индексы и скорость, транзакции, миграции, права доступа, бэкапы по расписанию и подключение из Python и Node.js.</p>
     </a>
   </article>`,
+  bots: [{ t: 'Бот в Telegram', f: () => `
+  <article class="lesson">
+    <p class="kicker">Боты · Урок 1</p>
+    <h1>🤖 Свой Telegram-бот за вечер</h1>
+    <p class="meta"><span class="brief">≈ 15 минут · только суть и команды</span><span class="full">≈ 35 минут · с объяснениями и разбором ошибок</span></p>
+    <ul class="toc">
+      <li><button data-go="what">Что это</button></li>
+      <li><button data-go="why">Зачем это вам</button></li>
+      <li><button data-go="how">Как сделать</button></li>
+      <li><button data-go="cheat">Шпаргалка</button></li>
+    </ul>
+    <div class="progress"><span></span><div class="progress-bar"><i></i></div>
+      <small>Отмечайте пройденные шаги галочкой «Отметить прохождение» внизу каждого шага. Прогресс сохраняется в этом браузере.</small></div>
+
+    <h2 id="what">Что это</h2>
+    <p class="brief"><b>Telegram-бот</b> — это программа, которая переписывается с людьми в Telegram от имени специального аккаунта.
+      Аккаунт бота создаётся в официальном боте <b>@BotFather</b>, а «мозг» бота — ваша программа на Python, запущенная на компьютере или сервере.</p>
+    <div class="full">
+      <p><b>Telegram-бот</b> выглядит как обычный собеседник, но отвечает ему программа. Важно понимать, как это устроено:
+        сам Telegram только <b>передаёт сообщения</b>. Отвечает ваша программа, которая где-то запущена — сначала на вашем компьютере, потом на сервере.</p>
+      <div class="flow">
+        <div>Пользователь<small>пишет боту</small></div><span>→</span>
+        <div>Telegram<small>хранит сообщение</small></div><span>Bot API →</span>
+        <div>Ваша программа<small>решает, что ответить</small></div>
+      </div>
+      <div class="tbl"><table>
+        <tr><th>Слово</th><th>Что значит</th></tr>
+        <tr><td>@BotFather</td><td>Официальный бот Telegram, через который создают и настраивают ботов.</td></tr>
+        <tr><td>Токен</td><td>Пароль бота: <code>1234567890:AAH…</code>. Кто знает токен — управляет ботом.</td></tr>
+        <tr><td>Bot API</td><td>Способ, которым программа получает сообщения и отправляет ответы.</td></tr>
+        <tr><td>Polling</td><td>Программа сама постоянно спрашивает Telegram «есть новое?». Работает откуда угодно, даже с домашнего ноутбука.</td></tr>
+        <tr><td>aiogram</td><td>Популярная библиотека на Python для ботов. Берёт на себя всю работу с Bot API.</td></tr>
+      </table></div>
+    </div>
+    <div class="callout"><p><b>Бот работает, пока работает программа.</b> В этом уроке она запущена на вашем компьютере — выключили компьютер, бот замолчал.
+      Как сделать бота круглосуточным — в <a href="#/bots/2">уроке 2</a>.</p></div>
+
+    <h2 id="why">Зачем это вам</h2>
+    <ul>
+      <li><b>Автоматизация рутины.</b> Заявки, напоминания, ответы на частые вопросы — без вашего участия.</li>
+      <li><b>Уведомления.</b> Новый заказ, упал сайт, пришёл платёж — сообщение прямо в Telegram.</li>
+      <li><b>Сервис без сайта и приложения.</b> Запись, приём заказов, опросы — в мессенджере, который у всех уже есть.<span class="full"> Не нужно ни верстать сайт, ни публиковать приложение в магазинах.</span></li>
+      <li><b>Инструмент для команды.</b> Отчёты, доступы, учёт — внутренние боты экономят часы.</li>
+      <li><b>Интерфейс к ИИ.</b> Бот — самый простой способ дать людям доступ к своему ИИ-агенту.</li>
+      <li><b>Бесплатно.</b> Telegram не берёт денег за ботов.<span class="full"> Платить придётся только за сервер — от пары сотен рублей в месяц (урок 2).</span></li>
+    </ul>
+
+    <h2 id="how">Как сделать</h2>
+
+    <h3>${step("bots", 1)}Создайте бота в @BotFather</h3>
+    <p>В Telegram найдите <b>@BotFather</b> (с синей галочкой), нажмите <b>Start</b> и отправьте <code>/newbot</code>.
+      Введите имя бота (любое, например «Мой первый бот»), затем username — латиницей и обязательно с окончанием <code>bot</code>, например <code>ivan_test_123_bot</code>.</p>
+    ${out(`Done! Congratulations on your new bot. You will find it at t.me/ivan_test_123_bot.
+...
+Use this token to access the HTTP API:
+1234567890:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw
+Keep your token secure and store it safely, it can be used by anyone to control your bot.`,
+      'Это ответ BotFather. Скопируйте токен — строку вида <code>цифры:буквы</code>. Если пишет <code>Sorry, this username is already taken</code> — придумайте другой username.')}
+    <div class="callout warn"><p><b>Токен — это пароль.</b> Не публикуйте его и не коммитьте в Git.
+      Если токен утёк — в @BotFather: <code>/mybots</code> → ваш бот → <b>API Token</b> → <b>Revoke</b>, и получите новый.</p></div>
+    ${done("bots", 1)}
+
+    <h3>${step("bots", 2)}Установите Python</h3>
+    ${by({
+      Windows: code('winget install -e --id Python.Python.3.13'),
+      macOS: code('brew install python'),
+      Linux: code('sudo apt install -y python3 python3-venv python3-pip'),
+    })}
+    ${by({
+      Windows: out('Найдено Python 3.13 [Python.Python.3.13] Версия 3.13.9\n...\nУспешно установлено', 'После установки <b>закройте и снова откройте терминал</b>.'),
+      macOS: out('==> Pouring python@3.13--3.13.9.arm64_sequoia.bottle.tar.gz\n🍺  /opt/homebrew/Cellar/python@3.13/3.13.9: 3,615 files, 66MB', 'Нет Homebrew — скачайте установщик с <b>python.org</b> → Downloads.'),
+      Linux: out('...\nSetting up python3-venv (3.12.3-0ubuntu2) ...\nSetting up python3-pip (24.0+dfsg-1ubuntu1.3) ...', 'Если пишет <code>already the newest version</code> — Python уже есть. На Fedora: <code>sudo dnf install python3</code>.'),
+    })}
+    <p>Проверьте:</p>
+    ${code(by({ Windows: 'python --version', macOS: 'python3 --version', Linux: 'python3 --version' }))}
+    ${out(by({ Windows: 'Python 3.13.9', macOS: 'Python 3.13.9', Linux: 'Python 3.12.3' }), 'Нужна версия 3.10 или новее. ' + by({
+      Windows: 'Если вместо версии открылся Microsoft Store — отключите в Параметрах: Приложения → Дополнительные параметры → <b>Псевдонимы выполнения приложений</b> → выключите оба «Установщик приложения python».',
+      macOS: '', Linux: '' }))}
+    ${done("bots", 2)}
+
+    <h3>${step("bots", 3)}Создайте проект и установите aiogram</h3>
+    ${by({
+      Windows: code('mkdir mybot\ncd mybot\npython -m venv .venv\n.venv\\Scripts\\Activate.ps1\npip install aiogram python-dotenv'),
+      macOS: code('mkdir mybot\ncd mybot\npython3 -m venv .venv\nsource .venv/bin/activate\npip install aiogram python-dotenv'),
+      Linux: code('mkdir mybot\ncd mybot\npython3 -m venv .venv\nsource .venv/bin/activate\npip install aiogram python-dotenv'),
+    })}
+    ${out(by({ Windows: '(.venv) PS C:\\Users\\Иван\\mybot> pip install aiogram python-dotenv', macOS: '(.venv) ivan@MacBook mybot % pip install aiogram python-dotenv', Linux: '(.venv) ivan@ubuntu:~/mybot$ pip install aiogram python-dotenv' }) + `
+Collecting aiogram
+...
+Successfully installed aiofiles-24.1.0 aiogram-3.22.0 aiohttp-3.12.15 ... python-dotenv-1.1.1 ...`,
+      'Главное — <code>(.venv)</code> в начале строки (окружение включено) и <code>Successfully installed</code>.' + by({
+        Windows: ' Если PowerShell пишет «<b>выполнение сценариев отключено в этой системе</b>» — выполните <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>, ответьте <code>Y</code> и повторите активацию.',
+        macOS: '', Linux: '' }))}
+    <div class="full">
+      <p><b>Виртуальное окружение</b> (<code>.venv</code>) — отдельная папка с библиотеками только для этого проекта, чтобы разные проекты не мешали друг другу.
+        Его нужно <b>активировать каждый раз</b>, когда открываете новый терминал: <code>${by({ Windows: '.venv\\Scripts\\Activate.ps1', macOS: 'source .venv/bin/activate', Linux: 'source .venv/bin/activate' })}</code>.</p>
+      <p><code>aiogram</code> — библиотека для ботов, <code>python-dotenv</code> — читает токен из файла <code>.env</code>, чтобы не держать его в коде.</p>
+    </div>
+    ${done("bots", 3)}
+
+    <h3>${step("bots", 4)}Сохраните токен в .env</h3>
+    <p>Замените <code>ВСТАВЬТЕ_ТОКЕН</code> на токен из шага 1:</p>
+    ${by({
+      Windows: code('Set-Content .env "BOT_TOKEN=ВСТАВЬТЕ_ТОКЕН"\n".env", ".venv/" | Set-Content .gitignore'),
+      macOS: code('echo "BOT_TOKEN=ВСТАВЬТЕ_ТОКЕН" > .env\nprintf ".env\\n.venv/\\n" > .gitignore'),
+      Linux: code('echo "BOT_TOKEN=ВСТАВЬТЕ_ТОКЕН" > .env\nprintf ".env\\n.venv/\\n" > .gitignore'),
+    })}
+    ${out('', 'Проверьте: <code>' + by({ Windows: 'Get-Content .env', macOS: 'cat .env', Linux: 'cat .env' }) + '</code> покажет <code>BOT_TOKEN=1234567890:AAH…</code> — без пробелов и кавычек вокруг токена.')}
+    <p class="full">Вторая строка создаёт <code>.gitignore</code>: если проект попадёт в Git (а в уроке 2 попадёт), токен и библиотеки туда не уйдут.
+      Подробнее — в <a href="#/git">уроке по Git</a>.</p>
+    ${done("bots", 4)}
+
+    <h3>${step("bots", 5)}Напишите код бота</h3>
+    <p>Создайте в папке <code>mybot</code> файл <code>bot.py</code> ${by({ Windows: '(например, <code>notepad bot.py</code> → «Да», создать файл)', macOS: '(например, в VS Code или <code>nano bot.py</code>)', Linux: '(например, в VS Code или <code>nano bot.py</code>)' })} и вставьте:</p>
+    ${code(`import asyncio
+import logging
+import os
+
+from aiogram import Bot, Dispatcher, F
+from aiogram.filters import CommandStart
+from aiogram.types import Message
+from dotenv import load_dotenv
+
+load_dotenv()
+bot = Bot(os.environ["BOT_TOKEN"])
+dp = Dispatcher()
+
+
+@dp.message(CommandStart())
+async def start(message: Message):
+    await message.answer(f"Привет, {message.from_user.first_name}! Напиши мне что-нибудь — я повторю.")
+
+
+@dp.message(F.text)
+async def echo(message: Message):
+    await message.answer(f"Вы написали: {message.text}")
+
+
+async def main():
+    logging.basicConfig(level=logging.INFO)
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())`)}
+    <div class="full">
+      <ul>
+        <li><code>load_dotenv()</code> читает <code>.env</code>, <code>Bot(...)</code> — подключение к Telegram по токену.</li>
+        <li><code>Dispatcher</code> — «диспетчер»: решает, какая функция обработает сообщение.</li>
+        <li><code>@dp.message(CommandStart())</code> — функция ниже срабатывает на команду <code>/start</code>.</li>
+        <li><code>@dp.message(F.text)</code> — на любой текст. Порядок важен: сначала проверяется <code>/start</code>, потом всё остальное.</li>
+        <li><code>message.answer(...)</code> — ответить в тот же чат.</li>
+        <li><code>start_polling</code> — бесконечно спрашивать Telegram о новых сообщениях.</li>
+      </ul>
+      <p>В Python важны <b>отступы</b> — 4 пробела внутри функций. Копируйте код кнопкой «Копировать», чтобы они не сбились.</p>
+    </div>
+    ${done("bots", 5)}
+
+    <h3>${step("bots", 6)}Запустите и напишите боту</h3>
+    ${code('python bot.py')}
+    ${out(`INFO:aiogram.dispatcher:Start polling
+INFO:aiogram.dispatcher:Run polling for bot @ivan_test_123_bot id=1234567890 - 'Мой первый бот'`,
+      'Бот запущен — терминал «занят», так и должно быть. Откройте бота в Telegram (ссылка <code>t.me/…</code> из шага 1), нажмите <b>Start</b> и напишите что-нибудь — бот повторит. Остановить бота — <code>Ctrl + C</code>.')}
+    <p>После каждого сообщения в терминале появится строка:</p>
+    ${out('INFO:aiogram.event:Update id=123456789 is handled. Duration 85 ms by bot id=1234567890', 'Сообщение обработано. Если вместо этого ошибка — она будет здесь же, в терминале.')}
+    <p class="full">Поменяли код — остановите бота (<code>Ctrl + C</code>) и запустите снова, иначе изменения не подхватятся.
+      Попробуйте заменить текст приветствия на свой — это лучший способ понять, как всё работает.</p>
+    ${done("bots", 6)}
+
+    <h3>${step("bots", 7)}Оформите бота</h3>
+    <p>В @BotFather отправьте <code>/setcommands</code>, выберите своего бота и отправьте список команд:</p>
+    ${code('start - Начать работу')}
+    ${out('Success! Command list updated. /help', 'Теперь у бота появится кнопка «Меню» с командой /start.')}
+    <p>Там же: <code>/setuserpic</code> — аватарка, <code>/setdescription</code> — текст, который видят до нажатия Start,
+      <code>/setabouttext</code> — описание в профиле бота.</p>
+    ${done("bots", 7)}
+
+    <div class="full">
+      <h3>Частые ошибки</h3>
+      <div class="tbl"><table>
+        <tr><th>Сообщение</th><th>Что делать</th></tr>
+        <tr><td>KeyError: 'BOT_TOKEN'</td><td>Нет файла <code>.env</code> в папке, откуда вы запускаете бота, или опечатка в названии переменной.</td></tr>
+        <tr><td>TokenValidationError / Unauthorized</td><td>Неверный токен: лишние пробелы, кавычки или токен отозван. Скопируйте заново из @BotFather.</td></tr>
+        <tr><td>No module named 'aiogram'</td><td>Окружение не активировано (нет <code>(.venv)</code> в начале строки). Активируйте его — шаг 3.</td></tr>
+        <tr><td>TelegramConflictError: terminated by other getUpdates request</td><td>Бот запущен дважды — в другом окне терминала или уже на сервере. Оставьте одну копию.</td></tr>
+        <tr><td>IndentationError</td><td>Сбились отступы в <code>bot.py</code>. Скопируйте код заново кнопкой «Копировать».</td></tr>
+        <tr><td>Бот молчит, ошибок нет</td><td>Убедитесь, что пишете именно своему боту (username из шага 1) и что программа запущена.</td></tr>
+        <tr><td>выполнение сценариев отключено</td><td>Windows: <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>.</td></tr>
+      </table></div>
+    </div>
+
+    <h2 id="cheat">Шпаргалка</h2>
+    <div class="tbl"><table>
+      <tr><td>/newbot</td><td>Создать бота (в @BotFather)</td></tr>
+      <tr><td>/mybots</td><td>Настройки ботов, отзыв токена</td></tr>
+      <tr><td>/setcommands</td><td>Меню команд</td></tr>
+      <tr><td>/setuserpic · /setdescription</td><td>Аватарка и описание</td></tr>
+      <tr><td>${by({ Windows: '.venv\\Scripts\\Activate.ps1', macOS: 'source .venv/bin/activate', Linux: 'source .venv/bin/activate' })}</td><td>Включить окружение</td></tr>
+      <tr><td>pip install aiogram python-dotenv</td><td>Установить библиотеки</td></tr>
+      <tr><td>python bot.py</td><td>Запустить бота</td></tr>
+      <tr><td>Ctrl + C</td><td>Остановить бота</td></tr>
+    </table></div>
+
+    <a class="next" href="#/bots/2">
+      <h3>Урок 2: бот на своём сервере →</h3>
+      <p>Сейчас бот работает, только пока включён ваш компьютер. Перенесём его на сервер — круглосуточно и с автоперезапуском.</p>
+    </a>
+  </article>` },
+  { t: 'Бот на своём сервере', f: () => `
+  <article class="lesson">
+    <p class="kicker">Боты · Урок 2</p>
+    <h1>🖥️ Бот на своём сервере 24/7</h1>
+    <p class="meta"><span class="brief">≈ 20 минут · только суть и команды</span><span class="full">≈ 45 минут · с объяснениями и разбором ошибок</span></p>
+    <ul class="toc">
+      <li><button data-go="what">Что это</button></li>
+      <li><button data-go="why">Зачем это вам</button></li>
+      <li><button data-go="how">Как сделать</button></li>
+      <li><button data-go="cheat">Шпаргалка</button></li>
+    </ul>
+    <div class="progress"><span></span><div class="progress-bar"><i></i></div>
+      <small>Отмечайте пройденные шаги галочкой «Отметить прохождение» внизу каждого шага. Прогресс сохраняется в этом браузере.</small></div>
+    <p>Нужен бот из <a href="#/bots">урока 1</a> и проект в GitHub (<a href="#/git">урок по Git</a>, шаги 8–9).</p>
+
+    <h2 id="what">Что это</h2>
+    <p class="brief"><b>VPS</b> — арендованный компьютер в дата-центре: работает круглосуточно, с Linux, управляется через терминал по <b>SSH</b>.
+      На нём бот запускается как <b>служба systemd</b> — стартует вместе с сервером и сам перезапускается, если упал.</p>
+    <div class="full">
+      <p>В уроке 1 бот жил на вашем компьютере: закрыли ноутбук — бот замолчал. Чтобы он работал всегда, программу запускают на <b>сервере</b>.
+        Проще и дешевле всего — арендовать <b>VPS</b> (виртуальный сервер): кусочек мощного компьютера в дата-центре, со своей ОС (обычно Ubuntu),
+        постоянным интернетом и электричеством.</p>
+      <p>Экрана и мышки у сервера нет — им управляют из терминала по <b>SSH</b>: вы набираете команды у себя, а выполняются они на сервере.</p>
+      <div class="flow">
+        <div>Ваш компьютер<small>терминал</small></div><span>ssh →</span>
+        <div>Сервер Ubuntu<small>работает 24/7</small></div><span>systemd →</span>
+        <div>bot.py<small>отвечает в Telegram</small></div>
+      </div>
+      <div class="tbl"><table>
+        <tr><th>Слово</th><th>Что значит</th></tr>
+        <tr><td>VPS</td><td>Виртуальный сервер в аренду. 1 ядро и 1 ГБ памяти хватит на несколько ботов.</td></tr>
+        <tr><td>SSH</td><td>Защищённое подключение к терминалу сервера.</td></tr>
+        <tr><td>SSH-ключ</td><td>Пара файлов вместо пароля: публичный кладут на сервер, приватный остаётся у вас. Надёжнее любого пароля.</td></tr>
+        <tr><td>systemd</td><td>Менеджер служб Linux: запускает программы при старте и перезапускает при сбое.</td></tr>
+        <tr><td>journalctl</td><td>Просмотр логов служб systemd.</td></tr>
+      </table></div>
+    </div>
+
+    <h2 id="why">Зачем это вам</h2>
+    <ul>
+      <li><b>Круглосуточно.</b> Бот отвечает, даже когда ваш компьютер выключен.</li>
+      <li><b>Сам поднимается.</b> Упал из-за ошибки или сервер перезагрузился — systemd запустит бота снова через 5 секунд.</li>
+      <li><b>Недорого.</b> Самый простой VPS стоит как пара чашек кофе в месяц.</li>
+      <li><b>Один сервер — много всего.</b> Несколько ботов, база данных, сайт — на одной машине.<span class="full"> Базу из <a href="#/databases">урока по базам данных</a> можно поднять здесь же.</span></li>
+      <li><b>Обновление за минуту.</b> Поправили код у себя → <code>git push</code> → на сервере <code>git pull</code> и перезапуск.</li>
+    </ul>
+
+    <h2 id="how">Как сделать</h2>
+
+    <h3>${step("bots2", 1)}Арендуйте сервер</h3>
+    <p>Выберите любого хостинг-провайдера с VPS (например, Timeweb Cloud, Selectel, REG.RU, Hetzner, DigitalOcean) и создайте сервер:
+      <b>Ubuntu 24.04</b>, 1 CPU, 1 ГБ RAM, 10+ ГБ диска. После создания вы получите <b>IP-адрес</b> (вида <code>203.0.113.10</code>) и пароль <b>root</b>.</p>
+    <p class="full">Многие провайдеры при создании сервера предлагают сразу добавить SSH-ключ — если умеете, добавьте (шаг 2 станет короче).
+      Локацию выбирайте поближе к пользователям; главное — чтобы из неё был доступен <code>api.telegram.org</code>.</p>
+    ${done("bots2", 1)}
+
+    <h3>${step("bots2", 2)}Подключитесь по SSH-ключу</h3>
+    <p>На <b>своём</b> компьютере создайте ключ (на все вопросы — Enter) и отправьте его на сервер. <code>IP_СЕРВЕРА</code> замените на свой IP:</p>
+    ${by({
+      Windows: code('ssh-keygen -t ed25519\ntype $env:USERPROFILE\\.ssh\\id_ed25519.pub | ssh root@IP_СЕРВЕРА "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"'),
+      macOS: code('ssh-keygen -t ed25519\nssh-copy-id root@IP_СЕРВЕРА'),
+      Linux: code('ssh-keygen -t ed25519\nssh-copy-id root@IP_СЕРВЕРА'),
+    })}
+    ${out(`Generating public/private ed25519 key pair.
+Enter file in which to save the key (${by({ Windows: 'C:\\Users\\Иван/.ssh/id_ed25519', macOS: '/Users/ivan/.ssh/id_ed25519', Linux: '/home/ivan/.ssh/id_ed25519' })}):
+Enter passphrase (empty for no passphrase):
+Your identification has been saved in ...
+The authenticity of host '203.0.113.10 (203.0.113.10)' can't be established.
+ED25519 key fingerprint is SHA256:Xb3k...
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+root@203.0.113.10's password:` + by({ Windows: '', macOS: '\n\nNumber of key(s) added: 1', Linux: '\n\nNumber of key(s) added: 1' }),
+      'На вопрос <code>yes/no</code> напечатайте <code>yes</code>, затем введите пароль root от провайдера (символы не отображаются — это нормально). Если ключ уже был — <code>ssh-keygen</code> спросит <code>Overwrite?</code>: ответьте <code>n</code>.')}
+    <p>Теперь входите без пароля:</p>
+    ${code('ssh root@IP_СЕРВЕРА')}
+    ${out(`Welcome to Ubuntu 24.04.3 LTS (GNU/Linux 6.8.0-85-generic x86_64)
+...
+root@vm123456:~#`, 'Приглашение <code>root@…:~#</code> — вы на сервере. Все следующие команды выполняются <b>там</b>. Выйти с сервера — <code>exit</code>.')}
+    ${done("bots2", 2)}
+
+    <h3>${step("bots2", 3)}Подготовьте сервер</h3>
+    ${code(`apt update && apt upgrade -y
+apt install -y python3 python3-venv git
+adduser --disabled-password --gecos "" bot`)}
+    ${out(`...
+Setting up python3-venv (3.12.3-0ubuntu2) ...
+info: Adding user 'bot' ...
+info: Selecting UID/GID from range 1000 to 59999 ...
+info: Adding new group 'bot' (1000) ...
+info: Creating home directory '/home/bot' ...`, 'Если во время обновления появится розовое окно с вопросом — просто нажмите Enter.')}
+    <p class="full">Бот будет работать от отдельного пользователя <code>bot</code>, а не от <code>root</code>: если в коде бота найдётся уязвимость,
+      злоумышленник получит доступ только к папке бота, а не ко всему серверу.</p>
+    ${done("bots2", 3)}
+
+    <h3>${step("bots2", 4)}Перенесите код на сервер</h3>
+    <p>Залейте папку <code>mybot</code> из урока 1 в GitHub (<a href="#/git">урок по Git</a>, шаг 9). Для приватного репозитория при клонировании понадобится вход — проще сделать репозиторий публичным: токен всё равно не в Git.</p>
+    ${code(`su - bot
+git clone https://github.com/ВАШ_ЛОГИН/mybot.git
+cd mybot
+python3 -m venv .venv
+.venv/bin/pip install aiogram python-dotenv`)}
+    ${out(`Cloning into 'mybot'...
+...
+Receiving objects: 100% (4/4), done.
+...
+Successfully installed aiofiles-24.1.0 aiogram-3.22.0 ... python-dotenv-1.1.1 ...`, 'После <code>su - bot</code> приглашение сменится на <code>bot@…:~$</code> — вы работаете от имени пользователя bot.')}
+    <p class="full">Без GitHub файл можно закинуть напрямую со своего компьютера: <code>scp bot.py root@IP_СЕРВЕРА:/home/bot/</code>,
+      затем на сервере <code>chown bot:bot /home/bot/bot.py</code>. Но Git удобнее: обновлять бота потом — одна команда.</p>
+    ${done("bots2", 4)}
+
+    <h3>${step("bots2", 5)}Положите токен на сервер</h3>
+    <div class="callout warn"><p><b>Сначала остановите бота на своём компьютере</b> (<code>Ctrl + C</code>). Две запущенные копии с одним токеном мешают друг другу.</p></div>
+    ${code(`echo "BOT_TOKEN=ВСТАВЬТЕ_ТОКЕН" > .env
+chmod 600 .env
+.venv/bin/python bot.py`)}
+    ${out(`INFO:aiogram.dispatcher:Start polling
+INFO:aiogram.dispatcher:Run polling for bot @ivan_test_123_bot id=1234567890 - 'Мой первый бот'`,
+      'Бот запущен уже на сервере — проверьте его в Telegram. Затем остановите <code>Ctrl + C</code> и вернитесь в root командой <code>exit</code>: запускать будем через systemd.')}
+    <p class="full"><code>chmod 600</code> — читать файл с токеном может только пользователь bot. Пробный запуск руками нужен, чтобы убедиться, что всё работает,
+      до того как прятать бота в службу: ошибки так видно сразу.</p>
+    ${done("bots2", 5)}
+
+    <h3>${step("bots2", 6)}Сделайте бота службой systemd</h3>
+    <p>Вы снова <code>root</code>. Создайте файл службы:</p>
+    ${code('nano /etc/systemd/system/tgbot.service')}
+    <p>Вставьте (в nano — правой кнопкой мыши или <code>Ctrl + Shift + V</code>), сохраните <code>Ctrl + O</code>, Enter, выйдите <code>Ctrl + X</code>:</p>
+    ${code(`[Unit]
+Description=Telegram bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=bot
+WorkingDirectory=/home/bot/mybot
+ExecStart=/home/bot/mybot/.venv/bin/python bot.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target`)}
+    <p>Запустите службу:</p>
+    ${code(`systemctl daemon-reload
+systemctl enable --now tgbot
+systemctl status tgbot`)}
+    ${out(`Created symlink /etc/systemd/system/multi-user.target.wants/tgbot.service → /etc/systemd/system/tgbot.service.
+● tgbot.service - Telegram bot
+     Loaded: loaded (/etc/systemd/system/tgbot.service; enabled; preset: enabled)
+     Active: active (running) since Thu 2026-10-22 10:00:00 UTC; 3s ago
+   Main PID: 12345 (python)
+     Memory: 38.5M
+...
+Oct 22 10:00:01 vm123456 python[12345]: INFO:aiogram.dispatcher:Run polling for bot @ivan_test_123_bot ...`,
+      'Главное — <code>active (running)</code> зелёным. Если внизу <code>lines 1-15</code> и курсор не возвращается — нажмите <code>q</code>. Теперь можно закрыть терминал и выключить компьютер — бот продолжит работать.')}
+    <div class="full">
+      <div class="tbl"><table>
+        <tr><th>Строка</th><th>Что значит</th></tr>
+        <tr><td>After=network-online.target</td><td>Запускать после того, как появится интернет.</td></tr>
+        <tr><td>User=bot</td><td>От имени пользователя bot, а не root.</td></tr>
+        <tr><td>WorkingDirectory</td><td>Папка, где лежат <code>bot.py</code> и <code>.env</code>.</td></tr>
+        <tr><td>ExecStart</td><td>Команда запуска — Python из окружения проекта, полный путь.</td></tr>
+        <tr><td>Restart=always</td><td>Упал — перезапустить через <code>RestartSec=5</code> секунд.</td></tr>
+        <tr><td>WantedBy=multi-user.target</td><td>Вместе с <code>enable</code>: запускать при старте сервера.</td></tr>
+      </table></div>
+      <p>Проверьте самое главное — перезагрузку: <code>reboot</code>, подождите минуту и напишите боту. Он должен ответить сам, без вашего участия.</p>
+    </div>
+    ${done("bots2", 6)}
+
+    <h3>${step("bots2", 7)}Логи и управление</h3>
+    ${code(`journalctl -u tgbot -f       # логи в реальном времени, выход — Ctrl + C
+systemctl restart tgbot      # перезапустить
+systemctl stop tgbot         # остановить`)}
+    ${out(`Oct 22 10:05:12 vm123456 python[12345]: INFO:aiogram.event:Update id=123456790 is handled. Duration 92 ms by bot id=1234567890
+Oct 22 10:05:20 vm123456 python[12345]: INFO:aiogram.event:Update id=123456791 is handled. Duration 77 ms by bot id=1234567890`,
+      'Каждое сообщение боту — новая строка в логе. <code>restart</code> и <code>stop</code> ничего не выводят.')}
+    <p class="full">Бот не отвечает — первым делом смотрите последние строки лога: <code>journalctl -u tgbot -n 50</code>. Там будет ошибка Python с номером строки.</p>
+    ${done("bots2", 7)}
+
+    <h3>${step("bots2", 8)}Обновляйте бота</h3>
+    <p>Поправили код на своём компьютере и сделали <code>git push</code>. Затем на сервере (под root):</p>
+    ${code(`su - bot -c "cd mybot && git pull"
+systemctl restart tgbot`)}
+    ${out(`Updating a1b2c3d..e4f5a6b
+Fast-forward
+ bot.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)`, 'Новый код подтянулся, после <code>restart</code> бот работает уже с ним. Если добавили новые библиотеки — установите их: <code>su - bot -c "cd mybot && .venv/bin/pip install имя"</code>.')}
+    <p class="full">Это и есть цикл работы: правите и проверяете локально → <code>git push</code> → на сервере <code>git pull</code> + <code>restart</code>.
+      Как сделать, чтобы сервер обновлялся сам после каждого push, — в продвинутом курсе (GitHub Actions).</p>
+    ${done("bots2", 8)}
+
+    <h3>${step("bots2", 9)}Защитите сервер</h3>
+    ${code(`ufw allow OpenSSH
+ufw enable`)}
+    ${out(`Rules updated
+Rules updated (v6)
+Command may disrupt existing ssh connections. Proceed with operation (y|n)? y
+Firewall is active and enabled on system startup`, 'Ответьте <code>y</code>. Теперь снаружи открыт только SSH. Боту на polling входящие порты не нужны — он сам ходит в Telegram.')}
+    <div class="full">
+      <p>Серверы с паролем root постоянно пытаются подобрать боты-взломщики. Раз вход по ключу работает — отключите вход по паролю:</p>
+      ${code(`echo "PasswordAuthentication no" > /etc/ssh/sshd_config.d/no-password.conf
+systemctl restart ssh`)}
+      ${out('', 'Проверьте в <b>новом</b> окне терминала, что <code>ssh root@IP_СЕРВЕРА</code> по-прежнему пускает. Старое окно не закрывайте, пока не убедились.')}
+      <p>И включите автоматические обновления безопасности: <code>apt install -y unattended-upgrades</code> (на Ubuntu обычно уже стоит).</p>
+    </div>
+    ${done("bots2", 9)}
+
+    <div class="full">
+      <h3>Частые ошибки</h3>
+      <div class="tbl"><table>
+        <tr><th>Сообщение</th><th>Что делать</th></tr>
+        <tr><td>Permission denied (publickey)</td><td>Ключ не попал на сервер или вы входите не тем пользователем. Повторите шаг 2.</td></tr>
+        <tr><td>Connection timed out</td><td>Неверный IP, сервер выключен или порт 22 закрыт. Проверьте в панели провайдера.</td></tr>
+        <tr><td>REMOTE HOST IDENTIFICATION HAS CHANGED</td><td>Сервер переустанавливали. Выполните у себя <code>ssh-keygen -R IP_СЕРВЕРА</code> и подключитесь снова.</td></tr>
+        <tr><td>activating (auto-restart) / failed</td><td>Бот падает при старте. Причина — в <code>journalctl -u tgbot -n 50</code>.</td></tr>
+        <tr><td>status=203/EXEC</td><td>Неверный путь в <code>ExecStart</code>. Проверьте, что <code>/home/bot/mybot/.venv/bin/python</code> существует.</td></tr>
+        <tr><td>KeyError: 'BOT_TOKEN'</td><td>Нет <code>.env</code> в <code>WorkingDirectory</code> или у пользователя bot нет к нему доступа.</td></tr>
+        <tr><td>TelegramConflictError</td><td>Бот всё ещё запущен на вашем компьютере. Остановите его там.</td></tr>
+        <tr><td>could not read Username for 'https://github.com'</td><td>Репозиторий приватный. Сделайте его публичным или настройте доступ (продвинутый курс).</td></tr>
+      </table></div>
+    </div>
+
+    <h2 id="cheat">Шпаргалка</h2>
+    <div class="tbl"><table>
+      <tr><td>ssh root@IP_СЕРВЕРА</td><td>Войти на сервер</td></tr>
+      <tr><td>systemctl status tgbot</td><td>Работает ли бот</td></tr>
+      <tr><td>journalctl -u tgbot -f</td><td>Логи в реальном времени</td></tr>
+      <tr><td>journalctl -u tgbot -n 50</td><td>Последние 50 строк лога</td></tr>
+      <tr><td>systemctl restart tgbot</td><td>Перезапустить</td></tr>
+      <tr><td>systemctl stop / start tgbot</td><td>Остановить / запустить</td></tr>
+      <tr><td>su - bot -c "cd mybot && git pull"</td><td>Забрать новый код</td></tr>
+      <tr><td>exit</td><td>Выйти с сервера</td></tr>
+    </table></div>
+
+    <a class="next" href="#/bots/advanced">
+      <h3>Продвинутые боты →</h3>
+      <p>Кнопки и меню, диалоги с состояниями, база данных для бота, webhook, платежи, рассылки и деплой в Docker с автообновлением.</p>
+    </a>
+  </article>` }],
 };
 
 const ADVANCED = {
   git: ['Ветки и слияние', 'Конфликты и как их решать', 'Отмена коммитов: revert и reset', 'Rebase', 'Stash — отложить изменения',
     'Теги и релизы', 'Pull request и код-ревью', 'GitHub Actions: автоматический деплой'],
+  bots: ['Кнопки и меню (inline-клавиатуры)', 'Диалоги с состояниями (FSM)', 'База данных для бота', 'Webhook вместо polling',
+    'Платежи в Telegram', 'Рассылки и лимиты Telegram', 'Админ-панель бота', 'Docker и автодеплой бота'],
   databases: ['Связи между таблицами и JOIN', 'Индексы и скорость запросов', 'Транзакции', 'Миграции схемы',
     'Пользователи и права доступа', 'Бэкапы по расписанию', 'Подключение из Python и Node.js', 'Redis: кэш и очереди'],
   docker: ['Dockerfile: свой образ', 'Многоэтапная сборка и лёгкие образы', 'Тома и бэкапы данных', 'Сети между контейнерами',
     'Compose: приложение + база данных', 'Переменные окружения и .env', 'Публикация образа: Docker Hub и GHCR', 'Docker на сервере: деплой и автообновление'],
 };
+
+// Раздел = один урок (функция) или несколько ({ t, f }); урок N открывается по #/раздел/N
+function lessonView(id, sub, badge) {
+  const list = [].concat(LESSONS[id]).map(l => typeof l === 'function' ? { f: l } : l);
+  const i = Math.min(Math.max(parseInt(sub) || 1, 1), list.length) - 1;
+  const tabs = list.length > 1 ? `<nav class="ltabs">${list.map((l, k) =>
+    `<a href="#/${id}${k ? '/' + (k + 1) : ''}"${k === i ? ' class="active"' : ''}>Урок ${k + 1}. ${l.t}</a>`).join('')}</nav>` : '';
+  return `<div class="narrow">${badge}${tabs}${list[i].f()}</div>`;
+}
 
 function render() {
   const [id, sub] = location.hash.slice(2).split('/');
@@ -1167,7 +1626,7 @@ function render() {
         <p>Скоро здесь появятся:</p>
         <p>${ADVANCED[id].join(' · ')}</p>
       </div>
-    </section>` : page && LESSONS[id] ? `<div class="narrow">${badge}${LESSONS[id]()}</div>` : page ? `
+    </section>` : page && LESSONS[id] ? lessonView(id, sub, badge) : page ? `
     <section class="hero">${badge}
       <h1>${page[1]} ${page[0]}</h1>
       <p class="lead">${page[2]}</p>
@@ -1180,7 +1639,7 @@ function render() {
     <section class="hero">${badge}
       <h1>Учитесь <span class="grad">быстро</span>.<br>Делайте то, что нужно.</h1>
       <p class="lead brief">Короткие практические уроки без воды. Для Windows, Linux и macOS.</p>
-      <p class="lead full">Академия быстрого обучения для занятых людей. Никакой воды и долгих курсов —
+      <p class="lead full">FastAcadem — академия быстрого обучения для занятых людей. Никакой воды и долгих курсов —
         только короткие практические уроки, после которых вы сразу сделаете нужное дело:
         заведёте аккаунт, запустите бота, настроите агента, базу данных или Docker.
         Каждый урок — для Windows, Linux и macOS.</p>
@@ -1190,7 +1649,7 @@ function render() {
     </section>`;
   document.querySelectorAll('#app [data-done]').forEach(b => b.checked = store('done:' + b.dataset.done) === '1');
   progress();
-  document.title = (page ? page[0] + ' — ' : '') + 'Академия быстрого обучения';
+  document.title = (page ? page[0] + ' — ' : '') + 'FastAcadem';
 }
 
 function applyTheme() {
