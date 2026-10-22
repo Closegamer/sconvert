@@ -207,7 +207,7 @@ const store = (k, v) => { try { return v === undefined ? localStorage.getItem(k)
 
 let os = store('os') || (/Mac/.test(navigator.platform) ? 'macOS' : /Linux/.test(navigator.platform) ? 'Linux' : 'Windows');
 let mode = store('mode') || 'brief';
-let theme = store('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+let theme = store('theme') || 'light';
 
 $('#nav').innerHTML = Object.entries(PAGES).map(([id, [t]]) => `<a href="#/${id}" data-id="${id}">${t}</a>`).join('');
 
