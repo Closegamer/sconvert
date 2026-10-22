@@ -223,7 +223,7 @@ const LESSONS = {
   <article class="lesson">
     <p class="kicker">Гит · Урок 1</p>
     <h1>🌿 Git: основы</h1>
-    <p class="meta"><span class="brief">≈ 5 минут · только суть и команды</span><span class="full">≈ 20 минут · с объяснениями и разбором ошибок</span></p>
+    <p class="meta"><span class="brief">≈ 7 минут · только суть и команды</span><span class="full">≈ 25 минут · с объяснениями и разбором ошибок</span></p>
     <ul class="toc">
       <li><button data-go="what">Что это</button></li>
       <li><button data-go="why">Зачем это вам</button></li>
@@ -395,8 +395,35 @@ __pycache__/
 *.log`)}
     <div class="callout warn"><p><b>Никогда не коммитьте пароли и токены.</b><span class="full"> Если это случилось и коммит ушёл на GitHub — считайте секрет украденным: смените пароль или токен, удаления из истории недостаточно.</span></p></div>
 
-    <h3>${step("git", 8)}Отправьте проект на GitHub</h3>
-    <p>На <b>github.com</b> нажмите <b>New repository</b>, придумайте имя и создайте <b>пустой</b> репозиторий (без README). Затем:</p>
+    <h3>${step("git", 8)}Войдите в GitHub (один раз)</h3>
+    <p>Зарегистрируйтесь на <b>github.com</b>, если ещё нет аккаунта. Пароль от GitHub в терминале не работает — нужен вход через браузер.</p>
+    ${by({
+      Windows: '<p>На Windows ничего ставить не нужно: вместе с Git установился Git Credential Manager. При первом <code>git push</code> или <code>git clone</code> приватного репозитория откроется окно браузера — просто войдите в GitHub и нажмите <b>Authorize</b>.</p>',
+      macOS: code('brew install gh\ngh auth login'),
+      Linux: code('sudo apt install gh     # или: sudo dnf install gh\ngh auth login'),
+    })}
+    ${os !== 'Windows' ? out(`? Where do you use GitHub? GitHub.com
+? What is your preferred protocol for Git operations? HTTPS
+? Authenticate Git with your GitHub credentials? Yes
+? How would you like to authenticate GitHub CLI? Login with a web browser
+! First copy your one-time code: 1A2B-3C4D
+Press Enter to open github.com in your browser...
+✓ Authentication complete.
+✓ Logged in as ВАШ_ЛОГИН`, 'На каждый вопрос жмите Enter, затем вставьте одноразовый код в открывшемся браузере. Главное — последняя строка <code>Logged in as</code>.') : ''}
+    <p class="full"><code>gh</code> — официальная программа GitHub для терминала. Она один раз сохраняет вход, и дальше
+      <code>git push</code>, <code>git pull</code> и <code>git clone</code> работают без вопросов.${by({ Windows: ' На Windows её тоже можно поставить: <code>winget install --id GitHub.cli -e</code>, но для основ она не нужна.', macOS: '', Linux: '' })}</p>
+
+    <p>Дальше два пути — выберите свой:</p>
+    <ul>
+      <li><b>Вариант А</b> — проект уже есть у вас на компьютере (как <code>my-project</code> выше) → отправляем на GitHub.</li>
+      <li><b>Вариант Б</b> — проекта ещё нет → создаём на GitHub и скачиваем (клонируем) к себе.</li>
+    </ul>
+
+    <h3>${step("git", 9)}Вариант А: отправьте свой проект на GitHub</h3>
+    <p>На GitHub нажмите <b>+</b> в правом верхнем углу → <b>New repository</b>. Введите имя (например, <code>my-project</code>),
+      выберите <b>Public</b> или <b>Private</b> и <b>не ставьте</b> галочки «Add a README», «.gitignore», «license» — репозиторий должен быть пустым.
+      Нажмите <b>Create repository</b> и скопируйте ссылку вида <code>https://github.com/ВАШ_ЛОГИН/my-project.git</code>.</p>
+    <p>В терминале, находясь в папке проекта:</p>
     ${code(`git remote add origin https://github.com/ВАШ_ЛОГИН/my-project.git
 git push -u origin main`)}
     ${out(`Enumerating objects: 3, done.
@@ -406,27 +433,52 @@ Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
 To https://github.com/ВАШ_ЛОГИН/my-project.git
  * [new branch]      main -> main
 branch 'main' set up to track 'origin/main'.`, 'Главное — строка <code>[new branch] main -> main</code>. Обновите страницу репозитория на GitHub — там появится README.md.')}
-    <p>Дальше: <code>git push</code> — отправить новые коммиты, <code>git pull</code> — забрать чужие,
-      <code>git clone ссылка</code> — скачать проект на другой компьютер.</p>
     <div class="full">
-      <p>GitHub не принимает обычный пароль в терминале. ${by({
-        Windows: 'На Windows вместе с Git ставится Git Credential Manager: при первом <code>git push</code> откроется браузер — просто войдите в GitHub.',
-        macOS: 'Проще всего войти через GitHub CLI:',
-        Linux: 'Проще всего войти через GitHub CLI:',
-      })}</p>
-      ${by({
-        Windows: '',
-        macOS: code('brew install gh\ngh auth login'),
-        Linux: code('sudo apt install gh     # или: sudo dnf install gh\ngh auth login'),
-      })}
-      ${os !== 'Windows' ? out(`? Where do you use GitHub? GitHub.com
-? What is your preferred protocol for Git operations? HTTPS
-? Authenticate Git with your GitHub credentials? Yes
-? How would you like to authenticate GitHub CLI? Login with a web browser
-! First copy your one-time code: 1A2B-3C4D
-Press Enter to open github.com in your browser...
-✓ Authentication complete.
-✓ Logged in as ВАШ_ЛОГИН`, 'На каждый вопрос просто жмите Enter, затем введите код в открывшемся браузере.') : ''}
+      <p><code>origin</code> — короткое имя для адреса на GitHub, чтобы не писать ссылку каждый раз.
+        Флаг <code>-u</code> запоминает связь вашей ветки <code>main</code> с GitHub — дальше достаточно просто <code>git push</code>.</p>
+      <p>Проверить, куда смотрит проект:</p>
+      ${code('git remote -v')}
+      ${out(`origin  https://github.com/ВАШ_ЛОГИН/my-project.git (fetch)
+origin  https://github.com/ВАШ_ЛОГИН/my-project.git (push)`)}
+      <div class="callout"><p>Если на GitHub случайно создали репозиторий с README — <code>git push</code> откажет (<code>rejected … fetch first</code>).
+        Проще всего удалить репозиторий на GitHub (Settings → Delete) и создать пустой. Или выполнить
+        <code>git pull origin main --allow-unrelated-histories</code>, а потом <code>git push</code>.</p></div>
+    </div>
+
+    <h3>${step("git", 10)}Вариант Б: создайте на GitHub и клонируйте к себе</h3>
+    <p>На GitHub: <b>+</b> → <b>New repository</b>, введите имя (например, <code>my-new-project</code>) и <b>поставьте</b> галочку
+      <b>Add a README file</b> → <b>Create repository</b>. Затем нажмите зелёную кнопку <b>&lt;&gt; Code</b> → вкладка <b>HTTPS</b> → скопируйте ссылку.</p>
+    <p>В терминале перейдите туда, где хотите хранить проекты, и клонируйте:</p>
+    ${code(`cd ~
+git clone https://github.com/ВАШ_ЛОГИН/my-new-project.git
+cd my-new-project`)}
+    ${out(`Cloning into 'my-new-project'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+Receiving objects: 100% (3/3), done.`, 'Появилась папка <code>my-new-project</code> с файлом README.md внутри. Связь с GitHub уже настроена — <code>git init</code> и <code>git remote add</code> делать не нужно.')}
+    <div class="full">
+      <p><code>cd ~</code> — переход в домашнюю папку (${by({ Windows: '<code>C:\\Users\\Иван</code>', macOS: '<code>/Users/ivan</code>', Linux: '<code>/home/ivan</code>' })}).
+        Не клонируйте проект внутрь другого репозитория — Git запутается, чья это папка.</p>
+      <p>Так же скачивается любой чужой открытый проект: найдите его на GitHub, скопируйте ссылку из <b>&lt;&gt; Code</b> и выполните <code>git clone</code>.
+        Свои изменения в чужой репозиторий отправить не получится — это тема продвинутого курса (fork и pull request).</p>
+      <p>Приватный репозиторий при клонировании попросит войти — см. шаг 8.</p>
+    </div>
+
+    <h3>${step("git", 11)}Каждый день: pull → правки → push</h3>
+    ${code(`git pull                       # забрать свежие изменения с GitHub
+# ...поправили файлы...
+git add .
+git commit -m "Что сделано"
+git push                       # отправить на GitHub`)}
+    ${out(`Already up to date.
+[main e4f5a6b] Что сделано
+ 1 file changed, 2 insertions(+)
+To https://github.com/ВАШ_ЛОГИН/my-project.git
+   a1b2c3d..e4f5a6b  main -> main`, '<code>Already up to date</code> — на GitHub нет ничего нового. Последняя строка — ваши коммиты ушли на GitHub.')}
+    <p class="full">Правило: <b>начали работу — <code>git pull</code>, закончили — <code>git push</code></b>.
+      Особенно если вы работаете с двух компьютеров или в команде — так вы не разойдётесь версиями.</p>
+    <div class="full">
       <h3>Частые ошибки</h3>
       <div class="tbl"><table>
         <tr><th>Сообщение</th><th>Что делать</th></tr>
@@ -435,6 +487,10 @@ Press Enter to open github.com in your browser...
         <tr><td>nothing to commit</td><td>Нет изменений: файл не сохранён в редакторе или уже закоммичен.</td></tr>
         <tr><td>src refspec main does not match any</td><td>Ещё нет ни одного коммита — сначала <code>git commit</code>, потом <code>git push</code>.</td></tr>
         <tr><td>rejected … fetch first</td><td>На GitHub есть коммиты, которых нет у вас. Выполните <code>git pull</code>, затем <code>git push</code>.</td></tr>
+        <tr><td>Password authentication is not supported</td><td>GitHub не принимает пароль в терминале. Войдите через браузер — шаг 8.</td></tr>
+        <tr><td>Repository not found</td><td>Опечатка в ссылке или нет доступа к приватному репозиторию. Проверьте ссылку и что вы вошли под нужным аккаунтом.</td></tr>
+        <tr><td>remote origin already exists</td><td>Адрес уже задан. Заменить: <code>git remote set-url origin НОВАЯ_ССЫЛКА</code>.</td></tr>
+        <tr><td>destination path … already exists</td><td>Папка с таким именем уже есть. Клонируйте в другое место или удалите старую папку.</td></tr>
         <tr><td>LF will be replaced by CRLF</td><td>Не ошибка, а предупреждение про концы строк. См. шаг 3.</td></tr>
       </table></div>
     </div>
@@ -448,7 +504,10 @@ Press Enter to open github.com in your browser...
       <tr><td>git log --oneline</td><td>История коммитов</td></tr>
       <tr><td>git diff</td><td>Что именно изменилось</td></tr>
       <tr><td>git restore файл</td><td>Отменить правки в файле</td></tr>
+      <tr><td>git remote add origin ссылка</td><td>Связать проект с GitHub</td></tr>
+      <tr><td>git push -u origin main</td><td>Первая отправка на GitHub</td></tr>
       <tr><td>git clone ссылка</td><td>Скачать репозиторий</td></tr>
+      <tr><td>git remote -v</td><td>Куда смотрит проект</td></tr>
       <tr><td>git pull</td><td>Забрать изменения с сервера</td></tr>
       <tr><td>git push</td><td>Отправить коммиты на сервер</td></tr>
     </table></div>
