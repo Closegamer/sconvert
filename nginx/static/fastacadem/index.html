@@ -1138,10 +1138,373 @@ local     pgdata`, 'Контейнеры удалены, а тома с данн
       <p>Связи и JOIN, индексы и скорость, транзакции, миграции, права доступа, бэкапы по расписанию и подключение из Python и Node.js.</p>
     </a>
   </article>`,
-  agents: () => `
+  agents: [{ t: 'Российские модели', f: () => `
   <article class="lesson">
     <p class="kicker">Агенты · Урок 1</p>
-    <h1>🧠 Как написать своего ИИ-агента</h1>
+    <h1>🪆 Агент на российской модели: YandexGPT и GigaChat</h1>
+    <p class="meta"><span class="brief">≈ 20 минут · только суть и код</span><span class="full">≈ 45 минут · с объяснениями и разбором ошибок</span></p>
+    <ul class="toc">
+      <li><button data-go="what">Что это</button></li>
+      <li><button data-go="why">Зачем это вам</button></li>
+      <li><button data-go="how">Как написать</button></li>
+      <li><button data-go="cheat">Шпаргалка</button></li>
+    </ul>
+    <div class="progress"><span></span><div class="progress-bar"><i></i></div>
+      <small>Отмечайте пройденные шаги галочкой «Отметить прохождение» внизу каждого шага. Прогресс сохраняется в этом браузере.</small></div>
+
+    <h2 id="what">Что это</h2>
+    <p class="brief"><b>ИИ-агент</b> = языковая модель + <b>инструменты</b> + <b>цикл</b>. Модель получает задачу, сама решает, какой инструмент вызвать
+      (прочитать файл, найти в базе, отправить сообщение), ваша программа выполняет вызов и возвращает результат — и так по кругу, пока задача не решена.
+      В этом уроке «мозг» агента — российская модель: <b>YandexGPT</b> от Яндекса или <b>GigaChat</b> от Сбера.</p>
+    <div class="full">
+      <p>Языковая модель сама по себе умеет только получить текст и написать текст в ответ. <b>Агент</b> — программа вокруг модели, которая даёт ей «руки»:
+        вы описываете модели <b>инструменты</b> (функции вашей программы), модель просит вызвать нужный, программа выполняет и возвращает результат,
+        модель решает, что делать дальше. Это и есть <b>цикл агента</b>.</p>
+      <div class="flow">
+        <div>Задача<small>от вас</small></div><span>→</span>
+        <div>Модель<small>решает, что сделать</small></div><span>вызов →</span>
+        <div>Ваш код<small>выполняет функцию</small></div><span>↺</span>
+        <div>Ответ<small>когда всё готово</small></div>
+      </div>
+      <p>Обе российские модели умеют вызывать функции (<b>function calling</b>) — главное, что нужно для агента. Подключаются они по-разному:</p>
+      <div class="tbl"><table>
+        <tr><th></th><th>YandexGPT</th><th>GigaChat</th></tr>
+        <tr><td>Компания</td><td>Яндекс, платформа AI Studio</td><td>Сбер, developers.sber.ru</td></tr>
+        <tr><td>Как подключать</td><td>Стандартная библиотека <code>openai</code> — API совместим с OpenAI</td><td>Официальная библиотека <code>gigachat</code></td></tr>
+        <tr><td>Что нужно</td><td>API-ключ и ID каталога</td><td>Ключ авторизации и сертификат Минцифры</td></tr>
+        <tr><td>Начать бесплатно</td><td>Стартовый грант для новых аккаунтов</td><td>Бесплатный пакет токенов для физлиц</td></tr>
+        <tr><td>Оплата</td><td>В рублях</td><td>В рублях</td></tr>
+      </table></div>
+    </div>
+    <div class="callout"><p><b>Какую выбрать?</b> Не знаете — начните с <b>YandexGPT</b>: код почти такой же, как для зарубежных моделей, и потом легко переключиться.
+      <b>GigaChat</b> — если вы уже в экосистеме Сбера или нужен бесплатный старт без привязки карты.</p></div>
+
+    <h2 id="why">Зачем это вам</h2>
+    <ul>
+      <li><b>Работает из России.</b> Регистрация, доступ и оплата — без ограничений, в рублях.</li>
+      <li><b>Данные остаются в РФ.</b> Важно, если агент обрабатывает персональные данные клиентов (152-ФЗ).<span class="full"> Модели работают в российских дата-центрах.</span></li>
+      <li><b>Отлично знает русский.</b> Документы, переписка, деловой стиль — родная среда для этих моделей.</li>
+      <li><b>Рутина, где нужно подумать.</b> Разобрать заметки, заявки, письма — агент сам решит, какие файлы открыть и что с ними сделать.</li>
+      <li><b>Бот с мозгами.</b> Подключите агента к <a href="#/bots">Telegram-боту</a> — и бот действительно выполняет просьбы, а не отвечает шаблонами.</li>
+    </ul>
+    <div class="callout warn"><p><b>Честно о минусах:</b> в сложных многошаговых задачах российские модели пока слабее лучших зарубежных (<a href="#/agents/2">урок 2</a>).
+      Давайте им понятные задачи, мало инструментов и подробные описания — и они справляются.</p></div>
+
+    <h2 id="how">Как написать</h2>
+    <p>Напишем агента-помощника по заметкам: он читает файлы в папке и создаёт новые. Инструменты общие, а «мозг» — на выбор:
+      <b>YandexGPT</b> (шаги 3–4) или <b>GigaChat</b> (шаги 5–6). Можно пройти оба варианта и сравнить.</p>
+
+    <h3>${step("agentsru", 1)}Создайте проект и установите библиотеки</h3>
+    <p>Нужен Python 3.10 или новее${by({ Windows: ' (если нет — <code>winget install -e --id Python.Python.3.13</code> и перезапустите терминал)', macOS: ' (если нет — <code>brew install python</code> или установщик с python.org)', Linux: ' (если нет — <code>sudo apt install -y python3 python3-venv</code>)' })}.</p>
+    ${by({
+      Windows: code('mkdir myagent\ncd myagent\npython -m venv .venv\n.venv\\Scripts\\Activate.ps1\npip install openai gigachat python-dotenv\n".env", ".venv/", "*.cer" | Set-Content .gitignore'),
+      macOS: code('mkdir myagent\ncd myagent\npython3 -m venv .venv\nsource .venv/bin/activate\npip install openai gigachat python-dotenv\nprintf ".env\\n.venv/\\n*.cer\\n" > .gitignore'),
+      Linux: code('mkdir myagent\ncd myagent\npython3 -m venv .venv\nsource .venv/bin/activate\npip install openai gigachat python-dotenv\nprintf ".env\\n.venv/\\n*.cer\\n" > .gitignore'),
+    })}
+    ${out(`Collecting openai
+...
+Successfully installed gigachat-0.2.3 openai-3.36.1 ... python-dotenv-1.1.1 ...`,
+      'Главное — <code>(.venv)</code> в начале строки и <code>Successfully installed</code>. Версии могут быть новее.' + by({
+        Windows: ' Если PowerShell пишет «<b>выполнение сценариев отключено</b>» — выполните <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>, ответьте <code>Y</code> и повторите активацию.',
+        macOS: '', Linux: '' }))}
+    <p class="full"><code>openai</code> — библиотека для OpenAI-совместимых API, через неё работает YandexGPT. <code>gigachat</code> — официальная библиотека Сбера.
+      <code>python-dotenv</code> читает ключи из файла <code>.env</code>, а <code>.gitignore</code> не даст ключам попасть в Git.
+      Окружение <code>.venv</code> нужно активировать в каждом новом окне терминала.</p>
+    ${done("agentsru", 1)}
+
+    <h3>${step("agentsru", 2)}Инструменты агента и заметки</h3>
+    <p>Подготовьте папку <code>workspace</code> с парой заметок — с ними агент будет работать:</p>
+    ${by({
+      Windows: code('mkdir workspace\nSet-Content workspace/monday.txt "Позвонить бухгалтеру до среды. Купить домен для сайта. Ответить Ане про созвон в четверг." -Encoding utf8\nSet-Content workspace/ideas.txt "Сделать Telegram-бота для записи клиентов. Написать пост про Docker. Купить домен — срочно!" -Encoding utf8'),
+      macOS: code('mkdir workspace\necho "Позвонить бухгалтеру до среды. Купить домен для сайта. Ответить Ане про созвон в четверг." > workspace/monday.txt\necho "Сделать Telegram-бота для записи клиентов. Написать пост про Docker. Купить домен — срочно!" > workspace/ideas.txt'),
+      Linux: code('mkdir workspace\necho "Позвонить бухгалтеру до среды. Купить домен для сайта. Ответить Ане про созвон в четверг." > workspace/monday.txt\necho "Сделать Telegram-бота для записи клиентов. Написать пост про Docker. Купить домен — срочно!" > workspace/ideas.txt'),
+    })}
+    ${out('', by({ Windows: '<code>mkdir</code> выведет таблицу с новой папкой — это нормально. ', macOS: '', Linux: '' }) + 'В папке <code>workspace</code> появились два файла.')}
+    <p>Создайте файл <code>tools.py</code> — инструменты и их описание, общие для обеих моделей:</p>
+    ${code(`from pathlib import Path
+
+WORKSPACE = Path("workspace").resolve()
+
+SYSTEM = "Ты — помощник по заметкам. С файлами работаешь только через инструменты. Отвечай по-русски."
+
+
+def safe_path(name):
+    path = (WORKSPACE / name).resolve()
+    if not path.is_relative_to(WORKSPACE):
+        raise ValueError("Доступ разрешён только к папке workspace")
+    return path
+
+
+def list_files():
+    return "\\n".join(p.name for p in WORKSPACE.iterdir()) or "Папка пуста"
+
+
+def read_file(name):
+    return safe_path(name).read_text(encoding="utf-8-sig")
+
+
+def write_file(name, content):
+    safe_path(name).write_text(content, encoding="utf-8")
+    return f"Файл {name} сохранён"
+
+
+FUNCTIONS = {"list_files": list_files, "read_file": read_file, "write_file": write_file}
+
+# Описание инструментов для модели — одно для YandexGPT и GigaChat
+SPECS = [
+    {
+        "name": "list_files",
+        "description": "Показать список файлов в рабочей папке.",
+        "parameters": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "read_file",
+        "description": "Прочитать текстовый файл из рабочей папки.",
+        "parameters": {
+            "type": "object",
+            "properties": {"name": {"type": "string", "description": "Имя файла, например notes.txt"}},
+            "required": ["name"],
+        },
+    },
+    {
+        "name": "write_file",
+        "description": "Создать или перезаписать текстовый файл в рабочей папке.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string", "description": "Имя файла"},
+                "content": {"type": "string", "description": "Полный текст файла"},
+            },
+            "required": ["name", "content"],
+        },
+    },
+]`)}
+    <div class="full">
+      <ul>
+        <li><b>Функции</b> <code>list_files</code>, <code>read_file</code>, <code>write_file</code> — то, что агент реально умеет делать. Обычный Python.</li>
+        <li><b>SPECS</b> — описание функций для модели: имя, что делает, какие параметры принимает (в формате JSON Schema).
+          Модель видит только описания, поэтому пишите их ясно — от этого зависит, правильно ли агент выберет инструмент.</li>
+        <li><code>safe_path</code> — <b>защита</b>: агент не может прочитать или перезаписать ничего за пределами папки <code>workspace</code>.</li>
+        <li><code>utf-8-sig</code> — читает и файлы, созданные в Windows с невидимой меткой кодировки (BOM), и обычные.</li>
+      </ul>
+    </div>
+    ${done("agentsru", 2)}
+
+    <h3>${step("agentsru", 3)}YandexGPT: получите ключ</h3>
+    <ol>
+      <li>Зайдите на <b>aistudio.yandex.ru</b> и войдите с Яндекс ID. Автоматически создадутся организация и каталог <code>default</code>.</li>
+      <li>Привяжите платёжный аккаунт — новым пользователям начисляется стартовый грант, его хватит на эксперименты.</li>
+      <li>Нажмите <b>Создать API-ключ</b> в правом верхнем углу и скопируйте ключ — он показывается <b>один раз</b>.</li>
+      <li>Скопируйте <b>ID каталога</b> — строку вида <code>b1g…</code> (видна в AI Studio рядом с названием каталога).</li>
+    </ol>
+    <p>Создайте в папке проекта файл <code>.env</code> ${by({ Windows: '(<code>notepad .env</code> → «Да»)', macOS: '(<code>nano .env</code>)', Linux: '(<code>nano .env</code>)' })} и впишите:</p>
+    ${code(`YANDEX_API_KEY=ВСТАВЬТЕ_КЛЮЧ
+YANDEX_FOLDER_ID=ВСТАВЬТЕ_ID_КАТАЛОГА`)}
+    ${out('', 'Ключ Яндекса обычно начинается с <code>AQVN</code>, ID каталога — с <code>b1g</code>. Без пробелов и кавычек.')}
+    <div class="callout warn"><p><b>Ключ — это деньги.</b> Не публикуйте его и не вставляйте в код — только в <code>.env</code>.</p></div>
+    ${done("agentsru", 3)}
+
+    <h3>${step("agentsru", 4)}YandexGPT: агент</h3>
+    <p>Создайте <code>agent_yandex.py</code>:</p>
+    ${code(`import json
+import os
+
+from dotenv import load_dotenv
+from openai import OpenAI
+
+from tools import FUNCTIONS, SPECS, SYSTEM
+
+load_dotenv()
+FOLDER = os.environ["YANDEX_FOLDER_ID"]
+client = OpenAI(
+    api_key=os.environ["YANDEX_API_KEY"],
+    project=FOLDER,
+    base_url="https://ai.api.cloud.yandex.net/v1",
+)
+tools = [{"type": "function", "function": spec} for spec in SPECS]
+
+messages = [
+    {"role": "system", "content": SYSTEM},
+    {"role": "user", "content": input("Задача для агента: ")},
+]
+
+for step in range(20):  # предохранитель: не больше 20 шагов
+    response = client.chat.completions.create(
+        model=f"gpt://{FOLDER}/yandexgpt/rc",
+        messages=messages,
+        tools=tools,
+    )
+    message = response.choices[0].message
+    messages.append(message.model_dump(exclude_none=True))
+
+    if not message.tool_calls:
+        break  # модель закончила — инструменты больше не нужны
+
+    for call in message.tool_calls:
+        args = json.loads(call.function.arguments or "{}")
+        print(f"🔧 {call.function.name} {json.dumps(args, ensure_ascii=False)}")
+        try:
+            result = FUNCTIONS[call.function.name](**args)
+        except Exception as e:
+            result = f"Ошибка: {e}"
+        messages.append({"role": "tool", "tool_call_id": call.id, "content": result})
+
+print(message.content)`)}
+    ${code('python agent_yandex.py')}
+    ${out(`Задача для агента: Прочитай все заметки и сделай файл plan.md — список задач, срочные сверху
+🔧 list_files {}
+🔧 read_file {"name": "monday.txt"}
+🔧 read_file {"name": "ideas.txt"}
+🔧 write_file {"name": "plan.md", "content": "# План задач\\n\\n## Срочно\\n- Купить домен для сайта\\n..."}
+Готово! Я создал файл plan.md: сверху срочные задачи — купить домен и позвонить бухгалтеру до среды, ниже остальные.`,
+      'Строки с 🔧 — действия агента. У вас шаги и текст могут отличаться. Откройте <code>workspace/plan.md</code> — там готовый план.')}
+    <div class="full">
+      <ul>
+        <li><code>OpenAI(..., base_url=…yandex…)</code> — та же библиотека, что для ChatGPT, но запросы уходят в Яндекс. <code>project</code> — ID каталога.</li>
+        <li><code>model="gpt://каталог/yandexgpt/rc"</code> — адрес модели YandexGPT; <code>rc</code> — свежая версия с улучшенным вызовом функций.</li>
+        <li>Если в ответе есть <code>tool_calls</code> — модель просит вызвать функции. Выполняем каждую и возвращаем результат сообщением с ролью <code>tool</code> и тем же <code>tool_call_id</code>.</li>
+        <li>Ошибку функции не прячем, а отдаём модели текстом — она прочитает и попробует по-другому.</li>
+        <li>Ответ без <code>tool_calls</code> — задача решена, печатаем текст. <code>range(20)</code> — предохранитель от бесконечного цикла.</li>
+      </ul>
+      <p>Этот же код работает с любым OpenAI-совместимым API — чтобы сменить модель, достаточно поменять <code>base_url</code>, ключ и <code>model</code>.</p>
+    </div>
+    ${done("agentsru", 4)}
+
+    <h3>${step("agentsru", 5)}GigaChat: ключ и сертификат</h3>
+    <ol>
+      <li>Зайдите на <b>developers.sber.ru</b>, войдите по Сбер ID и откройте <b>GigaChat API</b>.</li>
+      <li>Создайте проект и нажмите <b>Получить ключ</b> — скопируйте <b>Authorization Key</b> (длинная строка, часто заканчивается на <code>==</code>). Физлицам доступен бесплатный пакет токенов.</li>
+    </ol>
+    <p>GigaChat работает по защищённому соединению с сертификатом Минцифры — скачайте его в папку проекта:</p>
+    ${by({
+      Windows: code('Invoke-WebRequest https://gu-st.ru/content/Other/doc/russian_trusted_root_ca.cer -OutFile russian_trusted_root_ca.cer'),
+      macOS: code('curl -o russian_trusted_root_ca.cer https://gu-st.ru/content/Other/doc/russian_trusted_root_ca.cer'),
+      Linux: code('curl -o russian_trusted_root_ca.cer https://gu-st.ru/content/Other/doc/russian_trusted_root_ca.cer'),
+    })}
+    ${by({
+      Windows: out('', 'Рядом появился файл <code>russian_trusted_root_ca.cer</code> (около 2 КБ).'),
+      macOS: out(`  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  2088  100  2088    0     0  12500      0 --:--:-- --:--:-- --:--:-- 12500`, 'Рядом появился файл <code>russian_trusted_root_ca.cer</code> (около 2 КБ).'),
+      Linux: out(`  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  2088  100  2088    0     0  12500      0 --:--:-- --:--:-- --:--:-- 12500`, 'Рядом появился файл <code>russian_trusted_root_ca.cer</code> (около 2 КБ).'),
+    })}
+    <p>Добавьте в <code>.env</code> (если его ещё нет — создайте, как в шаге 3):</p>
+    ${code(`GIGACHAT_CREDENTIALS=ВСТАВЬТЕ_КЛЮЧ_АВТОРИЗАЦИИ
+GIGACHAT_SCOPE=GIGACHAT_API_PERS
+GIGACHAT_CA_BUNDLE_FILE=russian_trusted_root_ca.cer`)}
+    ${out('', 'Библиотека <code>gigachat</code> сама прочитает эти переменные — в коде их указывать не нужно.')}
+    <p class="full"><code>GIGACHAT_API_PERS</code> — доступ для физических лиц (для ИП и компаний — <code>GIGACHAT_API_B2B</code> или <code>GIGACHAT_API_CORP</code>, смотрите в личном кабинете).
+      Не отключайте проверку сертификата (<code>verify_ssl_certs=False</code>), как советуют некоторые статьи, — это открывает дорогу перехвату ваших данных.</p>
+    ${done("agentsru", 5)}
+
+    <h3>${step("agentsru", 6)}GigaChat: агент</h3>
+    <p>Создайте <code>agent_giga.py</code>:</p>
+    ${code(`import json
+
+from dotenv import load_dotenv
+from gigachat import GigaChat
+from gigachat.models import Chat, Function, Messages, MessagesRole
+
+from tools import FUNCTIONS, SPECS, SYSTEM
+
+load_dotenv()
+client = GigaChat(model="GigaChat-2-Max")  # ключ, scope и сертификат берутся из .env
+functions = [Function(**spec) for spec in SPECS]
+
+messages = [
+    Messages(role=MessagesRole.SYSTEM, content=SYSTEM),
+    Messages(role=MessagesRole.USER, content=input("Задача для агента: ")),
+]
+
+for step in range(20):  # предохранитель: не больше 20 шагов
+    response = client.chat(Chat(messages=messages, functions=functions, function_call="auto"))
+    message = response.choices[0].message
+    messages.append(message)
+
+    if not message.function_call:
+        break  # модель закончила — инструменты больше не нужны
+
+    call = message.function_call
+    args = call.arguments or {}
+    print(f"🔧 {call.name} {json.dumps(args, ensure_ascii=False)}")
+    try:
+        result = FUNCTIONS[call.name](**args)
+    except Exception as e:
+        result = f"Ошибка: {e}"
+    messages.append(Messages(role=MessagesRole.FUNCTION, name=call.name, content=json.dumps({"result": result}, ensure_ascii=False)))
+
+print(message.content)`)}
+    ${code('python agent_giga.py')}
+    ${out(`Задача для агента: Прочитай все заметки и сделай файл plan.md — список задач, срочные сверху
+🔧 list_files {}
+🔧 read_file {"name": "monday.txt"}
+🔧 read_file {"name": "ideas.txt"}
+🔧 write_file {"name": "plan.md", "content": "# План задач\\n\\n## Срочно\\n- Купить домен\\n..."}
+Файл plan.md создан. Срочные задачи — купить домен и позвонить бухгалтеру — вынесены наверх.`,
+      'Агент тот же, инструменты те же — поменялся только «мозг». У вас шаги и текст могут отличаться.')}
+    <div class="full">
+      <ul>
+        <li><code>GigaChat(model="GigaChat-2-Max")</code> — самая сильная модель Сбера; функции поддерживают версии Pro и Max.</li>
+        <li><code>Function(**spec)</code> — описания инструментов из <code>tools.py</code> в формате GigaChat. <code>function_call="auto"</code> — модель сама решает, вызывать ли функцию.</li>
+        <li>GigaChat за один шаг вызывает одну функцию: она приходит в <code>message.function_call</code> с уже разобранными аргументами.</li>
+        <li>Результат возвращается сообщением с ролью <code>function</code>, и его содержимое должно быть <b>JSON-объектом</b> — поэтому оборачиваем в <code>{"result": …}</code>.</li>
+        <li>Сообщение модели добавляем в историю целиком (<code>messages.append(message)</code>) — в нём есть служебный идентификатор, который GigaChat ждёт на следующем шаге.</li>
+      </ul>
+    </div>
+    ${done("agentsru", 6)}
+
+    <h3>${step("agentsru", 7)}Запустите агента на сервере по расписанию</h3>
+    <p>Чтобы агент работал без вас — например, каждое утро делал план дня, — нужен сервер, который не выключается.
+      Подойдёт самый ${vps('недорогой VPS')} с Ubuntu: российские модели работают с российского сервера без каких-либо ограничений, и данные не покидают РФ.
+      Как подключиться и подготовить сервер — в <a href="#/bots/2">уроке про бота на своём сервере</a> (шаги 1–3).
+      Перенесите папку проекта (с <code>.env</code> и сертификатом), создайте <code>.venv</code> как в шаге 1, затем откройте расписание:</p>
+    ${code('crontab -e')}
+    <p>Добавьте в конец строку (каждый день в 8:00 по времени сервера) и сохраните:</p>
+    ${code('0 8 * * * cd /root/myagent && echo "Прочитай заметки и обнови plan.md" | .venv/bin/python agent_yandex.py >> agent.log 2>&1')}
+    ${out('crontab: installing new crontab', 'Расписание сохранено. Задача передаётся агенту через <code>echo</code>, результаты копятся в <code>agent.log</code>: <code>tail -n 30 /root/myagent/agent.log</code>. Для GigaChat замените <code>agent_yandex.py</code> на <code>agent_giga.py</code>.')}
+    <p class="full">При первом <code>crontab -e</code> выберите редактор <code>nano</code> (обычно цифра 1). Формат строки: <code>минута час день месяц день_недели команда</code>:
+      <code>0 8 * * *</code> — в 8:00 каждый день, <code>*/30 * * * *</code> — каждые 30 минут, <code>0 9 * * 1</code> — по понедельникам в 9:00.</p>
+    ${done("agentsru", 7)}
+
+    <div class="full">
+      <h3>Частые ошибки</h3>
+      <div class="tbl"><table>
+        <tr><th>Сообщение</th><th>Что делать</th></tr>
+        <tr><td>KeyError: 'YANDEX_API_KEY'</td><td>Нет файла <code>.env</code> в папке, откуда запускаете, или опечатка в названии переменной.</td></tr>
+        <tr><td>401 / Unauthenticated (Яндекс)</td><td>Неверный API-ключ. Создайте новый в AI Studio.</td></tr>
+        <tr><td>403 / Permission denied (Яндекс)</td><td>Неверный ID каталога или у ключа нет доступа к моделям. Проверьте <code>YANDEX_FOLDER_ID</code>.</td></tr>
+        <tr><td>CERTIFICATE_VERIFY_FAILED (GigaChat)</td><td>Не найден сертификат. Проверьте, что файл <code>russian_trusted_root_ca.cer</code> лежит в папке проекта и указан в <code>GIGACHAT_CA_BUNDLE_FILE</code>.</td></tr>
+        <tr><td>AuthenticationError / 401 (GigaChat)</td><td>Неверный ключ авторизации или <code>GIGACHAT_SCOPE</code> не соответствует вашему типу аккаунта.</td></tr>
+        <tr><td>402 Payment Required</td><td>Закончились токены или грант. Пополните баланс в личном кабинете.</td></tr>
+        <tr><td>No module named 'openai' / 'gigachat'</td><td>Окружение не активировано — нет <code>(.venv)</code> в начале строки. Шаг 1.</td></tr>
+        <tr><td>Доступ разрешён только к папке workspace</td><td>Не ошибка, а защита: агент попытался выйти за пределы папки.</td></tr>
+        <tr><td>Агент отвечает, но не вызывает инструменты</td><td>Сформулируйте задачу прямее («прочитай файлы и создай…») и улучшите описания в <code>SPECS</code>.</td></tr>
+      </table></div>
+    </div>
+
+    <h2 id="cheat">Шпаргалка</h2>
+    <div class="tbl"><table>
+      <tr><td>pip install openai gigachat python-dotenv</td><td>Библиотеки для агентов</td></tr>
+      <tr><td>base_url="https://ai.api.cloud.yandex.net/v1"</td><td>YandexGPT через библиотеку openai</td></tr>
+      <tr><td>gpt://ID_КАТАЛОГА/yandexgpt/rc</td><td>Модель YandexGPT</td></tr>
+      <tr><td>message.tool_calls</td><td>YandexGPT просит вызвать функции</td></tr>
+      <tr><td>GigaChat(model="GigaChat-2-Max")</td><td>Клиент GigaChat (настройки из .env)</td></tr>
+      <tr><td>function_call="auto"</td><td>Разрешить GigaChat вызывать функции</td></tr>
+      <tr><td>message.function_call</td><td>GigaChat просит вызвать функцию</td></tr>
+      <tr><td>range(20)</td><td>Предохранитель от бесконечного цикла</td></tr>
+    </table></div>
+
+    <a class="next" href="#/agents/2">
+      <h3>Урок 2: агент на зарубежной модели →</h3>
+      <p>Тот же агент на Claude — одной из самых сильных моделей для агентов, плюс короткий способ без ручного цикла.</p>
+    </a>
+  </article>` },
+  { t: 'Зарубежные модели', f: () => `
+  <article class="lesson">
+    <p class="kicker">Агенты · Урок 2</p>
+    <h1>🌍 Агент на зарубежной модели: Claude</h1>
     <p class="meta"><span class="brief">≈ 20 минут · только суть и код</span><span class="full">≈ 45 минут · с объяснениями и разбором ошибок</span></p>
     <ul class="toc">
       <li><button data-go="what">Что это</button></li>
@@ -1199,7 +1562,9 @@ local     pgdata`, 'Контейнеры удалены, а тома с данн
     ${out('sk-ant-api03-Xb3k...Q9wA', 'Ключ начинается с <code>sk-ant-</code> и показывается <b>один раз</b> — сразу сохраните его. Потеряли — создайте новый.')}
     <div class="callout warn"><p><b>API-ключ — это деньги.</b> Кто знает ключ, тратит ваш баланс. Не публикуйте его и не вставляйте в код.<span class="full">
       В разделе <b>Limits</b> поставьте месячный лимит расходов — так случайная ошибка в цикле агента не съест весь баланс.</span></p></div>
-    <p class="full">API Anthropic работает не во всех странах — список поддерживаемых есть в документации на сайте. Стоимость считается по токенам:
+    <p>API Anthropic работает не во всех странах — список поддерживаемых есть в документации на сайте.
+      Если вашей страны там нет — используйте российские модели из <a href="#/agents">урока 1</a>.</p>
+    <p class="full"> Стоимость считается по токенам:
       модель Claude Opus 5 стоит $5 за миллион входящих и $25 за миллион исходящих токенов. Один запуск агента из этого урока — обычно центы.
       Расход видно в разделе <b>Usage</b>.</p>
     ${done("agents", 1)}
@@ -1530,7 +1895,7 @@ for message in runner:
       <h3>Продвинутые агенты →</h3>
       <p>Веб-поиск, память между запусками, MCP, агент в Telegram-боте, подтверждение опасных действий, несколько агентов вместе и экономия на токенах.</p>
     </a>
-  </article>`,
+  </article>` }],
   bots: [{ t: 'Бот на Vercel', f: () => `
   <article class="lesson">
     <p class="kicker">Боты · Урок 1</p>
