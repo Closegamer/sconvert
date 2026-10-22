@@ -101,15 +101,14 @@
   .out pre { margin: 0; overflow-x: auto; font: .82rem/1.6 ui-monospace, Consolas, monospace; color: var(--muted); }
   .out p { margin: 0; color: var(--muted); font-size: .9rem; }
   .out small { display: block; margin-top: 6px; color: var(--muted); font-size: .82rem; }
-  .chk { cursor: pointer; }
-  .chk input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-  .chk input:focus-visible + .n { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .lesson h3 .chk .n { box-shadow: 0 0 0 0 transparent; transition: background .2s; }
-  .chk:hover .n { filter: brightness(1.15); }
-  .chk .n { position: relative; }
-  .chk input:checked + .n { background: #22c55e; color: transparent; }
-  .chk input:checked + .n::after { content: '✓'; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; }
-  h3:has(.chk input:checked) { color: var(--muted); }
+  .lesson h3 .n.ok { background: #22c55e; }
+  .done { display: inline-flex; align-items: center; gap: 10px; margin: 18px 0 8px; padding: 10px 16px; cursor: pointer; user-select: none;
+    border: 1px solid var(--border); border-radius: 12px; background: var(--surface); font-weight: 600; font-size: .92rem; transition: border-color .2s, background .2s; }
+  .done:hover { border-color: var(--accent); }
+  .done input { width: 20px; height: 20px; margin: 0; cursor: pointer; accent-color: #22c55e; }
+  .done .t1, .done:has(input:checked) .t0 { display: none; }
+  .done:has(input:checked) .t1 { display: inline; color: #16a34a; }
+  .done:has(input:checked) { border-color: #22c55e; background: color-mix(in srgb, #22c55e 10%, var(--surface)); }
   .progress { margin: 20px 0 0; padding: 14px 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); }
   .progress-bar { height: 8px; border-radius: 99px; background: var(--border); overflow: hidden; margin: 8px 0 6px; }
   .progress-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #22c55e); transition: width .3s; }
@@ -209,10 +208,12 @@ const code = s => `<div class="code"><pre>${esc(s.trim())}</pre><button class="c
 const by = o => o[os];
 // out: undefined — без блока, '' — команда молчит, строка — ожидаемый вывод; note — пояснение под выводом
 const out = (o, note = '') => `<div class="out"><b>Ожидаемый вывод</b>${o ? `<pre>${esc(o.trim())}</pre>` : '<p>Ничего не выводит — значит, всё прошло успешно.</p>'}${note ? `<small>${note}</small>` : ''}</div>`;
-const step = (lesson, n) => `<label class="chk" title="Отметить шаг как пройденный"><input type="checkbox" data-done="${lesson}-${n}"><span class="n">${n}</span></label>`;
+const step = (lesson, n) => `<span class="n" data-n="${lesson}-${n}">${n}</span>`;
+const done = (lesson, n) => `<label class="done"><input type="checkbox" data-done="${lesson}-${n}"><span class="t0">Отметить прохождение</span><span class="t1">Пройдено</span></label>`;
 function progress() {
   const boxes = [...document.querySelectorAll('#app [data-done]')], p = $('#app .progress');
   if (!p) return;
+  boxes.forEach(b => document.querySelector(`#app [data-n="${b.dataset.done}"]`)?.classList.toggle('ok', b.checked));
   const done = boxes.filter(b => b.checked).length;
   p.querySelector('i').style.width = (100 * done / boxes.length) + '%';
   p.querySelector('span').textContent = done === boxes.length ? `Все ${done} шагов пройдены 🎉` : `Пройдено ${done} из ${boxes.length}`;
@@ -231,7 +232,7 @@ const LESSONS = {
       <li><button data-go="cheat">Шпаргалка</button></li>
     </ul>
     <div class="progress"><span></span><div class="progress-bar"><i></i></div>
-      <small>Нажимайте на номер шага, чтобы отметить его пройденным. Прогресс сохраняется в этом браузере.</small></div>
+      <small>Отмечайте пройденные шаги галочкой «Отметить прохождение» внизу каждого шага. Прогресс сохраняется в этом браузере.</small></div>
 
     <h2 id="what">Что это</h2>
     <p class="brief"><b>Git</b> — программа, которая хранит историю изменений файлов в папке проекта.
@@ -283,6 +284,7 @@ const LESSONS = {
       Linux: 'Нажмите <code>Ctrl + Alt + T</code> или найдите «Терминал» в меню приложений.',
     })}</p>
 
+    ${done("git", 1)}
     <h3>${step("git", 2)}Установите Git</h3>
     ${by({
       Windows: code('winget install --id Git.Git -e --source winget'),
@@ -312,6 +314,7 @@ Processing triggers for man-db (2.12.0-4build2) ...`, 'На Fedora в конце
     ${out(by({ Windows: 'git version 2.51.0.windows.1', macOS: 'git version 2.39.5 (Apple Git-154)', Linux: 'git version 2.43.0' }),
       'Цифры могут отличаться — главное, что есть строка <code>git version</code>. Если видите <code>command not found</code> или «не является командлетом» — Git не установлен или терминал нужно перезапустить.')}
 
+    ${done("git", 2)}
     <h3>${step("git", 3)}Представьтесь Git (один раз)</h3>
     ${code(`git config --global user.name "Иван Иванов"
 git config --global user.email "ivan@example.com"
@@ -327,6 +330,7 @@ git config --global init.defaultBranch main`)}
       })}
     </div>
 
+    ${done("git", 3)}
     <h3>${step("git", 4)}Создайте репозиторий</h3>
     ${code(`mkdir my-project
 cd my-project
@@ -346,6 +350,7 @@ Initialized empty Git repository in C:/Users/Иван/my-project/.git/`,
       Удалите <code>.git</code> — и история пропадёт, а сами файлы останутся. Чтобы подключить Git к уже существующему
       проекту, перейдите в его папку через <code>cd</code> и выполните <code>git init</code>.</p>
 
+    ${done("git", 4)}
     <h3>${step("git", 5)}Главный цикл: изменили → add → commit</h3>
     <p>Создайте файл:</p>
     ${by({
@@ -379,6 +384,7 @@ nothing added to commit but untracked files present (use "git add" to track)
         Плохое: <code>fix</code>, <code>123</code>, <code>правки</code>. Коммитьте часто и понемногу — одна законченная мысль на коммит.</p>
     </div>
 
+    ${done("git", 5)}
     <h3>${step("git", 6)}История и откат</h3>
     ${code(`git log --oneline       # список коммитов
 git diff                # что изменено и ещё не добавлено
@@ -387,6 +393,7 @@ git restore README.md   # вернуть файл к последнему ком
     <div class="callout warn full"><p><b>Осторожно:</b> <code>git restore</code> безвозвратно удаляет правки, которые ещё не попали в коммит.
       То, что уже закоммичено, Git не потеряет. Возврат к старым коммитам — в продвинутом курсе.</p></div>
 
+    ${done("git", 6)}
     <h3>${step("git", 7)}Скажите Git, что не сохранять</h3>
     <p>Создайте в папке проекта файл <code>.gitignore</code> и перечислите в нём, что не должно попасть в историю:</p>
     ${code(`.env
@@ -395,6 +402,7 @@ __pycache__/
 *.log`)}
     <div class="callout warn"><p><b>Никогда не коммитьте пароли и токены.</b><span class="full"> Если это случилось и коммит ушёл на GitHub — считайте секрет украденным: смените пароль или токен, удаления из истории недостаточно.</span></p></div>
 
+    ${done("git", 7)}
     <h3>${step("git", 8)}Войдите в GitHub (один раз)</h3>
     <p>Зарегистрируйтесь на <b>github.com</b>, если ещё нет аккаунта. Пароль от GitHub в терминале не работает — нужен вход через браузер.</p>
     ${by({
@@ -412,6 +420,8 @@ Press Enter to open github.com in your browser...
 ✓ Logged in as ВАШ_ЛОГИН`, 'На каждый вопрос жмите Enter, затем вставьте одноразовый код в открывшемся браузере. Главное — последняя строка <code>Logged in as</code>.') : ''}
     <p class="full"><code>gh</code> — официальная программа GitHub для терминала. Она один раз сохраняет вход, и дальше
       <code>git push</code>, <code>git pull</code> и <code>git clone</code> работают без вопросов.${by({ Windows: ' На Windows её тоже можно поставить: <code>winget install --id GitHub.cli -e</code>, но для основ она не нужна.', macOS: '', Linux: '' })}</p>
+
+    ${done("git", 8)}
 
     <p>Дальше два пути — выберите свой:</p>
     <ul>
@@ -445,6 +455,7 @@ origin  https://github.com/ВАШ_ЛОГИН/my-project.git (push)`)}
         <code>git pull origin main --allow-unrelated-histories</code>, а потом <code>git push</code>.</p></div>
     </div>
 
+    ${done("git", 9)}
     <h3>${step("git", 10)}Вариант Б: создайте на GitHub и клонируйте к себе</h3>
     <p>На GitHub: <b>+</b> → <b>New repository</b>, введите имя (например, <code>my-new-project</code>) и <b>поставьте</b> галочку
       <b>Add a README file</b> → <b>Create repository</b>. Затем нажмите зелёную кнопку <b>&lt;&gt; Code</b> → вкладка <b>HTTPS</b> → скопируйте ссылку.</p>
@@ -465,6 +476,7 @@ Receiving objects: 100% (3/3), done.`, 'Появилась папка <code>my-n
       <p>Приватный репозиторий при клонировании попросит войти — см. шаг 8.</p>
     </div>
 
+    ${done("git", 10)}
     <h3>${step("git", 11)}Каждый день: pull → правки → push</h3>
     ${code(`git pull                       # забрать свежие изменения с GitHub
 # ...поправили файлы...
@@ -478,6 +490,7 @@ To https://github.com/ВАШ_ЛОГИН/my-project.git
    a1b2c3d..e4f5a6b  main -> main`, '<code>Already up to date</code> — на GitHub нет ничего нового. Последняя строка — ваши коммиты ушли на GitHub.')}
     <p class="full">Правило: <b>начали работу — <code>git pull</code>, закончили — <code>git push</code></b>.
       Особенно если вы работаете с двух компьютеров или в команде — так вы не разойдётесь версиями.</p>
+    ${done("git", 11)}
     <div class="full">
       <h3>Частые ошибки</h3>
       <div class="tbl"><table>
