@@ -96,6 +96,24 @@
   .code pre { margin: 0; padding: 4px 18px 16px; overflow-x: auto; font: .9rem/1.65 ui-monospace, Consolas, monospace; color: #e6e8f2; }
   .copy { align-self: flex-end; margin: 8px 8px 0; font: inherit; font-size: .78rem; font-weight: 600; cursor: pointer; color: #c9cde0; background: #1c2133; border: 1px solid #2f3550; border-radius: 8px; padding: 4px 10px; }
   .copy:hover { color: #fff; }
+  .out { margin: -6px 0 16px; border: 1px dashed var(--border); border-top: 0; border-radius: 0 0 12px 12px; padding: 8px 18px 12px; }
+  .out b { display: block; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .out pre { margin: 0; overflow-x: auto; font: .82rem/1.6 ui-monospace, Consolas, monospace; color: var(--muted); }
+  .out p { margin: 0; color: var(--muted); font-size: .9rem; }
+  .out small { display: block; margin-top: 6px; color: var(--muted); font-size: .82rem; }
+  .chk { cursor: pointer; }
+  .chk input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .chk input:focus-visible + .n { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .lesson h3 .chk .n { box-shadow: 0 0 0 0 transparent; transition: background .2s; }
+  .chk:hover .n { filter: brightness(1.15); }
+  .chk .n { position: relative; }
+  .chk input:checked + .n { background: #22c55e; color: transparent; }
+  .chk input:checked + .n::after { content: '✓'; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; }
+  h3:has(.chk input:checked) { color: var(--muted); }
+  .progress { margin: 20px 0 0; padding: 14px 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); }
+  .progress-bar { height: 8px; border-radius: 99px; background: var(--border); overflow: hidden; margin: 8px 0 6px; }
+  .progress-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #22c55e); transition: width .3s; }
+  .progress small { color: var(--muted); }
   .callout { margin: 16px 0; padding: 14px 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent-2); }
   .callout.warn { border-left-color: #f5a524; }
   .callout p { margin: 4px 0; }
@@ -189,6 +207,16 @@ $('#nav').innerHTML = Object.entries(PAGES).map(([id, [t]]) => `<a href="#/${id}
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const code = s => `<div class="code"><pre>${esc(s.trim())}</pre><button class="copy">Копировать</button></div>`;
 const by = o => o[os];
+// out: undefined — без блока, '' — команда молчит, строка — ожидаемый вывод; note — пояснение под выводом
+const out = (o, note = '') => `<div class="out"><b>Ожидаемый вывод</b>${o ? `<pre>${esc(o.trim())}</pre>` : '<p>Ничего не выводит — значит, всё прошло успешно.</p>'}${note ? `<small>${note}</small>` : ''}</div>`;
+const step = (lesson, n) => `<label class="chk" title="Отметить шаг как пройденный"><input type="checkbox" data-done="${lesson}-${n}"><span class="n">${n}</span></label>`;
+function progress() {
+  const boxes = [...document.querySelectorAll('#app [data-done]')], p = $('#app .progress');
+  if (!p) return;
+  const done = boxes.filter(b => b.checked).length;
+  p.querySelector('i').style.width = (100 * done / boxes.length) + '%';
+  p.querySelector('span').textContent = done === boxes.length ? `Все ${done} шагов пройдены 🎉` : `Пройдено ${done} из ${boxes.length}`;
+}
 
 const LESSONS = {
   git: () => `
@@ -202,6 +230,8 @@ const LESSONS = {
       <li><button data-go="how">Как пользоваться</button></li>
       <li><button data-go="cheat">Шпаргалка</button></li>
     </ul>
+    <div class="progress"><span></span><div class="progress-bar"><i></i></div>
+      <small>Нажимайте на номер шага, чтобы отметить его пройденным. Прогресс сохраняется в этом браузере.</small></div>
 
     <h2 id="what">Что это</h2>
     <p class="brief"><b>Git</b> — программа, которая хранит историю изменений файлов в папке проекта.
@@ -246,18 +276,31 @@ const LESSONS = {
 
     <h2 id="how">Как пользоваться (база)</h2>
 
-    <h3><span class="n">1</span>Откройте терминал</h3>
+    <h3>${step("git", 1)}Откройте терминал</h3>
     <p>${by({
       Windows: 'Нажмите <code>Win + X</code> → «Терминал» (или найдите <b>PowerShell</b> в меню Пуск).',
       macOS: 'Нажмите <code>Cmd + Пробел</code>, введите «Терминал» и нажмите Enter.',
       Linux: 'Нажмите <code>Ctrl + Alt + T</code> или найдите «Терминал» в меню приложений.',
     })}</p>
 
-    <h3><span class="n">2</span>Установите Git</h3>
+    <h3>${step("git", 2)}Установите Git</h3>
     ${by({
       Windows: code('winget install --id Git.Git -e --source winget'),
       macOS: code('xcode-select --install'),
       Linux: code('sudo apt install git      # Ubuntu, Debian, Mint\nsudo dnf install git      # Fedora\nsudo pacman -S git        # Arch'),
+    })}
+    ${by({
+      Windows: out(`Найдено Git [Git.Git] Версия 2.51.0
+Скачивание https://github.com/git-for-windows/git/releases/download/...
+  ██████████████████████████████  65.0 MB / 65.0 MB
+Успешно проверен хэш установщика
+Запуск установки пакета...
+Успешно установлено`, 'Номер версии может быть другим. Вывод на английском (Successfully installed) — тоже нормально.'),
+      macOS: out('xcode-select: note: install requested for command line developer tools',
+        'И появится окно «Установить». Если видите <code>command line tools are already installed</code> — Git уже есть, переходите дальше.'),
+      Linux: out(`...
+Setting up git (1:2.43.0-1ubuntu7.3) ...
+Processing triggers for man-db (2.12.0-4build2) ...`, 'На Fedora в конце будет <code>Complete!</code>. Если пишет, что git уже установлен (<code>already the newest version</code>), — всё в порядке.'),
     })}
     <p class="full">${by({
       Windows: 'Если <code>winget</code> не найден — скачайте установщик с <b>git-scm.com</b> и жмите «Next» со стандартными настройками. После установки <b>закройте и снова откройте терминал</b>, иначе команда <code>git</code> не найдётся.',
@@ -266,40 +309,68 @@ const LESSONS = {
     })}</p>
     <p>Проверьте, что всё работает:</p>
     ${code('git --version')}
+    ${out(by({ Windows: 'git version 2.51.0.windows.1', macOS: 'git version 2.39.5 (Apple Git-154)', Linux: 'git version 2.43.0' }),
+      'Цифры могут отличаться — главное, что есть строка <code>git version</code>. Если видите <code>command not found</code> или «не является командлетом» — Git не установлен или терминал нужно перезапустить.')}
 
-    <h3><span class="n">3</span>Представьтесь Git (один раз)</h3>
+    <h3>${step("git", 3)}Представьтесь Git (один раз)</h3>
     ${code(`git config --global user.name "Иван Иванов"
 git config --global user.email "ivan@example.com"
 git config --global init.defaultBranch main`)}
+    ${out('', 'Проверить настройки: <code>git config --global --list</code> — там будут ваши имя и почта.')}
     <div class="full">
       <p>Имя и почта подписывают каждый коммит. Укажите ту же почту, что на GitHub, — тогда коммиты привяжутся к вашему профилю.
         Третья строка называет основную ветку <code>main</code> — так сейчас принято везде.</p>
       ${by({
-        Windows: '<p>Windows и Linux/macOS по-разному обозначают конец строки (CRLF и LF). Чтобы не было путаницы в общих проектах:</p>' + code('git config --global core.autocrlf true'),
-        macOS: '<p>Чтобы концы строк не ломались в проектах, где работают люди с Windows:</p>' + code('git config --global core.autocrlf input'),
-        Linux: '<p>Чтобы концы строк не ломались в проектах, где работают люди с Windows:</p>' + code('git config --global core.autocrlf input'),
+        Windows: '<p>Windows и Linux/macOS по-разному обозначают конец строки (CRLF и LF). Чтобы не было путаницы в общих проектах:</p>' + code('git config --global core.autocrlf true') + out(''),
+        macOS: '<p>Чтобы концы строк не ломались в проектах, где работают люди с Windows:</p>' + code('git config --global core.autocrlf input') + out(''),
+        Linux: '<p>Чтобы концы строк не ломались в проектах, где работают люди с Windows:</p>' + code('git config --global core.autocrlf input') + out(''),
       })}
     </div>
 
-    <h3><span class="n">4</span>Создайте репозиторий</h3>
+    <h3>${step("git", 4)}Создайте репозиторий</h3>
     ${code(`mkdir my-project
 cd my-project
 git init`)}
+    ${out(by({
+      Windows: `    Каталог: C:\\Users\\Иван
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        22.10.2026     12:00                my-project
+
+Initialized empty Git repository in C:/Users/Иван/my-project/.git/`,
+      macOS: 'Initialized empty Git repository in /Users/ivan/my-project/.git/',
+      Linux: 'Initialized empty Git repository in /home/ivan/my-project/.git/',
+    }), 'Git может ответить по-русски: «Инициализирован пустой репозиторий Git в …» — это то же самое.')}
     <p class="full">Команда <code>git init</code> создаёт скрытую папку <code>.git</code> — в ней вся история.
       Удалите <code>.git</code> — и история пропадёт, а сами файлы останутся. Чтобы подключить Git к уже существующему
       проекту, перейдите в его папку через <code>cd</code> и выполните <code>git init</code>.</p>
 
-    <h3><span class="n">5</span>Главный цикл: изменили → add → commit</h3>
+    <h3>${step("git", 5)}Главный цикл: изменили → add → commit</h3>
     <p>Создайте файл:</p>
     ${by({
       Windows: code('Set-Content README.md "Привет, Git!"'),
       macOS: code('echo "Привет, Git!" > README.md'),
       Linux: code('echo "Привет, Git!" > README.md'),
     })}
+    ${out('', 'Проверьте, что файл появился: <code>' + by({ Windows: 'Get-Content README.md', macOS: 'cat README.md', Linux: 'cat README.md' }) + '</code> покажет «Привет, Git!».')}
     <p>И сохраните его в историю:</p>
     ${code(`git status                      # что изменилось
 git add README.md               # или git add . — все изменения
 git commit -m "Добавил README"  # сохранить снимок`)}
+    ${out(`On branch main
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        README.md
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+[main (root-commit) a1b2c3d] Добавил README
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md`, 'Первая часть — от <code>git status</code>: файл новый и пока не в Git. <code>git add</code> ничего не пишет. Последние строки — от <code>git commit</code>: снимок сохранён, <code>a1b2c3d</code> — его номер (у вас будет другой).')}
     <p>Дальше всегда одно и то же: поменяли файлы → <code>git add</code> → <code>git commit</code>.</p>
     <div class="full">
       <p><code>git status</code> — ваша главная команда: красным показаны изменения вне индекса, зелёным — те, что войдут в коммит.
@@ -308,14 +379,15 @@ git commit -m "Добавил README"  # сохранить снимок`)}
         Плохое: <code>fix</code>, <code>123</code>, <code>правки</code>. Коммитьте часто и понемногу — одна законченная мысль на коммит.</p>
     </div>
 
-    <h3><span class="n">6</span>История и откат</h3>
+    <h3>${step("git", 6)}История и откат</h3>
     ${code(`git log --oneline       # список коммитов
 git diff                # что изменено и ещё не добавлено
 git restore README.md   # вернуть файл к последнему коммиту`)}
+    ${out('a1b2c3d (HEAD -> main) Добавил README', 'Это вывод <code>git log --oneline</code> — по строке на коммит, новые сверху. <code>git diff</code> и <code>git restore</code> молчат, если файл не меняли. Если <code>git log</code> открыл длинный список с <code>:</code> внизу — нажмите <code>q</code>, чтобы выйти.')}
     <div class="callout warn full"><p><b>Осторожно:</b> <code>git restore</code> безвозвратно удаляет правки, которые ещё не попали в коммит.
       То, что уже закоммичено, Git не потеряет. Возврат к старым коммитам — в продвинутом курсе.</p></div>
 
-    <h3><span class="n">7</span>Скажите Git, что не сохранять</h3>
+    <h3>${step("git", 7)}Скажите Git, что не сохранять</h3>
     <p>Создайте в папке проекта файл <code>.gitignore</code> и перечислите в нём, что не должно попасть в историю:</p>
     ${code(`.env
 node_modules/
@@ -323,10 +395,17 @@ __pycache__/
 *.log`)}
     <div class="callout warn"><p><b>Никогда не коммитьте пароли и токены.</b><span class="full"> Если это случилось и коммит ушёл на GitHub — считайте секрет украденным: смените пароль или токен, удаления из истории недостаточно.</span></p></div>
 
-    <h3><span class="n">8</span>Отправьте проект на GitHub</h3>
+    <h3>${step("git", 8)}Отправьте проект на GitHub</h3>
     <p>На <b>github.com</b> нажмите <b>New repository</b>, придумайте имя и создайте <b>пустой</b> репозиторий (без README). Затем:</p>
     ${code(`git remote add origin https://github.com/ВАШ_ЛОГИН/my-project.git
 git push -u origin main`)}
+    ${out(`Enumerating objects: 3, done.
+Counting objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 236 bytes | 236.00 KiB/s, done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/ВАШ_ЛОГИН/my-project.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.`, 'Главное — строка <code>[new branch] main -> main</code>. Обновите страницу репозитория на GitHub — там появится README.md.')}
     <p>Дальше: <code>git push</code> — отправить новые коммиты, <code>git pull</code> — забрать чужие,
       <code>git clone ссылка</code> — скачать проект на другой компьютер.</p>
     <div class="full">
@@ -340,6 +419,14 @@ git push -u origin main`)}
         macOS: code('brew install gh\ngh auth login'),
         Linux: code('sudo apt install gh     # или: sudo dnf install gh\ngh auth login'),
       })}
+      ${os !== 'Windows' ? out(`? Where do you use GitHub? GitHub.com
+? What is your preferred protocol for Git operations? HTTPS
+? Authenticate Git with your GitHub credentials? Yes
+? How would you like to authenticate GitHub CLI? Login with a web browser
+! First copy your one-time code: 1A2B-3C4D
+Press Enter to open github.com in your browser...
+✓ Authentication complete.
+✓ Logged in as ВАШ_ЛОГИН`, 'На каждый вопрос просто жмите Enter, затем введите код в открывшемся браузере.') : ''}
       <h3>Частые ошибки</h3>
       <div class="tbl"><table>
         <tr><th>Сообщение</th><th>Что делать</th></tr>
@@ -419,6 +506,8 @@ function render() {
         `<a class="card" href="#/${k}"><div class="ic">${ic}</div><h3>${t}</h3><p>${d}</p></a>`).join('')}
       </div>
     </section>`;
+  document.querySelectorAll('#app [data-done]').forEach(b => b.checked = store('done:' + b.dataset.done) === '1');
+  progress();
   document.title = (page ? page[0] + ' — ' : '') + 'Академия быстрого обучения';
 }
 
@@ -436,6 +525,9 @@ $('#app').onclick = e => {
   if (b) navigator.clipboard.writeText(b.previousElementSibling.textContent).then(() => {
     b.textContent = 'Скопировано ✓'; setTimeout(() => b.textContent = 'Копировать', 1500);
   });
+};
+$('#app').onchange = e => {
+  if (e.target.dataset.done) { store('done:' + e.target.dataset.done, e.target.checked ? '1' : ''); progress(); }
 };
 $('#os').onclick = e => { if (e.target.dataset.os) { os = e.target.dataset.os; store('os', os); render(); } };
 addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
