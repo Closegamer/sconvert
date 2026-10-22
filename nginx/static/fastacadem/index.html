@@ -214,6 +214,19 @@
     border-radius: 50%; border: 0; cursor: pointer; font-size: 1.3rem; font-weight: 800; color: #fff;
     background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 28px var(--glow); }
   #totop:hover { transform: translateY(-2px); }
+  /* Фон: медленно плывущие размытые пятна (aurora) */
+  .aurora { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+  .aurora i { position: absolute; width: 46vmax; height: 46vmax; border-radius: 50%; filter: blur(70px); opacity: .22; will-change: transform; }
+  .aurora i:nth-child(1) { background: var(--accent); top: -14vmax; left: -10vmax; animation: drift1 38s ease-in-out infinite alternate; }
+  .aurora i:nth-child(2) { background: var(--accent-2); top: 30vh; right: -16vmax; animation: drift2 46s ease-in-out infinite alternate; }
+  .aurora i:nth-child(3) { background: #f472b6; bottom: -20vmax; left: 25vw; opacity: .14; animation: drift3 54s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(28vw, 22vh) scale(1.15); } }
+  @keyframes drift2 { to { transform: translate(-30vw, -18vh) scale(.9); } }
+  @keyframes drift3 { to { transform: translate(-18vw, -26vh) scale(1.2); } }
+  [data-theme="dark"] .aurora i { opacity: .16; }
+  [data-anim="off"] .aurora, [data-anim="off"] .orb { animation: none; }
+  [data-anim="off"] .aurora { display: none; }
+  #anim[aria-pressed="false"] { opacity: .45; }
   @media (max-width: 640px) {
     .bar { gap: 10px; padding-block: 10px; }
     .logo { font-size: 1rem; }
@@ -256,12 +269,14 @@
           <button data-mode="brief">Краткий</button>
           <button data-mode="full">Развёрнутый</button>
         </div>
+        <button class="icon-btn" id="anim" aria-label="Анимация фона" title="Анимация фона">✨</button>
         <button class="icon-btn" id="theme" aria-label="Переключить тему">🌙</button>
       </div>
     </div>
     <nav id="nav"></nav>
   </div>
 </header>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
 <div id="zone" hidden></div>
 <main class="wrap" id="app"></main>
 <footer><div class="wrap foot"><span>© FastAcadem — быстрое обучение для занятых людей</span><code class="sig">writtenBy('Closegamer', 2026)</code></div></footer>
@@ -281,6 +296,7 @@ const store = (k, v) => { try { return v === undefined ? localStorage.getItem(k)
 let os = store('os') || (/Mac/.test(navigator.platform) ? 'macOS' : /Linux/.test(navigator.platform) ? 'Linux' : 'Windows');
 let mode = store('mode') || 'brief';
 let theme = store('theme') || 'light';
+let anim = store('anim') || (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'off' : 'on');
 
 $('#nav').innerHTML = '<a href="#/" data-id="">Главная</a>' + Object.entries(PAGES).map(([id, [t]]) => `<a href="#/${id}" data-id="${id}">${t}</a>`).join('');
 
@@ -2573,7 +2589,7 @@ function startSlider() {
   };
   const auto = () => {
     clearInterval(slideTimer);
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) slideTimer = setInterval(() => show(i + 1), 6000);
+    if (anim === 'on') slideTimer = setInterval(() => show(i + 1), 6000);
   };
   const go = n => { show(n); auto(); };
   root.querySelector('.hs-prev').onclick = () => go(i - 1);
@@ -2641,6 +2657,12 @@ function applyTheme() {
   $('#theme').textContent = theme === 'dark' ? '☀️' : '🌙';
 }
 
+function applyAnim() {
+  document.documentElement.dataset.anim = anim;
+  $('#anim').setAttribute('aria-pressed', anim === 'on');
+  $('#anim').title = anim === 'on' ? 'Отключить анимацию' : 'Включить анимацию';
+}
+$('#anim').onclick = () => { anim = anim === 'on' ? 'off' : 'on'; store('anim', anim); applyAnim(); startSlider(); };
 $('#theme').onclick = () => { theme = theme === 'dark' ? 'light' : 'dark'; store('theme', theme); applyTheme(); };
 $('#mode').onclick = e => { if (e.target.dataset.mode) { mode = e.target.dataset.mode; store('mode', mode); render(); } };
 $('#app').onclick = e => {
@@ -2658,7 +2680,7 @@ $('#os').onclick = e => { if (e.target.dataset.os) { os = e.target.dataset.os; s
 addEventListener('scroll', () => { $('#totop').hidden = scrollY < 600; }, { passive: true });
 $('#totop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
 addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
-applyTheme(); render();
+applyTheme(); applyAnim(); render();
 </script>
 </body>
 </html>
