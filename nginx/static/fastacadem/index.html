@@ -142,6 +142,72 @@
   .next p { margin: 0; opacity: .92; }
   .back { display: inline-block; margin-bottom: 20px; color: var(--muted); font-weight: 600; }
   .back:hover { color: var(--accent); }
+  /* ---------- Главная ---------- */
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 999px; font: inherit; font-weight: 700; font-size: .95rem;
+    cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: transform .2s, box-shadow .2s, border-color .2s; }
+  .btn:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .btn.primary { color: #fff; border-color: transparent; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 28px var(--glow); }
+  .hs { position: relative; border-radius: 28px; padding: clamp(28px, 5vw, 56px); border: 1px solid var(--border); overflow: hidden;
+    background: radial-gradient(40rem 22rem at 100% 0%, color-mix(in srgb, var(--accent-2) 14%, transparent), transparent 70%),
+                radial-gradient(36rem 22rem at 0% 100%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%), var(--surface); }
+  .hs-track { display: grid; }
+  .hs-slide { grid-area: 1 / 1; display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center;
+    opacity: 0; visibility: hidden; transform: translateY(12px); transition: opacity .6s, transform .6s, visibility .6s; }
+  .hs-slide.on { opacity: 1; visibility: visible; transform: none; }
+  .hs-kicker { display: inline-block; margin: 0 0 16px; padding: 5px 12px; border-radius: 999px; font-size: .8rem; font-weight: 800; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .hs h1 { font-size: clamp(2rem, 4.6vw, 3.5rem); line-height: 1.08; margin: 0 0 18px; letter-spacing: -.025em; }
+  .hs .lead { margin: 0 0 28px; }
+  .hs-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .hs-art { position: relative; height: 280px; display: grid; place-items: center; }
+  .orb { width: 200px; height: 200px; border-radius: 50%; display: grid; place-items: center; font-size: 5.5rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 30px 70px var(--glow), inset 0 -12px 30px rgba(0,0,0,.15);
+    animation: float 6s ease-in-out infinite; }
+  .chip { position: absolute; padding: 9px 14px; border-radius: 14px; font-size: .85rem; font-weight: 700; white-space: nowrap;
+    background: var(--surface); border: 1px solid var(--border); box-shadow: 0 12px 30px rgba(20, 22, 40, .12); }
+  .chip.c1 { top: 22px; left: 0; } .chip.c2 { bottom: 26px; right: 0; color: #16a34a; }
+  @keyframes float { 50% { transform: translateY(-12px); } }
+  .hs-nav { display: flex; align-items: center; gap: 14px; margin-top: 32px; }
+  .hs-nav > button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: inherit; font-size: 1.1rem; cursor: pointer; }
+  .hs-nav > button:hover { border-color: var(--accent); }
+  .hs-dots { display: flex; gap: 8px; }
+  .hs-dots button { width: 10px; height: 10px; padding: 0; border-radius: 99px; border: 0; cursor: pointer; background: var(--border); transition: width .3s, background .3s; }
+  .hs-dots button[aria-current="true"] { width: 30px; background: var(--accent); }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 20px; }
+  .stat { padding: 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--border); }
+  .stat b { display: block; font-size: clamp(1.8rem, 3.4vw, 2.4rem); line-height: 1.1; letter-spacing: -.02em; }
+  .stat span { color: var(--muted); font-size: .9rem; }
+
+  .sec { margin-top: 72px; scroll-margin-top: 140px; }
+  .sec-head { max-width: 640px; margin-bottom: 28px; }
+  .sec-head h2 { font-size: clamp(1.6rem, 3.4vw, 2.3rem); line-height: 1.15; margin: 8px 0 10px; letter-spacing: -.02em; }
+  .sec-head p { margin: 0; color: var(--muted); font-size: 1.05rem; }
+  .eyebrow { color: var(--accent); font-weight: 800; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
+  .feats { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 16px; }
+  .feat { padding: 24px; border-radius: 18px; background: var(--surface); border: 1px solid var(--border); }
+  .feat .ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 1.4rem; margin-bottom: 14px;
+    background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .feat h3 { margin: 0 0 6px; font-size: 1.08rem; }
+  .feat p { margin: 0; color: var(--muted); font-size: .94rem; }
+  .how { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; counter-reset: how; }
+  .how div { position: relative; padding: 24px 24px 24px 76px; border-radius: 18px; background: var(--surface); border: 1px solid var(--border); }
+  .how div::before { counter-increment: how; content: counter(how); position: absolute; left: 22px; top: 22px; width: 38px; height: 38px; border-radius: 12px;
+    display: grid; place-items: center; color: #fff; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+  .how h3 { margin: 0 0 4px; font-size: 1.05rem; }
+  .how p { margin: 0; color: var(--muted); font-size: .92rem; }
+  .card .meta-line { display: flex; justify-content: space-between; margin-top: 16px; font-size: .85rem; font-weight: 700; color: var(--accent); }
+  .cta-band { margin-top: 72px; padding: clamp(28px, 5vw, 48px); border-radius: 28px; color: #fff; text-align: center;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+  .cta-band h2 { margin: 0 0 10px; font-size: clamp(1.5rem, 3.2vw, 2.2rem); letter-spacing: -.02em; }
+  .cta-band p { margin: 0 auto 24px; max-width: 560px; opacity: .92; }
+  .cta-band .btn { background: #fff; color: #2b2560; border-color: transparent; }
+  @media (max-width: 760px) {
+    .hs-slide { grid-template-columns: 1fr; }
+    .hs-art { display: none; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  }
   @media (max-width: 640px) {
     .bar { gap: 10px; padding-block: 10px; }
     .logo { font-size: 1rem; }
@@ -209,7 +275,7 @@ let os = store('os') || (/Mac/.test(navigator.platform) ? 'macOS' : /Linux/.test
 let mode = store('mode') || 'brief';
 let theme = store('theme') || 'light';
 
-$('#nav').innerHTML = Object.entries(PAGES).map(([id, [t]]) => `<a href="#/${id}" data-id="${id}">${t}</a>`).join('');
+$('#nav').innerHTML = '<a href="#/" data-id="">Главная</a>' + Object.entries(PAGES).map(([id, [t]]) => `<a href="#/${id}" data-id="${id}">${t}</a>`).join('');
 
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const code = s => `<div class="code"><pre>${esc(s.trim())}</pre><button class="copy">Копировать</button></div>`;
@@ -2384,6 +2450,141 @@ const ADVANCED = {
 };
 
 // Раздел = один урок (функция) или несколько ({ t, f }); урок N открывается по #/раздел/N
+// ---------- Главная ----------
+const SLIDES = [
+  { k: 'Для занятых людей', h: 'Учитесь <span class="grad">быстро</span>.<br>Делайте то, что нужно.',
+    p: 'Короткие практические уроки без воды: открыли — сделали — пошли дальше. Для Windows, macOS и Linux.',
+    a: ['Выбрать тему', 'sections'], b: ['Создать бота', '#/bots'], ic: '🚀', c1: '⏱ ≈ 15 минут', c2: '✓ Готово' },
+  { k: 'Время — главный ресурс', h: '<span class="grad">15 минут</span> вместо курса на три месяца',
+    p: 'Только шаги, которые ведут к результату. Теория — по желанию, в развёрнутом режиме.',
+    a: ['Начать с Git', '#/git'], b: ['Все темы', 'sections'], ic: '⏱️', c1: 'Кратко · Развёрнуто', c2: '✓ Без воды' },
+  { k: 'Результат сегодня', h: 'Свой Telegram-бот — <span class="grad">за вечер</span>',
+    p: 'Пошагово и с ожидаемым результатом каждой команды — вы всегда видите, что всё идёт правильно.',
+    a: ['К урокам по ботам', '#/bots'], b: ['Все темы', 'sections'], ic: '🤖', c1: 'Шаг 6 из 7', c2: '✓ Бот отвечает' },
+  { k: 'Делегируйте рутину', h: 'ИИ-агент работает, <span class="grad">пока вы заняты</span>',
+    p: 'Агенты на YandexGPT, GigaChat и Claude: разбирают заметки, готовят планы, работают по расписанию.',
+    a: ['Создать агента', '#/agents'], b: ['Все темы', 'sections'], ic: '🧠', c1: 'Каждый день в 8:00', c2: '✓ План готов' },
+];
+
+const FEATS = [
+  ['⏱️', 'Коротко и по делу', 'Урок — это 10–20 минут и конкретный результат, а не «введение в профессию».'],
+  ['💻', 'Под вашу систему', 'Команды для Windows, macOS и Linux — переключатель вверху страницы.'],
+  ['📖', 'Кратко или развёрнуто', 'Спешите — только шаги. Есть время — объяснения и разбор частых ошибок.'],
+  ['✅', 'Видно, что всё правильно', 'Под каждой командой — ожидаемый вывод. Сверили — и идёте дальше.'],
+  ['📌', 'Прогресс сохраняется', 'Отмечайте пройденные шаги и возвращайтесь к уроку в любой момент.'],
+  ['🎁', 'Бесплатно и без регистрации', 'Открыли страницу — учитесь. Никаких анкет, звонков и рассылок.'],
+];
+
+const plural = (n, [one, few, many]) => n % 10 === 1 && n % 100 !== 11 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? few : many;
+const lessonsOf = id => [].concat(LESSONS[id] || []).map(l => typeof l === 'function' ? { f: l } : l);
+
+// Показатели считаются из самих уроков — цифры всегда честные
+function stats() {
+  const all = Object.keys(PAGES).flatMap(lessonsOf).map(l => l.f());
+  const steps = all.reduce((n, h) => n + (h.match(/data-done="/g) || []).length, 0);
+  const mins = all.map(h => +(h.match(/≈ (\d+) минут · только/) || [])[1]).filter(Boolean);
+  return [
+    [Object.keys(PAGES).length, plural(Object.keys(PAGES).length, ['направление', 'направления', 'направлений'])],
+    [all.length, plural(all.length, ['урок', 'урока', 'уроков'])],
+    [steps, plural(steps, ['практический шаг', 'практических шага', 'практических шагов'])],
+    ['3 ОС', 'Windows, macOS и Linux'],
+    [Math.min(...mins) + ' мин', 'самый короткий урок'],
+  ];
+}
+
+const link = ([text, to], cls) => to.startsWith('#')
+  ? `<a class="btn ${cls}" href="${to}">${text}</a>`
+  : `<button class="btn ${cls}" data-go="${to}">${text}</button>`;
+
+function homeView() {
+  return `
+  <section class="hs" aria-roledescription="carousel" aria-label="О FastAcadem">
+    <div class="hs-track">${SLIDES.map((s, i) => `
+      <article class="hs-slide" aria-roledescription="slide" aria-label="${i + 1} из ${SLIDES.length}">
+        <div>
+          <p class="hs-kicker">${s.k}</p>
+          <h1>${s.h}</h1>
+          <p class="lead">${s.p}</p>
+          <div class="hs-cta">${link(s.a, 'primary')}${link(s.b, '')}</div>
+        </div>
+        <div class="hs-art" aria-hidden="true"><div class="orb">${s.ic}</div><span class="chip c1">${s.c1}</span><span class="chip c2">${s.c2}</span></div>
+      </article>`).join('')}
+    </div>
+    <div class="hs-nav">
+      <button class="hs-prev" aria-label="Предыдущий слайд">←</button>
+      <div class="hs-dots">${SLIDES.map((_, i) => `<button aria-label="Слайд ${i + 1}"></button>`).join('')}</div>
+      <button class="hs-next" aria-label="Следующий слайд">→</button>
+    </div>
+  </section>
+
+  <div class="stats">${stats().map(([n, t]) => `<div class="stat"><b>${n}</b><span>${t}</span></div>`).join('')}</div>
+
+  <section class="sec">
+    <div class="sec-head"><span class="eyebrow">Почему FastAcadem</span>
+      <h2>Обучение, которое уважает ваше время</h2>
+      <p>Вы руководите, продаёте, запускаете проекты. Вам не нужен курс — нужно сделать конкретное дело и вернуться к работе.</p></div>
+    <div class="feats">${FEATS.map(([ic, t, d]) => `<div class="feat"><div class="ic">${ic}</div><h3>${t}</h3><p>${d}</p></div>`).join('')}</div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="eyebrow">Как это работает</span><h2>Три шага до результата</h2></div>
+    <div class="how">
+      <div><h3>Выберите задачу</h3><p>Бот, агент, база данных, Git или Docker — то, что нужно сделать сегодня.</p></div>
+      <div><h3>Пройдите шаги</h3><p>Копируйте команды одной кнопкой — они уже подобраны под вашу систему.</p></div>
+      <div><h3>Сверьте результат</h3><p>Ожидаемый вывод под каждой командой подскажет, что всё получилось.</p></div>
+    </div>
+  </section>
+
+  <section class="sec" id="sections">
+    <div class="sec-head"><span class="eyebrow">Направления</span><h2>С чего начнём?</h2>
+      <p>Каждое направление — законченные уроки: от первого шага до работающего результата.</p></div>
+    <div class="cards">${Object.entries(PAGES).map(([k, [t, ic, d]]) => {
+      const n = lessonsOf(k).length;
+      return `<a class="card" href="#/${k}"><div class="ic">${ic}</div><h3>${t}</h3><p>${d}</p>
+        <div class="meta-line"><span>${n ? n + ' ' + plural(n, ['урок', 'урока', 'уроков']) : 'Скоро'}</span><span>Начать →</span></div></a>`;
+    }).join('')}</div>
+  </section>
+
+  <section class="cta-band">
+    <h2>Начните с того, что нужно сегодня</h2>
+    <p>Первый результат — через 15 минут. Без регистрации и без воды.</p>
+    <button class="btn" data-go="sections">Выбрать тему →</button>
+  </section>`;
+}
+
+let slideTimer;
+function startSlider() {
+  clearInterval(slideTimer);
+  const root = $('#app .hs');
+  if (!root) return;
+  const slides = [...root.querySelectorAll('.hs-slide')], dots = [...root.querySelectorAll('.hs-dots button')];
+  let i = 0;
+  const show = n => {
+    i = (n + slides.length) % slides.length;
+    slides.forEach((s, k) => { s.classList.toggle('on', k === i); s.inert = k !== i; });
+    dots.forEach((d, k) => d.setAttribute('aria-current', k === i));
+  };
+  const auto = () => {
+    clearInterval(slideTimer);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) slideTimer = setInterval(() => show(i + 1), 6000);
+  };
+  const go = n => { show(n); auto(); };
+  root.querySelector('.hs-prev').onclick = () => go(i - 1);
+  root.querySelector('.hs-next').onclick = () => go(i + 1);
+  dots.forEach((d, k) => d.onclick = () => go(k));
+  root.onmouseenter = () => clearInterval(slideTimer);
+  root.onmouseleave = auto;
+  let x0 = null;
+  root.ontouchstart = e => { x0 = e.touches[0].clientX; };
+  root.ontouchend = e => {
+    const dx = e.changedTouches[0].clientX - x0;
+    if (x0 !== null && Math.abs(dx) > 40) go(i + (dx < 0 ? 1 : -1));
+    x0 = null;
+  };
+  show(0);
+  auto();
+}
+
 function lessonView(id, sub, badge) {
   const list = [].concat(LESSONS[id]).map(l => typeof l === 'function' ? { f: l } : l);
   const i = Math.min(Math.max(parseInt(sub) || 1, 1), list.length) - 1;
@@ -2421,20 +2622,10 @@ function render() {
         <p class="brief">Скоро здесь появятся короткие уроки для ${os}: только команды и шаги.</p>
         <p class="full">Скоро здесь появятся подробные уроки для ${os}: с объяснением каждого шага, скриншотами и разбором ошибок.</p>
       </div>
-    </section>` : `
-    <section class="hero">${badge}
-      <h1>Учитесь <span class="grad">быстро</span>.<br>Делайте то, что нужно.</h1>
-      <p class="lead brief">Короткие практические уроки без воды. Для Windows, Linux и macOS.</p>
-      <p class="lead full">FastAcadem — академия быстрого обучения для занятых людей. Никакой воды и долгих курсов —
-        только короткие практические уроки, после которых вы сразу сделаете нужное дело:
-        заведёте аккаунт, запустите бота, настроите агента, базу данных или Docker.
-        Каждый урок — для Windows, Linux и macOS.</p>
-      <div class="cards">${Object.entries(PAGES).filter(([k]) => k !== 'contacts').map(([k, [t, ic, d]]) =>
-        `<a class="card" href="#/${k}"><div class="ic">${ic}</div><h3>${t}</h3><p>${d}</p></a>`).join('')}
-      </div>
-    </section>`;
+    </section>` : homeView();
   document.querySelectorAll('#app [data-done]').forEach(b => b.checked = store('done:' + b.dataset.done) === '1');
   progress();
+  startSlider();
   document.title = (page ? page[0] + ' — ' : '') + 'FastAcadem';
 }
 
