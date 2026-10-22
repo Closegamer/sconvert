@@ -46,6 +46,7 @@
     padding: 6px 12px; border-radius: 999px; cursor: pointer; font-weight: 600;
   }
   .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  [data-mode="brief"] .full, [data-mode="full"] .brief { display: none !important; }
   .icon-btn { border: 1px solid var(--border); background: var(--surface); font-size: 1rem; padding: 6px 10px; }
 
   nav { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
@@ -82,7 +83,8 @@
   @media (max-width: 640px) {
     .bar { gap: 10px; padding-block: 10px; }
     .logo { font-size: 1rem; }
-    .tools { margin-left: 0; width: 100%; }
+    .tools { margin-left: 0; width: 100%; flex-wrap: wrap; }
+    #mode { order: 3; flex-basis: 100%; }
     .seg { flex: 1; }
     .seg button { flex: 1; padding: 8px 6px; }
     .icon-btn { padding: 8px 12px; }
@@ -111,6 +113,10 @@
           <button data-os="Linux">Linux</button>
           <button data-os="macOS">macOS</button>
         </div>
+        <div class="seg" id="mode" role="group" aria-label="Подробность уроков">
+          <button data-mode="brief">Краткий</button>
+          <button data-mode="full">Развёрнутый</button>
+        </div>
         <button class="icon-btn" id="theme" aria-label="Переключить тему">🌙</button>
       </div>
     </div>
@@ -136,6 +142,7 @@ const $ = s => document.querySelector(s);
 const store = (k, v) => { try { return v === undefined ? localStorage.getItem(k) : localStorage.setItem(k, v); } catch { } };
 
 let os = store('os') || (/Mac/.test(navigator.platform) ? 'macOS' : /Linux/.test(navigator.platform) ? 'Linux' : 'Windows');
+let mode = store('mode') || 'brief';
 let theme = store('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
 $('#nav').innerHTML = Object.entries(PAGES).map(([id, [t]]) => `<a href="#/${id}" data-id="${id}">${t}</a>`).join('');
@@ -146,7 +153,9 @@ function render() {
   document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('active', a.dataset.id === id));
   $('#nav a.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   document.querySelectorAll('#os button').forEach(b => b.setAttribute('aria-pressed', b.dataset.os === os));
-  const badge = `<span class="os-badge">Уроки для <b>${os}</b></span>`;
+  document.querySelectorAll('#mode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === mode));
+  document.documentElement.dataset.mode = mode;
+  const badge = `<span class="os-badge">Уроки для <b>${os}</b> · <b>${mode === 'brief' ? 'кратко' : 'развёрнуто'}</b></span>`;
 
   $('#app').innerHTML = page ? `
     <section class="hero">${badge}
@@ -154,12 +163,14 @@ function render() {
       <p class="lead">${page[2]}</p>
       <div class="stub"><div class="ic">🚧</div>
         <h3>Раздел в разработке</h3>
-        <p>Скоро здесь появятся уроки и туториалы для ${os}.</p>
+        <p class="brief">Скоро здесь появятся короткие уроки для ${os}: только команды и шаги.</p>
+        <p class="full">Скоро здесь появятся подробные уроки для ${os}: с объяснением каждого шага, скриншотами и разбором ошибок.</p>
       </div>
     </section>` : `
     <section class="hero">${badge}
       <h1>Учитесь <span class="grad">быстро</span>.<br>Делайте то, что нужно.</h1>
-      <p class="lead">Академия быстрого обучения для занятых людей. Никакой воды и долгих курсов —
+      <p class="lead brief">Короткие практические уроки без воды. Для Windows, Linux и macOS.</p>
+      <p class="lead full">Академия быстрого обучения для занятых людей. Никакой воды и долгих курсов —
         только короткие практические уроки, после которых вы сразу сделаете нужное дело:
         заведёте аккаунт, запустите бота, настроите агента, базу данных или Docker.
         Каждый урок — для Windows, Linux и macOS.</p>
@@ -176,6 +187,7 @@ function applyTheme() {
 }
 
 $('#theme').onclick = () => { theme = theme === 'dark' ? 'light' : 'dark'; store('theme', theme); applyTheme(); };
+$('#mode').onclick = e => { if (e.target.dataset.mode) { mode = e.target.dataset.mode; store('mode', mode); render(); } };
 $('#os').onclick = e => { if (e.target.dataset.os) { os = e.target.dataset.os; store('os', os); render(); } };
 addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
 applyTheme(); render();
