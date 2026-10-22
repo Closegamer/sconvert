@@ -93,6 +93,7 @@
   .lesson h3 { margin: 32px 0 8px; font-size: 1.12rem; }
   .lesson h3 .n { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 8px; border-radius: 8px; font-size: .85rem; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2)); vertical-align: 2px; }
   .lesson ul { padding-left: 1.2em; }
+  .lesson p a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
   .lesson li { margin: 6px 0; }
   .lesson :not(pre) > code { font-family: ui-monospace, Consolas, monospace; font-size: .9em; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; overflow-wrap: anywhere; }
   .code { display: flex; flex-direction: column-reverse; margin: 12px 0; background: #0f1220; border: 1px solid #262a3a; border-radius: 12px; }
@@ -129,6 +130,7 @@
   .tbl td, .tbl th { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
   .tbl tr:last-child td { border-bottom: 0; }
   .tbl th { background: var(--surface); }
+  .tbl.cmp td:nth-child(2) { font-family: ui-monospace, Consolas, monospace; font-size: .88rem; color: var(--accent-2); }
   .tbl td:first-child { white-space: nowrap; font-family: ui-monospace, Consolas, monospace; font-size: .88rem; color: var(--accent); }
   .next { display: block; margin-top: 56px; padding: 26px; border-radius: 18px; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2)); transition: transform .2s, box-shadow .2s; }
   .next:hover { transform: translateY(-3px); box-shadow: 0 14px 36px var(--glow); }
@@ -153,7 +155,8 @@
     .stub { padding: 28px 18px; }
     .flow { flex-direction: column; align-items: stretch; text-align: center; }
     .tbl td { display: block; }
-    .tbl td:first-child { padding-bottom: 0; border-bottom: 0; white-space: normal; overflow-wrap: anywhere; }
+    .tbl td:not(:last-child) { padding-bottom: 0; border-bottom: 0; }
+    .tbl td:first-child, .tbl.cmp td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
     .tbl tr:has(th) { display: none; }
   }
   @media (min-width: 1600px) { .wrap { max-width: 1320px; } body { font-size: 17px; } }
@@ -793,11 +796,353 @@ Total reclaimed space: 12.4kB`, 'На вопрос ответьте <code>y</cod
       <p>Свой образ через Dockerfile, тома и бэкапы, сети, Compose с базой данных, переменные окружения и деплой на сервер.</p>
     </a>
   </article>`,
+  databases: () => `
+  <article class="lesson">
+    <p class="kicker">Базы данных · Урок 1</p>
+    <h1>🗄️ Базы данных: PostgreSQL, MySQL, MongoDB</h1>
+    <p class="meta"><span class="brief">≈ 15 минут · только суть и команды</span><span class="full">≈ 40 минут · с объяснениями и разбором ошибок</span></p>
+    <ul class="toc">
+      <li><button data-go="what">Что это</button></li>
+      <li><button data-go="why">Зачем это вам</button></li>
+      <li><button data-go="how">Как пользоваться</button></li>
+      <li><button data-go="cheat">Шпаргалка</button></li>
+    </ul>
+    <div class="progress"><span></span><div class="progress-bar"><i></i></div>
+      <small>Отмечайте пройденные шаги галочкой «Отметить прохождение» внизу каждого шага. Прогресс сохраняется в этом браузере.</small></div>
+
+    <h2 id="what">Что это</h2>
+    <p class="brief"><b>База данных</b> — программа, которая надёжно хранит данные и быстро находит нужное.
+      <b>PostgreSQL</b> и <b>MySQL</b> хранят данные в таблицах и понимают язык <b>SQL</b>.
+      <b>MongoDB</b> хранит «документы» — записи в формате, похожем на JSON. Не знаете, что выбрать, — берите PostgreSQL.</p>
+    <div class="full">
+      <p>Данные можно хранить и в Excel или текстовом файле — пока их мало и с ними работает один человек.
+        Когда пользователей тысячи, а бот и сайт пишут данные одновременно, файл ломается и тормозит.
+        <b>База данных</b> — это программа-сервер, которая решает именно эти задачи: хранит данные надёжно, не путается,
+        когда к ней обращаются сразу многие, и за миллисекунды находит нужное среди миллионов записей.</p>
+      <p>Базы бывают двух главных видов:</p>
+      <ul>
+        <li><b>Реляционные (SQL)</b> — PostgreSQL, MySQL. Данные лежат в <b>таблицах</b> со строгими колонками, как в Excel.
+          Таблицы связаны между собой (пользователь → его заказы). Общаются с ними на языке <b>SQL</b>.</li>
+        <li><b>Документные (NoSQL)</b> — MongoDB. Данные — это <b>документы</b>, похожие на JSON. У разных документов могут быть разные поля,
+          заранее описывать структуру не нужно.</li>
+      </ul>
+      <div class="tbl"><table>
+        <tr><th>База</th><th>Сильные стороны</th><th>Где встречается</th></tr>
+        <tr><td>PostgreSQL</td><td>Самая мощная и строгая бесплатная SQL-база. Надёжность, сложные запросы, JSON внутри таблиц.</td><td>Боты, сервисы, аналитика. Выбор по умолчанию для новых проектов.</td></tr>
+        <tr><td>MySQL</td><td>Простая, быстрая, очень распространённая.</td><td>WordPress, 1С-Битрикс, старые и PHP-проекты, хостинги.</td></tr>
+        <tr><td>MongoDB</td><td>Гибкая структура, легко хранить «разношёрстные» данные.</td><td>Прототипы, логи, каталоги с разными полями, Node.js-проекты.</td></tr>
+      </table></div>
+      <div class="tbl"><table>
+        <tr><th>SQL</th><th>MongoDB</th></tr>
+        <tr><td>База (database)</td><td>База (database)</td></tr>
+        <tr><td>Таблица (table)</td><td>Коллекция (collection)</td></tr>
+        <tr><td>Строка (row)</td><td>Документ (document)</td></tr>
+        <tr><td>Колонка (column)</td><td>Поле (field)</td></tr>
+      </table></div>
+    </div>
+    <div class="callout"><p><b>Не знаете, что выбрать?</b> Берите <b>PostgreSQL</b>. MySQL — если этого требует готовая система (WordPress, Битрикс).
+      MongoDB — если данные действительно без единой структуры.</p></div>
+
+    <h2 id="why">Зачем это вам</h2>
+    <ul>
+      <li><b>Бот запоминает пользователей.</b> Подписки, настройки, история — всё переживёт перезапуск.</li>
+      <li><b>Сайт и сервисы.</b> Заказы, товары, заявки — почти любое приложение хранит данные в базе.</li>
+      <li><b>Быстрый поиск.</b> Найти нужное среди миллионов записей — за миллисекунды.<span class="full"> С индексами — даже среди миллиардов.</span></li>
+      <li><b>Надёжность.</b> Данные не теряются при сбое, а резервная копия делается одной командой.</li>
+      <li><b>Аналитика.</b> Один SQL-запрос заменяет час работы со сводными таблицами в Excel.<span class="full"> «Сколько заказов по городам за прошлый месяц» — три строки SQL.</span></li>
+      <li><b>Работа нескольких программ сразу.</b> Бот, сайт и админка читают и пишут одни и те же данные и не мешают друг другу.</li>
+    </ul>
+
+    <h2 id="how">Как пользоваться (база)</h2>
+    <p>Все три базы запустим в <b>Docker</b> — так не нужно ничего устанавливать в систему, а команды одинаковые на Windows, macOS и Linux.
+      Если Docker ещё не стоит — сначала пройдите <a href="#/docker">урок по Docker</a> (хватит шагов 1–2).</p>
+
+    <h3>${step("databases", 1)}Подготовьте рабочую папку</h3>
+    ${code(`docker --version
+mkdir db-lesson
+cd db-lesson`)}
+    ${out('Docker version 28.5.1, build e180ab8', 'Цифры могут отличаться.' + by({ Windows: ' <code>mkdir</code> ещё выведет таблицу с новой папкой — это нормально.', macOS: '', Linux: '' }) + ' Если <code>docker</code> не найден или пишет <code>Cannot connect</code> — ' + by({ Windows: 'запустите Docker Desktop.', macOS: 'запустите Docker Desktop.', Linux: 'выполните <code>sudo systemctl start docker</code>.' }))}
+    ${done("databases", 1)}
+
+    <h3>${step("databases", 2)}Запустите PostgreSQL</h3>
+    ${code('docker run -d --name pg -e POSTGRES_PASSWORD=secret -p 5432:5432 -v pgdata:/var/lib/postgresql/data postgres:17')}
+    ${out(`Unable to find image 'postgres:17' locally
+17: Pulling from library/postgres
+...
+Status: Downloaded newer image for postgres:17
+9c1e7d3a5b2f4e6d8c0a1b3d5f7e9a2c4b6d8f0e1a3c5e7b9d2f4a6c8e0b1d3f`, 'Последняя строка — ID контейнера. База стартует за несколько секунд.')}
+    <div class="full">
+      <div class="tbl"><table>
+        <tr><th>Часть</th><th>Что значит</th></tr>
+        <tr><td>--name pg</td><td>Имя контейнера — по нему будем подключаться.</td></tr>
+        <tr><td>-e POSTGRES_PASSWORD=secret</td><td>Пароль главного пользователя <code>postgres</code>. Без него контейнер не запустится.</td></tr>
+        <tr><td>-p 5432:5432</td><td>5432 — стандартный порт PostgreSQL. Через него к базе подключаются программы.</td></tr>
+        <tr><td>-v pgdata:…/data</td><td>Том <code>pgdata</code>: данные сохранятся, даже если удалить контейнер.</td></tr>
+        <tr><td>postgres:17</td><td>Образ и версия. Версию лучше указывать явно.</td></tr>
+      </table></div>
+    </div>
+    <div class="callout warn"><p><b>Пароль <code>secret</code> — только для учёбы на своём компьютере.</b><span class="full"> На сервере придумайте длинный пароль и не открывайте порт базы в интернет:
+      пишите <code>-p 127.0.0.1:5432:5432</code> — тогда база доступна только с самого сервера. Открытые базы с простым паролем взламывают за часы.</span></p></div>
+    ${done("databases", 2)}
+
+    <h3>${step("databases", 3)}Подключитесь к PostgreSQL</h3>
+    ${code('docker exec -it pg psql -U postgres')}
+    ${out(`psql (17.6 (Debian 17.6-1.pgdg13+1))
+Type "help" for help.
+
+postgres=#`, 'Приглашение <code>postgres=#</code> — вы внутри базы и можете писать SQL. Выйти — <code>\\q</code>.')}
+    <p class="full"><code>psql</code> — консольный клиент PostgreSQL, он уже есть внутри контейнера. <code>-U postgres</code> — войти под главным пользователем.
+      Каждая SQL-команда заканчивается точкой с запятой <code>;</code> — без неё psql ждёт продолжения (приглашение меняется на <code>postgres-#</code>).
+      ${by({ Windows: 'Если вместо русских букв видите знаки вопроса — выйдите, выполните <code>chcp 65001</code> и подключитесь снова (лучше работать в приложении «Терминал»).', macOS: '', Linux: '' })}</p>
+    ${done("databases", 3)}
+
+    <h3>${step("databases", 4)}Создайте таблицу и поработайте с данными (SQL)</h3>
+    <p>Вставьте в <code>psql</code> по очереди:</p>
+    ${code(`CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  city TEXT,
+  created_at TIMESTAMP DEFAULT now()
+);
+INSERT INTO users (name, city) VALUES ('Анна', 'Москва'), ('Борис', 'Казань'), ('Вера', 'Москва');
+SELECT id, name, city FROM users WHERE city = 'Москва';`)}
+    ${out(`CREATE TABLE
+INSERT 0 3
+ id | name |  city
+----+------+--------
+  1 | Анна | Москва
+  3 | Вера | Москва
+(2 rows)`, '<code>CREATE TABLE</code> — таблица создана, <code>INSERT 0 3</code> — добавлено 3 строки, дальше — результат поиска.')}
+    <p>Изменим и удалим:</p>
+    ${code(`UPDATE users SET city = 'Сочи' WHERE name = 'Борис';
+DELETE FROM users WHERE name = 'Вера';
+SELECT id, name, city FROM users;`)}
+    ${out(`UPDATE 1
+DELETE 1
+ id | name  | city
+----+-------+--------
+  1 | Анна  | Москва
+  2 | Борис | Сочи
+(2 rows)`, 'Цифры после <code>UPDATE</code> и <code>DELETE</code> — сколько строк затронуто. <code>0</code> — значит, условие <code>WHERE</code> ничего не нашло.')}
+    <div class="full">
+      <p>Это четыре главные операции, их называют <b>CRUD</b>: Create (<code>INSERT</code>), Read (<code>SELECT</code>), Update (<code>UPDATE</code>), Delete (<code>DELETE</code>).
+        На них построено 90% работы с любой базой.</p>
+      <ul>
+        <li><code>SERIAL PRIMARY KEY</code> — уникальный номер строки, база ставит его сама: 1, 2, 3…</li>
+        <li><code>NOT NULL</code> — поле обязательно. Попробуйте <code>INSERT INTO users (city) VALUES ('Омск');</code> — получите ошибку.</li>
+        <li><code>DEFAULT now()</code> — если не указать время, база подставит текущее.</li>
+        <li>Строки пишутся в <b>одинарных</b> кавычках: <code>'Москва'</code>.</li>
+      </ul>
+      <div class="callout warn"><p><b>Всегда пишите <code>WHERE</code> в <code>UPDATE</code> и <code>DELETE</code>.</b>
+        <code>DELETE FROM users;</code> без условия удалит <b>все</b> строки — без вопросов и без корзины.</p></div>
+      <p>Полезные команды psql: <code>\\dt</code> — список таблиц, <code>\\d users</code> — структура таблицы, <code>\\l</code> — список баз.</p>
+    </div>
+    <p>Выйдите из psql: <code>\\q</code></p>
+    ${done("databases", 4)}
+
+    <h3>${step("databases", 5)}MySQL: тот же SQL, другой сервер</h3>
+    ${code(`docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=lesson -p 3306:3306 -v mysqldata:/var/lib/mysql mysql:8.4
+docker exec -it mysql mysql -uroot -psecret lesson`)}
+    ${out(`...
+Status: Downloaded newer image for mysql:8.4
+4d7a2c9e1b3f5a7c9e0b2d4f6a8c1e3b5d7f9a0c2e4b6d8f1a3c5e7b9d0f2a4c
+mysql: [Warning] Using a password on the command line interface can be insecure.
+Welcome to the MySQL monitor.  Commands end with ; or \\g.
+Server version: 8.4.6 MySQL Community Server - GPL
+
+mysql>`, 'Приглашение <code>mysql&gt;</code> — вы внутри. Warning про пароль для учёбы можно игнорировать. Если видите <code>ERROR 2002</code> — MySQL ещё запускается: подождите 20–30 секунд и повторите вторую команду.')}
+    <p>SQL почти тот же — отличается только автонумерация:</p>
+    ${code(`CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  city VARCHAR(100)
+);
+INSERT INTO users (name, city) VALUES ('Анна', 'Москва'), ('Борис', 'Казань');
+SELECT * FROM users;`)}
+    ${out(`Query OK, 0 rows affected (0.03 sec)
+
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
++----+-------+--------+
+| id | name  | city   |
++----+-------+--------+
+|  1 | Анна  | Москва |
+|  2 | Борис | Казань |
++----+-------+--------+
+2 rows in set (0.00 sec)`, 'Выйти — <code>exit</code>.')}
+    <div class="full">
+      <p>Знание SQL переносится между базами: <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, <code>WHERE</code> — везде одинаковые.
+        Отличия в деталях: в PostgreSQL <code>SERIAL</code> и <code>TEXT</code>, в MySQL — <code>AUTO_INCREMENT</code> и <code>VARCHAR(длина)</code>.</p>
+      <p><code>MYSQL_DATABASE=lesson</code> сразу создаёт базу <code>lesson</code>. Список таблиц в MySQL — <code>SHOW TABLES;</code>, структура — <code>DESCRIBE users;</code>.</p>
+    </div>
+    ${done("databases", 5)}
+
+    <h3>${step("databases", 6)}MongoDB: документы вместо таблиц</h3>
+    ${code(`docker run -d --name mongo -p 27017:27017 -v mongodata:/data/db mongo:8
+docker exec -it mongo mongosh`)}
+    ${out(`...
+Status: Downloaded newer image for mongo:8
+7e2b4d6f8a0c1e3b5d7f9a2c4e6b8d0f1a3c5e7b9d2f4a6c8e0b1d3f5a7c9e2b
+Current Mongosh Log ID: 671f2a9c3e4b5d6f7a8b9c0d
+Connecting to:          mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000
+Using MongoDB:          8.0.15
+Using Mongosh:          2.5.8
+
+test>`, 'Приглашение <code>test&gt;</code> — вы внутри MongoDB. Команды здесь пишутся на JavaScript.')}
+    <p>Таблицу создавать не нужно — коллекция появится сама при первой записи:</p>
+    ${code(`use lesson
+db.users.insertMany([
+  { name: "Анна", city: "Москва", tags: ["admin"] },
+  { name: "Борис", city: "Казань", age: 30 }
+])
+db.users.find({ city: "Москва" })`)}
+    ${out(`switched to db lesson
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('671f2b1a3e4b5d6f7a8b9c0e'),
+    '1': ObjectId('671f2b1a3e4b5d6f7a8b9c0f')
+  }
+}
+[
+  {
+    _id: ObjectId('671f2b1a3e4b5d6f7a8b9c0e'),
+    name: 'Анна',
+    city: 'Москва',
+    tags: [ 'admin' ]
+  }
+]`, '<code>_id</code> MongoDB ставит сама — у вас будут другие значения. Обратите внимание: у Анны есть <code>tags</code>, а у Бориса — <code>age</code>. В MongoDB это нормально.')}
+    <p>Изменим и удалим:</p>
+    ${code(`db.users.updateOne({ name: "Борис" }, { $set: { city: "Сочи" } })
+db.users.deleteOne({ name: "Анна" })
+db.users.find()`)}
+    ${out(`{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+{ acknowledged: true, deletedCount: 1 }
+[
+  {
+    _id: ObjectId('671f2b1a3e4b5d6f7a8b9c0f'),
+    name: 'Борис',
+    city: 'Сочи',
+    age: 30
+  }
+]`, '<code>modifiedCount: 1</code> — изменён один документ, <code>deletedCount: 1</code> — удалён один. Выйти — <code>exit</code>.')}
+    <div class="full">
+      <p><code>$set</code> меняет только указанные поля. Без него <code>updateOne</code> не сработает — MongoDB защищает от случайной перезаписи всего документа.
+        <code>find()</code> без условия возвращает всё, <code>find({ age: { $gt: 18 } })</code> — тех, кому больше 18.</p>
+      <p>Полезное в mongosh: <code>show dbs</code> — базы, <code>show collections</code> — коллекции, <code>db.users.countDocuments()</code> — сколько документов.</p>
+    </div>
+    ${done("databases", 6)}
+
+    <h3>${step("databases", 7)}Подключитесь из программы или удобного окна</h3>
+    <p>Программы (бот, сайт) подключаются к базе по <b>строке подключения</b>:</p>
+    ${code(`postgresql://postgres:secret@localhost:5432/postgres
+mysql://root:secret@localhost:3306/lesson
+mongodb://localhost:27017/lesson`)}
+    <p>Смотреть и править данные мышкой удобно в бесплатных программах: <b>DBeaver</b> (PostgreSQL и MySQL) и <b>MongoDB Compass</b> (MongoDB).</p>
+    ${by({
+      Windows: code('winget install -e --id dbeaver.dbeaver\nwinget install -e --id MongoDB.Compass.Full'),
+      macOS: code('brew install --cask dbeaver-community mongodb-compass'),
+      Linux: code('sudo snap install dbeaver-ce'),
+    })}
+    ${out(by({ Windows: 'Найдено DBeaver [dbeaver.dbeaver] Версия 25.2.3\n...\nУспешно установлено\nНайдено MongoDB Compass [MongoDB.Compass.Full] Версия 1.46.10\n...\nУспешно установлено', macOS: '==> Installing Cask dbeaver-community\n🍺  dbeaver-community was successfully installed!\n==> Installing Cask mongodb-compass\n🍺  mongodb-compass was successfully installed!', Linux: 'dbeaver-ce 25.2.3 from DBeaver (dbeaver-corp) installed' }),
+      'Номера версий будут другими.' + by({ Windows: '', macOS: ' Нет Homebrew — скачайте программы с dbeaver.io и mongodb.com/products/compass.', Linux: ' MongoDB Compass скачайте .deb или .rpm с mongodb.com/products/compass.' }))}
+    <p class="full">В DBeaver: <b>Новое соединение</b> → PostgreSQL → хост <code>localhost</code>, порт <code>5432</code>, пользователь <code>postgres</code>, пароль <code>secret</code> → «Тест соединения»
+      (при первом подключении DBeaver предложит скачать драйвер — соглашайтесь). В Compass просто вставьте строку <code>mongodb://localhost:27017</code> и нажмите Connect.
+      Строку подключения в коде не пишут напрямую — её кладут в файл <code>.env</code>, который не попадает в Git.</p>
+    ${done("databases", 7)}
+
+    <h3>${step("databases", 8)}Сделайте резервную копию</h3>
+    ${code(`docker exec pg pg_dump -U postgres -f /tmp/backup.sql postgres
+docker cp pg:/tmp/backup.sql backup.sql`)}
+    ${out('Successfully copied 3.07kB to ' + by({ Windows: 'C:\\Users\\Иван\\db-lesson\\backup.sql', macOS: '/Users/ivan/db-lesson/backup.sql', Linux: '/home/ivan/db-lesson/backup.sql' }),
+      'Первая команда молчит — она сохраняет копию внутри контейнера, вторая копирует файл к вам в папку. Откройте <code>backup.sql</code> в любом редакторе — там SQL-команды, которые воссоздадут таблицы и данные.')}
+    <div class="full">
+      <p>Восстановить копию:</p>
+      ${code(`docker cp backup.sql pg:/tmp/backup.sql
+docker exec pg psql -U postgres -f /tmp/backup.sql`)}
+      ${out(`Successfully copied 3.07kB to pg:/tmp/backup.sql
+SET
+SET
+...
+CREATE TABLE
+...
+COPY 2`, 'Если таблица уже существует, psql напишет <code>ERROR: relation "users" already exists</code> — восстанавливают в пустую базу.')}
+      <div class="tbl"><table>
+        <tr><th>База</th><th>Команда резервной копии</th></tr>
+        <tr><td>PostgreSQL</td><td><code>pg_dump</code> (одна база), <code>pg_dumpall</code> (всё сразу)</td></tr>
+        <tr><td>MySQL</td><td><code>docker exec mysql mysqldump -uroot -psecret --result-file=/tmp/backup.sql lesson</code></td></tr>
+        <tr><td>MongoDB</td><td><code>docker exec mongo mongodump --archive=/tmp/backup.archive</code></td></tr>
+      </table></div>
+      <p>Файл копии забирают так же — через <code>docker cp</code>. Копия, которая лежит на том же компьютере, что и база, — не копия: храните её отдельно.</p>
+    </div>
+    ${done("databases", 8)}
+
+    <h3>${step("databases", 9)}Остановите базы — данные останутся</h3>
+    ${code(`docker rm -f pg mysql mongo
+docker volume ls`)}
+    ${out(`pg
+mysql
+mongo
+DRIVER    VOLUME NAME
+local     mongodata
+local     mysqldata
+local     pgdata`, 'Контейнеры удалены, а тома с данными — на месте. Запустите ту же команду <code>docker run</code> из шага 2 — и таблица <code>users</code> снова будет там.')}
+    <p class="full">Удалить данные окончательно: <code>docker volume rm pgdata mysqldata mongodata</code>. Это необратимо.</p>
+    ${done("databases", 9)}
+
+    <div class="full">
+      <h3>Частые ошибки</h3>
+      <div class="tbl"><table>
+        <tr><th>Сообщение</th><th>Что делать</th></tr>
+        <tr><td>port is already allocated</td><td>На компьютере уже работает такая база (или контейнер). Возьмите другой порт: <code>-p 5433:5432</code> — и подключайтесь к 5433.</td></tr>
+        <tr><td>Database is uninitialized…</td><td>Забыли <code>-e POSTGRES_PASSWORD=…</code>. Удалите контейнер (<code>docker rm -f pg</code>) и запустите с паролем.</td></tr>
+        <tr><td>role "root" does not exist</td><td>В PostgreSQL главный пользователь — <code>postgres</code>: добавьте <code>-U postgres</code>.</td></tr>
+        <tr><td>password authentication failed</td><td>Пароль задаётся только при <b>первом</b> запуске с пустым томом. Сменили пароль в команде — старый том помнит старый. Для учёбы: <code>docker rm -f pg</code> и <code>docker volume rm pgdata</code>.</td></tr>
+        <tr><td>ERROR 2002 (HY000)</td><td>MySQL ещё запускается. Подождите полминуты.</td></tr>
+        <tr><td>ERROR 1045: Access denied</td><td>Неверный пароль MySQL. Проверьте <code>-psecret</code> (без пробела после <code>-p</code>).</td></tr>
+        <tr><td>relation "users" does not exist</td><td>Таблицы нет: опечатка в имени или вы подключились к другой базе.</td></tr>
+        <tr><td>syntax error at or near …</td><td>Ошибка в SQL рядом с указанным словом. Частое: двойные кавычки вместо одинарных у строк или забытая запятая.</td></tr>
+        <tr><td>Знаки ??? вместо кириллицы</td><td>Windows: выполните <code>chcp 65001</code> и подключитесь заново, работайте в приложении «Терминал».</td></tr>
+      </table></div>
+    </div>
+
+    <h2 id="cheat">Шпаргалка</h2>
+    <div class="tbl cmp"><table>
+      <tr><th>SQL (PostgreSQL, MySQL)</th><th>MongoDB</th><th>Что делает</th></tr>
+      <tr><td>CREATE TABLE t (…);</td><td>— (создаётся сама)</td><td>Создать таблицу / коллекцию</td></tr>
+      <tr><td>INSERT INTO t (a) VALUES (1);</td><td>db.t.insertOne({ a: 1 })</td><td>Добавить</td></tr>
+      <tr><td>SELECT * FROM t WHERE a = 1;</td><td>db.t.find({ a: 1 })</td><td>Найти</td></tr>
+      <tr><td>UPDATE t SET a = 2 WHERE …;</td><td>db.t.updateOne({…}, { $set: { a: 2 } })</td><td>Изменить</td></tr>
+      <tr><td>DELETE FROM t WHERE …;</td><td>db.t.deleteOne({…})</td><td>Удалить</td></tr>
+      <tr><td>\\dt · SHOW TABLES;</td><td>show collections</td><td>Список таблиц</td></tr>
+      <tr><td>\\q · exit</td><td>exit</td><td>Выйти</td></tr>
+    </table></div>
+    <div class="tbl"><table>
+      <tr><td>docker exec -it pg psql -U postgres</td><td>Войти в PostgreSQL</td></tr>
+      <tr><td>docker exec -it mysql mysql -uroot -p</td><td>Войти в MySQL (спросит пароль)</td></tr>
+      <tr><td>docker exec -it mongo mongosh</td><td>Войти в MongoDB</td></tr>
+      <tr><td>pg_dump · mysqldump · mongodump</td><td>Резервная копия</td></tr>
+    </table></div>
+
+    <a class="next" href="#/databases/advanced">
+      <h3>Продвинутые базы данных →</h3>
+      <p>Связи и JOIN, индексы и скорость, транзакции, миграции, права доступа, бэкапы по расписанию и подключение из Python и Node.js.</p>
+    </a>
+  </article>`,
 };
 
 const ADVANCED = {
   git: ['Ветки и слияние', 'Конфликты и как их решать', 'Отмена коммитов: revert и reset', 'Rebase', 'Stash — отложить изменения',
     'Теги и релизы', 'Pull request и код-ревью', 'GitHub Actions: автоматический деплой'],
+  databases: ['Связи между таблицами и JOIN', 'Индексы и скорость запросов', 'Транзакции', 'Миграции схемы',
+    'Пользователи и права доступа', 'Бэкапы по расписанию', 'Подключение из Python и Node.js', 'Redis: кэш и очереди'],
   docker: ['Dockerfile: свой образ', 'Многоэтапная сборка и лёгкие образы', 'Тома и бэкапы данных', 'Сети между контейнерами',
     'Compose: приложение + база данных', 'Переменные окружения и .env', 'Публикация образа: Docker Hub и GHCR', 'Docker на сервере: деплой и автообновление'],
 };
