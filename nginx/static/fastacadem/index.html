@@ -1140,11 +1140,11 @@ local     pgdata`, 'Контейнеры удалены, а тома с данн
       <p>Связи и JOIN, индексы и скорость, транзакции, миграции, права доступа, бэкапы по расписанию и подключение из Python и Node.js.</p>
     </a>
   </article>`,
-  bots: [{ t: 'Бот в Telegram', f: () => `
+  bots: [{ t: 'Бот на Vercel', f: () => `
   <article class="lesson">
     <p class="kicker">Боты · Урок 1</p>
-    <h1>🤖 Свой Telegram-бот за вечер</h1>
-    <p class="meta"><span class="brief">≈ 15 минут · только суть и команды</span><span class="full">≈ 35 минут · с объяснениями и разбором ошибок</span></p>
+    <h1>☁️ Telegram-бот на Vercel — без сервера</h1>
+    <p class="meta"><span class="brief">≈ 15 минут · только суть и шаги</span><span class="full">≈ 30 минут · с объяснениями и разбором ошибок</span></p>
     <ul class="toc">
       <li><button data-go="what">Что это</button></li>
       <li><button data-go="why">Зачем это вам</button></li>
@@ -1153,43 +1153,50 @@ local     pgdata`, 'Контейнеры удалены, а тома с данн
     </ul>
     <div class="progress"><span></span><div class="progress-bar"><i></i></div>
       <small>Отмечайте пройденные шаги галочкой «Отметить прохождение» внизу каждого шага. Прогресс сохраняется в этом браузере.</small></div>
+    <p>Нужны только браузер, Telegram и аккаунт на <b>github.com</b>. Ничего устанавливать на компьютер не нужно.</p>
 
     <h2 id="what">Что это</h2>
-    <p class="brief"><b>Telegram-бот</b> — это программа, которая переписывается с людьми в Telegram от имени специального аккаунта.
-      Аккаунт бота создаётся в официальном боте <b>@BotFather</b>, а «мозг» бота — ваша программа на Python, запущенная на компьютере или сервере.</p>
+    <p class="brief"><b>Vercel</b> — облачная платформа: вы кладёте код на GitHub, Vercel запускает его на своих серверах.
+      Бот — это один небольшой файл, <b>облачная функция</b>: Telegram сам вызывает её на каждое сообщение (это называется <b>webhook</b>),
+      функция отвечает и засыпает. Свой сервер не нужен, а для личного бота это бесплатно.</p>
     <div class="full">
-      <p><b>Telegram-бот</b> выглядит как обычный собеседник, но отвечает ему программа. Важно понимать, как это устроено:
-        сам Telegram только <b>передаёт сообщения</b>. Отвечает ваша программа, которая где-то запущена — сначала на вашем компьютере, потом на сервере.</p>
+      <p>Сам Telegram только <b>передаёт сообщения</b> — отвечает боту ваша программа. Обычно это программа, запущенная всё время,
+        которая постоянно спрашивает Telegram «есть новые сообщения?» (режим <b>polling</b>, так сделано в <a href="#/bots/2">уроке 2</a>).
+        Для этого нужен компьютер, который всегда включён.</p>
+      <p>Есть второй режим — <b>webhook</b>: вы говорите Telegram адрес в интернете, и он <b>сам</b> присылает туда каждое новое сообщение.
+        Программе не нужно работать постоянно — достаточно проснуться, ответить и снова уснуть. Так работают <b>облачные функции</b> (serverless),
+        и <b>Vercel</b> — одна из самых простых платформ для них: положили файл в папку <code>api</code> на GitHub — получили адрес вида <code>https://mybot.vercel.app/api/webhook</code>.</p>
+      <p>Функцию напишем на JavaScript — это «родной» язык Vercel: без библиотек, без установки чего-либо, весь бот — 20 строк.</p>
       <div class="flow">
         <div>Пользователь<small>пишет боту</small></div><span>→</span>
-        <div>Telegram<small>хранит сообщение</small></div><span>Bot API →</span>
-        <div>Ваша программа<small>решает, что ответить</small></div>
+        <div>Telegram<small>шлёт webhook</small></div><span>POST →</span>
+        <div>Функция на Vercel<small>просыпается и отвечает</small></div>
       </div>
       <div class="tbl"><table>
-        <tr><th>Слово</th><th>Что значит</th></tr>
-        <tr><td>@BotFather</td><td>Официальный бот Telegram, через который создают и настраивают ботов.</td></tr>
-        <tr><td>Токен</td><td>Пароль бота: <code>1234567890:AAH…</code>. Кто знает токен — управляет ботом.</td></tr>
-        <tr><td>Bot API</td><td>Способ, которым программа получает сообщения и отправляет ответы.</td></tr>
-        <tr><td>Polling</td><td>Программа сама постоянно спрашивает Telegram «есть новое?». Работает откуда угодно, даже с домашнего ноутбука.</td></tr>
-        <tr><td>aiogram</td><td>Популярная библиотека на Python для ботов. Берёт на себя всю работу с Bot API.</td></tr>
+        <tr><th></th><th>Свой компьютер</th><th>Свой сервер (VPS)</th><th>Vercel</th></tr>
+        <tr><td>Работает 24/7</td><td>Нет</td><td>Да</td><td>Да</td></tr>
+        <tr><td>Цена</td><td>0</td><td>от пары сотен ₽/мес</td><td>0 на тарифе Hobby</td></tr>
+        <tr><td>Что установить</td><td>Python, библиотеки</td><td>Сервер целиком</td><td>Ничего</td></tr>
+        <tr><td>Обновление</td><td>Перезапуск</td><td>git pull + restart</td><td>Сохранить файл на GitHub</td></tr>
+        <tr><td>Ограничения</td><td>—</td><td>Почти нет</td><td>Нет памяти между сообщениями, лимит времени на ответ</td></tr>
       </table></div>
     </div>
-    <div class="callout"><p><b>Бот работает, пока работает программа.</b> В этом уроке она запущена на вашем компьютере — выключили компьютер, бот замолчал.
-      Как сделать бота круглосуточным — в <a href="#/bots/2">уроке 2</a>.</p></div>
 
     <h2 id="why">Зачем это вам</h2>
     <ul>
-      <li><b>Автоматизация рутины.</b> Заявки, напоминания, ответы на частые вопросы — без вашего участия.</li>
-      <li><b>Уведомления.</b> Новый заказ, упал сайт, пришёл платёж — сообщение прямо в Telegram.</li>
-      <li><b>Сервис без сайта и приложения.</b> Запись, приём заказов, опросы — в мессенджере, который у всех уже есть.<span class="full"> Не нужно ни верстать сайт, ни публиковать приложение в магазинах.</span></li>
-      <li><b>Инструмент для команды.</b> Отчёты, доступы, учёт — внутренние боты экономят часы.</li>
-      <li><b>Интерфейс к ИИ.</b> Бот — самый простой способ дать людям доступ к своему ИИ-агенту.</li>
-      <li><b>Бесплатно.</b> Telegram не берёт денег за ботов.<span class="full"> Платить придётся только за сервер — от пары сотен рублей в месяц (урок 2).</span></li>
+      <li><b>Ничего не нужно устанавливать.</b> Всё делается в браузере: GitHub, Vercel и Telegram.</li>
+      <li><b>Без сервера и администрирования.</b> Никаких SSH, Linux и systemd.</li>
+      <li><b>Бесплатно.</b> Для личного бота хватает бесплатного тарифа Hobby.<span class="full"> Для коммерческих проектов Vercel требует платный тариф Pro.</span></li>
+      <li><b>Работает всегда.</b> Ваш компьютер можно выключить.</li>
+      <li><b>Обновление за минуту.</b> Поправили файл на GitHub — Vercel сам выкатит новую версию.</li>
+      <li><b>Сам масштабируется.</b> Пишет один человек или тысяча — Vercel запустит столько копий функции, сколько нужно.</li>
     </ul>
+    <div class="callout"><p><b>Когда лучше VPS (урок 2):</b> бот должен что-то делать сам по расписанию, долго обрабатывать запросы,
+      держать данные в памяти или рядом нужна своя база. Облачная функция живёт только пока отвечает на одно сообщение.</p></div>
 
     <h2 id="how">Как сделать</h2>
 
-    <h3>${step("bots", 1)}Создайте бота в @BotFather</h3>
+    <h3>${step("botsv", 1)}Создайте бота в @BotFather</h3>
     <p>В Telegram найдите <b>@BotFather</b> (с синей галочкой), нажмите <b>Start</b> и отправьте <code>/newbot</code>.
       Введите имя бота (любое, например «Мой первый бот»), затем username — латиницей и обязательно с окончанием <code>bot</code>, например <code>ivan_test_123_bot</code>.</p>
     ${out(`Done! Congratulations on your new bot. You will find it at t.me/ivan_test_123_bot.
@@ -1198,156 +1205,132 @@ Use this token to access the HTTP API:
 1234567890:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw
 Keep your token secure and store it safely, it can be used by anyone to control your bot.`,
       'Это ответ BotFather. Скопируйте токен — строку вида <code>цифры:буквы</code>. Если пишет <code>Sorry, this username is already taken</code> — придумайте другой username.')}
-    <div class="callout warn"><p><b>Токен — это пароль.</b> Не публикуйте его и не коммитьте в Git.
+    <div class="callout warn"><p><b>Токен — это пароль.</b> Не публикуйте его и не вставляйте в код.
       Если токен утёк — в @BotFather: <code>/mybots</code> → ваш бот → <b>API Token</b> → <b>Revoke</b>, и получите новый.</p></div>
-    ${done("bots", 1)}
+    <p class="full">Там же потом можно оформить бота: <code>/setuserpic</code> — аватарка, <code>/setdescription</code> — текст до нажатия Start,
+      <code>/setcommands</code> — меню команд (например, <code>start - Начать работу</code>).</p>
+    ${done("botsv", 1)}
 
-    <h3>${step("bots", 2)}Установите Python</h3>
-    ${by({
-      Windows: code('winget install -e --id Python.Python.3.13'),
-      macOS: code('brew install python'),
-      Linux: code('sudo apt install -y python3 python3-venv python3-pip'),
-    })}
-    ${by({
-      Windows: out('Найдено Python 3.13 [Python.Python.3.13] Версия 3.13.9\n...\nУспешно установлено', 'После установки <b>закройте и снова откройте терминал</b>.'),
-      macOS: out('==> Pouring python@3.13--3.13.9.arm64_sequoia.bottle.tar.gz\n🍺  /opt/homebrew/Cellar/python@3.13/3.13.9: 3,615 files, 66MB', 'Нет Homebrew — скачайте установщик с <b>python.org</b> → Downloads.'),
-      Linux: out('...\nSetting up python3-venv (3.12.3-0ubuntu2) ...\nSetting up python3-pip (24.0+dfsg-1ubuntu1.3) ...', 'Если пишет <code>already the newest version</code> — Python уже есть. На Fedora: <code>sudo dnf install python3</code>.'),
-    })}
-    <p>Проверьте:</p>
-    ${code(by({ Windows: 'python --version', macOS: 'python3 --version', Linux: 'python3 --version' }))}
-    ${out(by({ Windows: 'Python 3.13.9', macOS: 'Python 3.13.9', Linux: 'Python 3.12.3' }), 'Нужна версия 3.10 или новее. ' + by({
-      Windows: 'Если вместо версии открылся Microsoft Store — отключите в Параметрах: Приложения → Дополнительные параметры → <b>Псевдонимы выполнения приложений</b> → выключите оба «Установщик приложения python».',
-      macOS: '', Linux: '' }))}
-    ${done("bots", 2)}
+    <h3>${step("botsv", 2)}Создайте репозиторий на GitHub</h3>
+    <p>На <b>github.com</b>: <b>+</b> → <b>New repository</b> → имя <code>mybot-vercel</code>, поставьте галочку <b>Add a README file</b> → <b>Create repository</b>.</p>
+    <p class="full">Репозиторий может быть публичным: токена в коде не будет, он хранится в настройках Vercel.</p>
+    ${done("botsv", 2)}
 
-    <h3>${step("bots", 3)}Создайте проект и установите aiogram</h3>
-    ${by({
-      Windows: code('mkdir mybot\ncd mybot\npython -m venv .venv\n.venv\\Scripts\\Activate.ps1\npip install aiogram python-dotenv'),
-      macOS: code('mkdir mybot\ncd mybot\npython3 -m venv .venv\nsource .venv/bin/activate\npip install aiogram python-dotenv'),
-      Linux: code('mkdir mybot\ncd mybot\npython3 -m venv .venv\nsource .venv/bin/activate\npip install aiogram python-dotenv'),
-    })}
-    ${out(by({ Windows: '(.venv) PS C:\\Users\\Иван\\mybot> pip install aiogram python-dotenv', macOS: '(.venv) ivan@MacBook mybot % pip install aiogram python-dotenv', Linux: '(.venv) ivan@ubuntu:~/mybot$ pip install aiogram python-dotenv' }) + `
-Collecting aiogram
-...
-Successfully installed aiofiles-24.1.0 aiogram-3.22.0 aiohttp-3.12.15 ... python-dotenv-1.1.1 ...`,
-      'Главное — <code>(.venv)</code> в начале строки (окружение включено) и <code>Successfully installed</code>.' + by({
-        Windows: ' Если PowerShell пишет «<b>выполнение сценариев отключено в этой системе</b>» — выполните <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>, ответьте <code>Y</code> и повторите активацию.',
-        macOS: '', Linux: '' }))}
-    <div class="full">
-      <p><b>Виртуальное окружение</b> (<code>.venv</code>) — отдельная папка с библиотеками только для этого проекта, чтобы разные проекты не мешали друг другу.
-        Его нужно <b>активировать каждый раз</b>, когда открываете новый терминал: <code>${by({ Windows: '.venv\\Scripts\\Activate.ps1', macOS: 'source .venv/bin/activate', Linux: 'source .venv/bin/activate' })}</code>.</p>
-      <p><code>aiogram</code> — библиотека для ботов, <code>python-dotenv</code> — читает токен из файла <code>.env</code>, чтобы не держать его в коде.</p>
-    </div>
-    ${done("bots", 3)}
+    <h3>${step("botsv", 3)}Добавьте файл бота</h3>
+    <p>В репозитории нажмите <b>Add file</b> → <b>Create new file</b>. В поле имени напишите <code>api/webhook.js</code>
+      (после <code>/</code> GitHub сам создаст папку <code>api</code>) и вставьте код:</p>
+    ${code(`module.exports = async (req, res) => {
+  // Проверка из браузера: открыли адрес — видим, что функция жива
+  if (req.method !== "POST") return res.status(200).send("Бот работает");
 
-    <h3>${step("bots", 4)}Сохраните токен в .env</h3>
-    <p>Замените <code>ВСТАВЬТЕ_ТОКЕН</code> на токен из шага 1:</p>
-    ${by({
-      Windows: code('Set-Content .env "BOT_TOKEN=ВСТАВЬТЕ_ТОКЕН"\n".env", ".venv/" | Set-Content .gitignore'),
-      macOS: code('echo "BOT_TOKEN=ВСТАВЬТЕ_ТОКЕН" > .env\nprintf ".env\\n.venv/\\n" > .gitignore'),
-      Linux: code('echo "BOT_TOKEN=ВСТАВЬТЕ_ТОКЕН" > .env\nprintf ".env\\n.venv/\\n" > .gitignore'),
-    })}
-    ${out('', 'Проверьте: <code>' + by({ Windows: 'Get-Content .env', macOS: 'cat .env', Linux: 'cat .env' }) + '</code> покажет <code>BOT_TOKEN=1234567890:AAH…</code> — без пробелов и кавычек вокруг токена.')}
-    <p class="full">Вторая строка создаёт <code>.gitignore</code>: если проект попадёт в Git (а в уроке 2 попадёт), токен и библиотеки туда не уйдут.
-      Подробнее — в <a href="#/git">уроке по Git</a>.</p>
-    ${done("bots", 4)}
+  // Принимаем только запросы от Telegram: он присылает секрет, заданный при setWebhook
+  if (req.headers["x-telegram-bot-api-secret-token"] !== process.env.WEBHOOK_SECRET) {
+    return res.status(403).end();
+  }
 
-    <h3>${step("bots", 5)}Напишите код бота</h3>
-    <p>Создайте в папке <code>mybot</code> файл <code>bot.py</code> ${by({ Windows: '(например, <code>notepad bot.py</code> → «Да», создать файл)', macOS: '(например, в VS Code или <code>nano bot.py</code>)', Linux: '(например, в VS Code или <code>nano bot.py</code>)' })} и вставьте:</p>
-    ${code(`import asyncio
-import logging
-import os
+  const msg = req.body && req.body.message;
+  if (msg && msg.text) {
+    const text = msg.text.startsWith("/start")
+      ? "Привет, " + msg.from.first_name + "! Я живу на Vercel. Напиши что-нибудь — я повторю."
+      : "Вы написали: " + msg.text;
 
-from aiogram import Bot, Dispatcher, F
-from aiogram.filters import CommandStart
-from aiogram.types import Message
-from dotenv import load_dotenv
+    await fetch("https://api.telegram.org/bot" + process.env.BOT_TOKEN + "/sendMessage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: msg.chat.id, text }),
+    });
+  }
 
-load_dotenv()
-bot = Bot(os.environ["BOT_TOKEN"])
-dp = Dispatcher()
-
-
-@dp.message(CommandStart())
-async def start(message: Message):
-    await message.answer(f"Привет, {message.from_user.first_name}! Напиши мне что-нибудь — я повторю.")
-
-
-@dp.message(F.text)
-async def echo(message: Message):
-    await message.answer(f"Вы написали: {message.text}")
-
-
-async def main():
-    logging.basicConfig(level=logging.INFO)
-    await dp.start_polling(bot)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())`)}
+  res.status(200).end();
+};`)}
+    <p>Нажмите <b>Commit changes…</b> → <b>Commit changes</b>.</p>
+    <div class="callout"><p><b>Что должно получиться:</b> В репозитории появилась папка <code>api</code> с файлом <code>webhook.js</code>. Vercel превращает каждый файл в этой папке в отдельный адрес: <code>api/webhook.js</code> → <code>/api/webhook</code>.</p></div>
     <div class="full">
       <ul>
-        <li><code>load_dotenv()</code> читает <code>.env</code>, <code>Bot(...)</code> — подключение к Telegram по токену.</li>
-        <li><code>Dispatcher</code> — «диспетчер»: решает, какая функция обработает сообщение.</li>
-        <li><code>@dp.message(CommandStart())</code> — функция ниже срабатывает на команду <code>/start</code>.</li>
-        <li><code>@dp.message(F.text)</code> — на любой текст. Порядок важен: сначала проверяется <code>/start</code>, потом всё остальное.</li>
-        <li><code>message.answer(...)</code> — ответить в тот же чат.</li>
-        <li><code>start_polling</code> — бесконечно спрашивать Telegram о новых сообщениях.</li>
+        <li><code>module.exports = async (req, res) =&gt; …</code> — функция, которую Vercel вызывает на каждый запрос: <code>req</code> — что пришло, <code>res</code> — что ответить.</li>
+        <li><code>req.body.message</code> — сообщение от Telegram. Vercel сам разбирает JSON, который присылает Telegram.</li>
+        <li><code>fetch(…/sendMessage)</code> — ответ пользователю через Bot API: в какой чат (<code>chat_id</code>) и какой текст.</li>
+        <li><code>process.env.BOT_TOKEN</code> и <code>WEBHOOK_SECRET</code> — переменные из настроек Vercel (шаг 5). В коде их нет.</li>
+        <li><b>Проверка секрета</b> обязательна: адрес функции публичный, и без неё кто угодно мог бы слать боту поддельные сообщения.</li>
+        <li>Ответ <code>200</code> в конце — сигнал Telegram, что сообщение принято. Иначе он будет присылать его снова и снова.</li>
       </ul>
-      <p>В Python важны <b>отступы</b> — 4 пробела внутри функций. Копируйте код кнопкой «Копировать», чтобы они не сбились.</p>
     </div>
-    ${done("bots", 5)}
+    ${done("botsv", 3)}
 
-    <h3>${step("bots", 6)}Запустите и напишите боту</h3>
-    ${code('python bot.py')}
-    ${out(`INFO:aiogram.dispatcher:Start polling
-INFO:aiogram.dispatcher:Run polling for bot @ivan_test_123_bot id=1234567890 - 'Мой первый бот'`,
-      'Бот запущен — терминал «занят», так и должно быть. Откройте бота в Telegram (ссылка <code>t.me/…</code> из шага 1), нажмите <b>Start</b> и напишите что-нибудь — бот повторит. Остановить бота — <code>Ctrl + C</code>.')}
-    <p>После каждого сообщения в терминале появится строка:</p>
-    ${out('INFO:aiogram.event:Update id=123456789 is handled. Duration 85 ms by bot id=1234567890', 'Сообщение обработано. Если вместо этого ошибка — она будет здесь же, в терминале.')}
-    <p class="full">Поменяли код — остановите бота (<code>Ctrl + C</code>) и запустите снова, иначе изменения не подхватятся.
-      Попробуйте заменить текст приветствия на свой — это лучший способ понять, как всё работает.</p>
-    ${done("bots", 6)}
+    <h3>${step("botsv", 4)}Придумайте секрет</h3>
+    <p>Секрет — длинная случайная строка, которой Telegram будет «подписывать» свои запросы. Только латиница и цифры, 20–40 символов.
+      Можно взять из любого генератора паролей (без спецсимволов) или выполнить в терминале:</p>
+    ${code(by({ Windows: '[guid]::NewGuid().ToString("N")', macOS: 'openssl rand -hex 16', Linux: 'openssl rand -hex 16' }))}
+    ${out('3f9c2a7e5b1d4c8e9a0f6b2d7c4e1a95', 'У вас будет другая строка. Сохраните её — понадобится в шагах 5 и 6.')}
+    ${done("botsv", 4)}
 
-    <h3>${step("bots", 7)}Оформите бота</h3>
-    <p>В @BotFather отправьте <code>/setcommands</code>, выберите своего бота и отправьте список команд:</p>
-    ${code('start - Начать работу')}
-    ${out('Success! Command list updated. /help', 'Теперь у бота появится кнопка «Меню» с командой /start.')}
-    <p>Там же: <code>/setuserpic</code> — аватарка, <code>/setdescription</code> — текст, который видят до нажатия Start,
-      <code>/setabouttext</code> — описание в профиле бота.</p>
-    ${done("bots", 7)}
+    <h3>${step("botsv", 5)}Подключите репозиторий к Vercel</h3>
+    <ol>
+      <li>Зайдите на <b>vercel.com</b> → <b>Sign Up</b> → <b>Continue with GitHub</b> (тариф <b>Hobby</b>).</li>
+      <li><b>Add New…</b> → <b>Project</b> → напротив <code>mybot-vercel</code> нажмите <b>Import</b>.</li>
+      <li>Откройте <b>Environment Variables</b> и добавьте две переменные:
+        <code>BOT_TOKEN</code> = токен из @BotFather и <code>WEBHOOK_SECRET</code> = секрет из шага 4.</li>
+      <li>Нажмите <b>Deploy</b> и подождите минуту.</li>
+    </ol>
+    ${out(`Congratulations!
+You just deployed a new Project to Vercel.`, 'Нажмите <b>Continue to Dashboard</b>. Адрес проекта — в блоке <b>Domains</b>, например <code>mybot-vercel.vercel.app</code>. Откройте в браузере <code>https://ВАШ_АДРЕС.vercel.app/api/webhook</code> — должно быть написано «Бот работает».')}
+    <p class="full">Если GitHub спросит, к каким репозиториям дать Vercel доступ, — можно выбрать только <code>mybot-vercel</code>.
+      Переменные можно поменять потом: проект → <b>Settings</b> → <b>Environment Variables</b>. После изменения нужен <b>Redeploy</b> (вкладка Deployments → ⋯ → Redeploy), иначе функция их не увидит.</p>
+    ${done("botsv", 5)}
+
+    <h3>${step("botsv", 6)}Скажите Telegram, куда слать сообщения</h3>
+    <p class="full">Если этот же бот уже запущен на сервере (<a href="#/bots/2">урок 2</a>) — сначала остановите его: webhook и polling вместе не работают.</p>
+    <p>Подставьте свои токен, адрес и секрет и откройте эту ссылку в браузере:</p>
+    ${code('https://api.telegram.org/botТОКЕН/setWebhook?url=https://ВАШ_АДРЕС.vercel.app/api/webhook&secret_token=СЕКРЕТ')}
+    ${out('{"ok":true,"result":true,"description":"Webhook was set"}', 'Токен пишется сразу после <code>bot</code>, слитно. <code>"ok":false</code> и <code>Unauthorized</code> — опечатка в токене.')}
+    <p>Теперь напишите боту в Telegram — он ответит «Привет… Я живу на Vercel».</p>
+    <div class="full">
+      <p>Проверить, что webhook работает и нет ли ошибок, — тоже в браузере:</p>
+      ${code('https://api.telegram.org/botТОКЕН/getWebhookInfo')}
+      ${out('{"ok":true,"result":{"url":"https://mybot-vercel.vercel.app/api/webhook","has_custom_certificate":false,"pending_update_count":0,"max_connections":40,"ip_address":"76.76.21.21"}}',
+        'Если есть поле <code>last_error_message</code> — там причина, почему Telegram не может достучаться до функции. Разбор — в таблице ошибок ниже.')}
+    </div>
+    ${done("botsv", 6)}
+
+    <h3>${step("botsv", 7)}Обновите бота</h3>
+    <p>На GitHub откройте <code>api/webhook.js</code> → значок карандаша ✏️ → поменяйте текст приветствия → <b>Commit changes</b>.</p>
+    <div class="callout"><p><b>Что должно получиться:</b> Vercel сам заметит изменение и через минуту выкатит новую версию: вкладка <b>Deployments</b> в проекте — статус <b>Ready</b>. Напишите боту <code>/start</code> — увидите новый текст. Webhook заново ставить не нужно.</p></div>
+    <p class="full">Если проект лежит у вас на компьютере в Git, то же самое делает <code>git push</code>.
+      Логи бота — в проекте на Vercel, вкладка <b>Logs</b>: там видны все запросы от Telegram и ошибки.
+      Чтобы перенести бота на свой сервер (урок 2), удалите webhook: <code>https://api.telegram.org/botТОКЕН/deleteWebhook</code>.</p>
+    ${done("botsv", 7)}
 
     <div class="full">
       <h3>Частые ошибки</h3>
       <div class="tbl"><table>
         <tr><th>Сообщение</th><th>Что делать</th></tr>
-        <tr><td>KeyError: 'BOT_TOKEN'</td><td>Нет файла <code>.env</code> в папке, откуда вы запускаете бота, или опечатка в названии переменной.</td></tr>
-        <tr><td>TokenValidationError / Unauthorized</td><td>Неверный токен: лишние пробелы, кавычки или токен отозван. Скопируйте заново из @BotFather.</td></tr>
-        <tr><td>No module named 'aiogram'</td><td>Окружение не активировано (нет <code>(.venv)</code> в начале строки). Активируйте его — шаг 3.</td></tr>
-        <tr><td>TelegramConflictError: terminated by other getUpdates request</td><td>Бот запущен дважды — в другом окне терминала или уже на сервере. Оставьте одну копию.</td></tr>
-        <tr><td>IndentationError</td><td>Сбились отступы в <code>bot.py</code>. Скопируйте код заново кнопкой «Копировать».</td></tr>
-        <tr><td>Бот молчит, ошибок нет</td><td>Убедитесь, что пишете именно своему боту (username из шага 1) и что программа запущена.</td></tr>
-        <tr><td>выполнение сценариев отключено</td><td>Windows: <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>.</td></tr>
+        <tr><td>404: NOT_FOUND</td><td>Файл не в папке <code>api</code> или называется иначе. Путь должен совпадать с адресом: <code>api/webhook.js</code> → <code>/api/webhook</code>.</td></tr>
+        <tr><td>Wrong response from the webhook: 403</td><td>Секрет не совпадает: <code>WEBHOOK_SECRET</code> в Vercel и <code>secret_token</code> в ссылке setWebhook должны быть одинаковыми. Изменили переменную — сделайте Redeploy.</td></tr>
+        <tr><td>Wrong response from the webhook: 401</td><td>Включена защита деплоя. Проект → Settings → Deployment Protection → отключите Vercel Authentication, либо используйте основной адрес из Domains.</td></tr>
+        <tr><td>Wrong response from the webhook: 500</td><td>Ошибка в коде — например, не задан <code>BOT_TOKEN</code>. Причина — во вкладке <b>Logs</b> на Vercel.</td></tr>
+        <tr><td>Бот молчит, ошибок нет</td><td>Проверьте <code>getWebhookInfo</code>: адрес должен заканчиваться на <code>/api/webhook</code>. Токен в Vercel — того же бота, которому вы пишете.</td></tr>
+        <tr><td>TelegramConflictError: can't use getUpdates method while webhook is active</td><td>Бота запускают на сервере (урок 2), а webhook от Vercel ещё стоит. Удалите его через <code>deleteWebhook</code>.</td></tr>
       </table></div>
     </div>
 
     <h2 id="cheat">Шпаргалка</h2>
     <div class="tbl"><table>
-      <tr><td>/newbot</td><td>Создать бота (в @BotFather)</td></tr>
-      <tr><td>/mybots</td><td>Настройки ботов, отзыв токена</td></tr>
-      <tr><td>/setcommands</td><td>Меню команд</td></tr>
-      <tr><td>/setuserpic · /setdescription</td><td>Аватарка и описание</td></tr>
-      <tr><td>${by({ Windows: '.venv\\Scripts\\Activate.ps1', macOS: 'source .venv/bin/activate', Linux: 'source .venv/bin/activate' })}</td><td>Включить окружение</td></tr>
-      <tr><td>pip install aiogram python-dotenv</td><td>Установить библиотеки</td></tr>
-      <tr><td>python bot.py</td><td>Запустить бота</td></tr>
-      <tr><td>Ctrl + C</td><td>Остановить бота</td></tr>
+      <tr><td>api/webhook.js</td><td>Функция бота → адрес <code>/api/webhook</code></td></tr>
+      <tr><td>BOT_TOKEN, WEBHOOK_SECRET</td><td>Переменные в Settings → Environment Variables</td></tr>
+      <tr><td>…/setWebhook?url=…&amp;secret_token=…</td><td>Подключить бота к функции</td></tr>
+      <tr><td>…/getWebhookInfo</td><td>Проверить webhook и ошибки</td></tr>
+      <tr><td>/newbot · /mybots</td><td>Создать бота и настроить его (в @BotFather)</td></tr>
+      <tr><td>…/deleteWebhook</td><td>Отключить webhook</td></tr>
+      <tr><td>Commit на GitHub</td><td>Задеплоить новую версию</td></tr>
+      <tr><td>Vercel → Logs</td><td>Логи бота</td></tr>
     </table></div>
 
     <a class="next" href="#/bots/2">
       <h3>Урок 2: бот на своём сервере →</h3>
-      <p>Сейчас бот работает, только пока включён ваш компьютер. Перенесём его на сервер — круглосуточно и с автоперезапуском.</p>
+      <p>Без ограничений облачных функций: бот работает постоянно, хранит данные, выполняет задачи по расписанию.</p>
     </a>
   </article>` },
+
   { t: 'Бот на своём сервере', f: () => `
   <article class="lesson">
     <p class="kicker">Боты · Урок 2</p>
@@ -1361,14 +1344,14 @@ INFO:aiogram.dispatcher:Run polling for bot @ivan_test_123_bot id=1234567890 - '
     </ul>
     <div class="progress"><span></span><div class="progress-bar"><i></i></div>
       <small>Отмечайте пройденные шаги галочкой «Отметить прохождение» внизу каждого шага. Прогресс сохраняется в этом браузере.</small></div>
-    <p>Нужен бот из <a href="#/bots">урока 1</a> и проект в GitHub (<a href="#/git">урок по Git</a>, шаги 8–9).</p>
+    <p>Нужен токен бота — как его получить, в <a href="#/bots">уроке 1</a>, шаг 1.</p>
 
     <h2 id="what">Что это</h2>
     <p class="brief"><b>VPS</b> — арендованный компьютер в дата-центре: работает круглосуточно, с Linux, управляется через терминал по <b>SSH</b>.
       На нём бот запускается как <b>служба systemd</b> — стартует вместе с сервером и сам перезапускается, если упал.</p>
     <div class="full">
-      <p>В уроке 1 бот жил на вашем компьютере: закрыли ноутбук — бот замолчал. Чтобы он работал всегда, программу запускают на <b>сервере</b>.
-        Проще и дешевле всего — арендовать <b>VPS</b> (виртуальный сервер): кусочек мощного компьютера в дата-центре, со своей ОС (обычно Ubuntu),
+      <p>В уроке 1 бот жил на Vercel как облачная функция: она просыпается на одно сообщение и ничего не помнит.
+        Свой <b>сервер</b> снимает эти ограничения: бот — обычная программа, которая работает постоянно. Проще и дешевле всего — арендовать <b>VPS</b> (виртуальный сервер): кусочек мощного компьютера в дата-центре, со своей ОС (обычно Ubuntu),
         постоянным интернетом и электричеством.</p>
       <p>Экрана и мышки у сервера нет — им управляют из терминала по <b>SSH</b>: вы набираете команды у себя, а выполняются они на сервере.</p>
       <div class="flow">
@@ -1388,11 +1371,11 @@ INFO:aiogram.dispatcher:Run polling for bot @ivan_test_123_bot id=1234567890 - '
 
     <h2 id="why">Зачем это вам</h2>
     <ul>
-      <li><b>Круглосуточно.</b> Бот отвечает, даже когда ваш компьютер выключен.</li>
+      <li><b>Без ограничений.</b> Бот работает постоянно: напоминания по расписанию, долгие задачи, данные в памяти.</li>
       <li><b>Сам поднимается.</b> Упал из-за ошибки или сервер перезагрузился — systemd запустит бота снова через 5 секунд.</li>
       <li><b>Недорого.</b> Самый простой VPS стоит как пара чашек кофе в месяц.</li>
       <li><b>Один сервер — много всего.</b> Несколько ботов, база данных, сайт — на одной машине.<span class="full"> Базу из <a href="#/databases">урока по базам данных</a> можно поднять здесь же.</span></li>
-      <li><b>Обновление за минуту.</b> Поправили код у себя → <code>git push</code> → на сервере <code>git pull</code> и перезапуск.</li>
+      <li><b>Любой язык и библиотеки.</b> Здесь — Python и aiogram, самая популярная связка для ботов.</li>
     </ul>
 
     <h2 id="how">Как сделать</h2>
@@ -1441,24 +1424,64 @@ info: Creating home directory '/home/bot' ...`, 'Если во время обн
       злоумышленник получит доступ только к папке бота, а не ко всему серверу.</p>
     ${done("bots2", 3)}
 
-    <h3>${step("bots2", 4)}Перенесите код на сервер</h3>
-    <p>Залейте папку <code>mybot</code> из урока 1 в GitHub (<a href="#/git">урок по Git</a>, шаг 9). Для приватного репозитория при клонировании понадобится вход — проще сделать репозиторий публичным: токен всё равно не в Git.</p>
+    <h3>${step("bots2", 4)}Напишите бота на сервере</h3>
+    <p>Перейдите в пользователя <code>bot</code>, создайте проект и установите библиотеки:</p>
     ${code(`su - bot
-git clone https://github.com/ВАШ_ЛОГИН/mybot.git
-cd mybot
+mkdir mybot && cd mybot
 python3 -m venv .venv
 .venv/bin/pip install aiogram python-dotenv`)}
-    ${out(`Cloning into 'mybot'...
+    ${out(`Collecting aiogram
 ...
-Receiving objects: 100% (4/4), done.
-...
-Successfully installed aiofiles-24.1.0 aiogram-3.22.0 ... python-dotenv-1.1.1 ...`, 'После <code>su - bot</code> приглашение сменится на <code>bot@…:~$</code> — вы работаете от имени пользователя bot.')}
-    <p class="full">Без GitHub файл можно закинуть напрямую со своего компьютера: <code>scp bot.py root@IP_СЕРВЕРА:/home/bot/</code>,
-      затем на сервере <code>chown bot:bot /home/bot/bot.py</code>. Но Git удобнее: обновлять бота потом — одна команда.</p>
+Successfully installed aiofiles-24.1.0 aiogram-3.22.0 aiohttp-3.12.15 ... python-dotenv-1.1.1 ...`, 'После <code>su - bot</code> приглашение сменится на <code>bot@…:~$</code> — вы работаете от имени пользователя bot.')}
+    <p>Создайте файл бота:</p>
+    ${code('nano bot.py')}
+    <p>Вставьте код (в nano — правой кнопкой мыши или <code>Ctrl + Shift + V</code>), сохраните <code>Ctrl + O</code>, Enter, выйдите <code>Ctrl + X</code>:</p>
+    ${code(`import asyncio
+import logging
+import os
+
+from aiogram import Bot, Dispatcher, F
+from aiogram.filters import CommandStart
+from aiogram.types import Message
+from dotenv import load_dotenv
+
+load_dotenv()
+bot = Bot(os.environ["BOT_TOKEN"])
+dp = Dispatcher()
+
+
+@dp.message(CommandStart())
+async def start(message: Message):
+    await message.answer(f"Привет, {message.from_user.first_name}! Я живу на своём сервере. Напиши что-нибудь — я повторю.")
+
+
+@dp.message(F.text)
+async def echo(message: Message):
+    await message.answer(f"Вы написали: {message.text}")
+
+
+async def main():
+    logging.basicConfig(level=logging.INFO)
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())`)}
+    ${out('', 'Файл сохранён. Проверить: <code>cat bot.py</code> покажет код.')}
+    <div class="full">
+      <ul>
+        <li><code>.venv</code> — виртуальное окружение: библиотеки только для этого проекта, чтобы разные боты на сервере не мешали друг другу.</li>
+        <li><code>aiogram</code> — библиотека для ботов на Python, <code>python-dotenv</code> читает токен из файла <code>.env</code>, чтобы не держать его в коде.</li>
+        <li><code>Dispatcher</code> решает, какая функция обработает сообщение: <code>CommandStart()</code> — команда <code>/start</code>, <code>F.text</code> — любой текст.</li>
+        <li><code>start_polling</code> — бесконечно спрашивать Telegram о новых сообщениях. Поэтому программа должна работать всё время — для этого и нужен сервер.</li>
+        <li>В Python важны <b>отступы</b> — 4 пробела внутри функций. Копируйте код кнопкой «Копировать», чтобы они не сбились.</li>
+      </ul>
+    </div>
     ${done("bots2", 4)}
 
     <h3>${step("bots2", 5)}Положите токен на сервер</h3>
-    <div class="callout warn"><p><b>Сначала остановите бота на своём компьютере</b> (<code>Ctrl + C</code>). Две запущенные копии с одним токеном мешают друг другу.</p></div>
+    <div class="callout warn"><p><b>Если этот бот уже подключён к Vercel</b> (урок 1) — сначала отключите webhook: откройте в браузере
+      <code>https://api.telegram.org/botТОКЕН/deleteWebhook</code>. Один бот не может работать одновременно и там, и здесь.</p></div>
     ${code(`echo "BOT_TOKEN=ВСТАВЬТЕ_ТОКЕН" > .env
 chmod 600 .env
 .venv/bin/python bot.py`)}
@@ -1525,15 +1548,20 @@ Oct 22 10:05:20 vm123456 python[12345]: INFO:aiogram.event:Update id=123456791 i
     ${done("bots2", 7)}
 
     <h3>${step("bots2", 8)}Обновляйте бота</h3>
-    <p>Поправили код на своём компьютере и сделали <code>git push</code>. Затем на сервере (под root):</p>
-    ${code(`su - bot -c "cd mybot && git pull"
+    <p>Поправьте код (под root) и перезапустите службу:</p>
+    ${code(`nano /home/bot/mybot/bot.py
 systemctl restart tgbot`)}
-    ${out(`Updating a1b2c3d..e4f5a6b
+    ${out('', 'Через пару секунд бот работает с новым кодом. Проверьте: <code>systemctl status tgbot</code> — снова <code>active (running)</code>. Если добавили новые библиотеки — установите их: <code>su - bot -c "cd mybot && .venv/bin/pip install имя"</code>.')}
+    <div class="full">
+      <p>Править код прямо на сервере удобно для мелочей. Для настоящей работы код держат в Git (<a href="#/git">урок по Git</a>):
+        правите и проверяете у себя → <code>git push</code> → на сервере забираете и перезапускаете:</p>
+      ${code(`su - bot -c "cd mybot && git pull"
+systemctl restart tgbot`)}
+      ${out(`Updating a1b2c3d..e4f5a6b
 Fast-forward
  bot.py | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)`, 'Новый код подтянулся, после <code>restart</code> бот работает уже с ним. Если добавили новые библиотеки — установите их: <code>su - bot -c "cd mybot && .venv/bin/pip install имя"</code>.')}
-    <p class="full">Это и есть цикл работы: правите и проверяете локально → <code>git push</code> → на сервере <code>git pull</code> + <code>restart</code>.
-      Как сделать, чтобы сервер обновлялся сам после каждого push, — в продвинутом курсе (GitHub Actions).</p>
+ 1 file changed, 2 insertions(+), 2 deletions(-)`, 'Для этого папку <code>mybot</code> нужно один раз создать через <code>git clone</code> вашего репозитория вместо <code>mkdir</code>. Как обновлять сервер автоматически после каждого push — в продвинутом курсе.')}
+    </div>
     ${done("bots2", 8)}
 
     <h3>${step("bots2", 9)}Защитите сервер</h3>
@@ -1562,8 +1590,8 @@ systemctl restart ssh`)}
         <tr><td>activating (auto-restart) / failed</td><td>Бот падает при старте. Причина — в <code>journalctl -u tgbot -n 50</code>.</td></tr>
         <tr><td>status=203/EXEC</td><td>Неверный путь в <code>ExecStart</code>. Проверьте, что <code>/home/bot/mybot/.venv/bin/python</code> существует.</td></tr>
         <tr><td>KeyError: 'BOT_TOKEN'</td><td>Нет <code>.env</code> в <code>WorkingDirectory</code> или у пользователя bot нет к нему доступа.</td></tr>
-        <tr><td>TelegramConflictError</td><td>Бот всё ещё запущен на вашем компьютере. Остановите его там.</td></tr>
-        <tr><td>could not read Username for 'https://github.com'</td><td>Репозиторий приватный. Сделайте его публичным или настройте доступ (продвинутый курс).</td></tr>
+        <tr><td>TelegramConflictError</td><td>Бот запущен ещё где-то или стоит webhook от Vercel (урок 1): откройте <code>…/deleteWebhook</code>.</td></tr>
+        <tr><td>IndentationError</td><td>Сбились отступы в <code>bot.py</code>. Вставьте код заново, скопировав кнопкой «Копировать».</td></tr>
       </table></div>
     </div>
 
@@ -1575,7 +1603,7 @@ systemctl restart ssh`)}
       <tr><td>journalctl -u tgbot -n 50</td><td>Последние 50 строк лога</td></tr>
       <tr><td>systemctl restart tgbot</td><td>Перезапустить</td></tr>
       <tr><td>systemctl stop / start tgbot</td><td>Остановить / запустить</td></tr>
-      <tr><td>su - bot -c "cd mybot && git pull"</td><td>Забрать новый код</td></tr>
+      <tr><td>nano /home/bot/mybot/bot.py</td><td>Поправить код</td></tr>
       <tr><td>exit</td><td>Выйти с сервера</td></tr>
     </table></div>
 
