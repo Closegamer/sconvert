@@ -218,6 +218,8 @@ const code = s => `<div class="code"><pre>${esc(s.trim())}</pre><button class="c
 const by = o => o[os];
 // out: undefined — без блока, '' — команда молчит, строка — ожидаемый вывод; note — пояснение под выводом
 const out = (o, note = '') => `<div class="out"><b>Ожидаемый вывод</b>${o ? `<pre>${esc(o.trim())}</pre>` : '<p>Ничего не выводит — значит, всё прошло успешно.</p>'}${note ? `<small>${note}</small>` : ''}</div>`;
+// Рекомендуемый хостинг для серверов — партнёрская ссылка AdminVPS (единственный рекомендуемый провайдер)
+const vps = text => `<a href="https://my.adminvps.ru/aff.php?aff=32834" target="_blank" rel="sponsored noopener">${text}</a>`;
 const step = (lesson, n) => `<span class="n" data-n="${lesson}-${n}">${n}</span>`;
 const done = (lesson, n) => `<label class="done"><input type="checkbox" data-done="${lesson}-${n}"><span class="t0">Отметить прохождение</span><span class="t1">Пройдено</span></label>`;
 // Фон урока: выше последнего отмеченного шага — лёгкий зелёный, ниже — лёгкий красный, граница — мягкий градиент
@@ -601,7 +603,7 @@ To https://github.com/ВАШ_ЛОГИН/my-project.git
       <li><b>Что угодно — одной командой.</b> PostgreSQL, Redis, n8n, WordPress — без установщиков и настройки.<span class="full"> Нужна база для бота? Одна строка — и через 10 секунд она работает.</span></li>
       <li><b>Конец «у меня работает».</b> Контейнер ведёт себя одинаково на вашем ноутбуке, у коллеги и на сервере.</li>
       <li><b>Чистая система.</b> Удалили контейнер — от программы не осталось следов.<span class="full"> Можно держать рядом PostgreSQL 14 и 17 для разных проектов, и они не мешают друг другу.</span></li>
-      <li><b>Простой деплой.</b> То, что работает у вас в Docker, так же запустится на сервере.<span class="full"> Этот сайт, например, тоже работает в Docker-контейнере.</span></li>
+      <li><b>Простой деплой.</b> То, что работает у вас в Docker, так же запустится на ${vps('сервере')}.<span class="full"> Этот сайт, например, тоже работает в Docker-контейнере.</span></li>
       <li><b>Это база.</b> Боты, агенты, базы данных и почти любой сервер сегодня запускают в Docker.</li>
     </ul>
 
@@ -1138,6 +1140,399 @@ local     pgdata`, 'Контейнеры удалены, а тома с данн
       <p>Связи и JOIN, индексы и скорость, транзакции, миграции, права доступа, бэкапы по расписанию и подключение из Python и Node.js.</p>
     </a>
   </article>`,
+  agents: () => `
+  <article class="lesson">
+    <p class="kicker">Агенты · Урок 1</p>
+    <h1>🧠 Как написать своего ИИ-агента</h1>
+    <p class="meta"><span class="brief">≈ 20 минут · только суть и код</span><span class="full">≈ 45 минут · с объяснениями и разбором ошибок</span></p>
+    <ul class="toc">
+      <li><button data-go="what">Что это</button></li>
+      <li><button data-go="why">Зачем это вам</button></li>
+      <li><button data-go="how">Как написать</button></li>
+      <li><button data-go="cheat">Шпаргалка</button></li>
+    </ul>
+    <div class="progress"><span></span><div class="progress-bar"><i></i></div>
+      <small>Отмечайте пройденные шаги галочкой «Отметить прохождение» внизу каждого шага. Прогресс сохраняется в этом браузере.</small></div>
+
+    <h2 id="what">Что это</h2>
+    <p class="brief"><b>ИИ-агент</b> = языковая модель + <b>инструменты</b> + <b>цикл</b>. Модель получает задачу, сама решает, какой инструмент вызвать
+      (прочитать файл, найти в базе, отправить сообщение), ваша программа выполняет вызов и возвращает результат — и так по кругу, пока задача не решена.
+      Обычный чат только отвечает текстом, агент — <b>действует</b>.</p>
+    <div class="full">
+      <p>Языковая модель (Claude, ChatGPT и другие) сама по себе умеет только одно: получить текст и написать текст в ответ. Она не видит ваших файлов,
+        не может открыть сайт или записать что-то в базу. <b>Агент</b> — это программа вокруг модели, которая даёт ей «руки».</p>
+      <p>Вы описываете модели <b>инструменты</b>: «есть функция <code>read_file</code>, она читает файл по имени». Модель, решая задачу, отвечает не текстом,
+        а просьбой: «вызови <code>read_file</code> с именем <code>notes.txt</code>». Ваша программа выполняет функцию и отправляет результат обратно.
+        Модель смотрит на результат и решает, что делать дальше: вызвать другой инструмент или дать финальный ответ. Это и есть <b>цикл агента</b>.</p>
+      <div class="flow">
+        <div>Задача<small>от вас</small></div><span>→</span>
+        <div>Модель<small>решает, что сделать</small></div><span>tool_use →</span>
+        <div>Ваш код<small>выполняет инструмент</small></div><span>↺</span>
+        <div>Ответ<small>когда всё готово</small></div>
+      </div>
+      <div class="tbl"><table>
+        <tr><th>Слово</th><th>Что значит</th></tr>
+        <tr><td>LLM</td><td>Большая языковая модель — «мозг» агента. В уроке — Claude от Anthropic.</td></tr>
+        <tr><td>API</td><td>Способ обращаться к модели из программы. Платный: оплата за объём текста.</td></tr>
+        <tr><td>Токен</td><td>Кусочек текста (примерно 3–4 символа). По токенам считают стоимость и лимиты.</td></tr>
+        <tr><td>Инструмент (tool)</td><td>Функция вашей программы, которую модель может попросить вызвать.</td></tr>
+        <tr><td>System prompt</td><td>Постоянная инструкция агенту: кто он, что можно и чего нельзя.</td></tr>
+        <tr><td>Цикл агента</td><td>Запрос → вызов инструмента → результат → снова запрос… пока модель не закончит.</td></tr>
+      </table></div>
+    </div>
+
+    <h2 id="why">Зачем это вам</h2>
+    <ul>
+      <li><b>Рутина, где нужно подумать.</b> Разобрать заметки, письма, заявки, отчёты — там, где обычный скрипт не справится, потому что каждый раз всё немного по-разному.</li>
+      <li><b>Задача словами, а не кодом.</b> «Найди в заметках все задачи на эту неделю и сложи в один файл» — агент сам решит, какие файлы открыть и в каком порядке.</li>
+      <li><b>Бот с мозгами.</b> Подключите агента к <a href="#/bots">Telegram-боту</a> — и бот не просто отвечает шаблонами, а действительно выполняет просьбы.</li>
+      <li><b>Работает без вас.</b> Агент на сервере по расписанию каждое утро делает сводку, проверяет данные, готовит черновики.</li>
+      <li><b>Ваши инструменты — ваши правила.</b> Агент может только то, что вы ему разрешили: никакой магии, всё в вашем коде.</li>
+    </ul>
+    <div class="callout"><p><b>Агент нужен не всегда.</b> Если шаги задачи всегда одинаковые — хватит обычного скрипта или одного запроса к модели:
+      это дешевле, быстрее и предсказуемее. Агент оправдан, когда заранее непонятно, какие действия понадобятся.</p></div>
+
+    <h2 id="how">Как написать</h2>
+    <p>Напишем агента-помощника по заметкам: он читает файлы в папке и создаёт новые. На Python, с моделью <b>Claude</b> через официальную библиотеку <code>anthropic</code>.</p>
+
+    <h3>${step("agents", 1)}Получите API-ключ</h3>
+    <p>Зайдите на <b>platform.claude.com</b>, зарегистрируйтесь, в разделе <b>Billing</b> пополните баланс (для учёбы хватит $5),
+      затем <b>API Keys</b> → <b>Create Key</b> → скопируйте ключ.</p>
+    ${out('sk-ant-api03-Xb3k...Q9wA', 'Ключ начинается с <code>sk-ant-</code> и показывается <b>один раз</b> — сразу сохраните его. Потеряли — создайте новый.')}
+    <div class="callout warn"><p><b>API-ключ — это деньги.</b> Кто знает ключ, тратит ваш баланс. Не публикуйте его и не вставляйте в код.<span class="full">
+      В разделе <b>Limits</b> поставьте месячный лимит расходов — так случайная ошибка в цикле агента не съест весь баланс.</span></p></div>
+    <p class="full">API Anthropic работает не во всех странах — список поддерживаемых есть в документации на сайте. Стоимость считается по токенам:
+      модель Claude Opus 5 стоит $5 за миллион входящих и $25 за миллион исходящих токенов. Один запуск агента из этого урока — обычно центы.
+      Расход видно в разделе <b>Usage</b>.</p>
+    ${done("agents", 1)}
+
+    <h3>${step("agents", 2)}Создайте проект и установите библиотеку</h3>
+    <p>Нужен Python 3.10 или новее${by({ Windows: ' (если нет — <code>winget install -e --id Python.Python.3.13</code> и перезапустите терминал)', macOS: ' (если нет — <code>brew install python</code> или установщик с python.org)', Linux: ' (если нет — <code>sudo apt install -y python3 python3-venv</code>)' })}.</p>
+    ${by({
+      Windows: code('mkdir myagent\ncd myagent\npython -m venv .venv\n.venv\\Scripts\\Activate.ps1\npip install anthropic python-dotenv'),
+      macOS: code('mkdir myagent\ncd myagent\npython3 -m venv .venv\nsource .venv/bin/activate\npip install anthropic python-dotenv'),
+      Linux: code('mkdir myagent\ncd myagent\npython3 -m venv .venv\nsource .venv/bin/activate\npip install anthropic python-dotenv'),
+    })}
+    ${out(`Collecting anthropic
+...
+Successfully installed anthropic-2.1.0 anyio-4.11.0 httpx-0.28.1 ... python-dotenv-1.1.1 ...`,
+      'Главное — <code>(.venv)</code> в начале строки и <code>Successfully installed</code>. Версии могут быть новее.' + by({
+        Windows: ' Если PowerShell пишет «<b>выполнение сценариев отключено</b>» — выполните <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>, ответьте <code>Y</code> и повторите активацию.',
+        macOS: '', Linux: '' }))}
+    <p class="full"><code>.venv</code> — виртуальное окружение: библиотеки только для этого проекта. Его нужно активировать в каждом новом окне терминала:
+      <code>${by({ Windows: '.venv\\Scripts\\Activate.ps1', macOS: 'source .venv/bin/activate', Linux: 'source .venv/bin/activate' })}</code>.
+      <code>anthropic</code> — официальная библиотека для Claude, <code>python-dotenv</code> — читает ключ из файла <code>.env</code>.</p>
+    ${done("agents", 2)}
+
+    <h3>${step("agents", 3)}Сохраните ключ в .env</h3>
+    ${by({
+      Windows: code('Set-Content .env "ANTHROPIC_API_KEY=ВСТАВЬТЕ_КЛЮЧ"\n".env", ".venv/" | Set-Content .gitignore'),
+      macOS: code('echo "ANTHROPIC_API_KEY=ВСТАВЬТЕ_КЛЮЧ" > .env\nprintf ".env\\n.venv/\\n" > .gitignore'),
+      Linux: code('echo "ANTHROPIC_API_KEY=ВСТАВЬТЕ_КЛЮЧ" > .env\nprintf ".env\\n.venv/\\n" > .gitignore'),
+    })}
+    ${out('', 'Проверьте: <code>' + by({ Windows: 'Get-Content .env', macOS: 'cat .env', Linux: 'cat .env' }) + '</code> покажет <code>ANTHROPIC_API_KEY=sk-ant-…</code> без пробелов и кавычек. <code>.gitignore</code> не даст ключу попасть в Git.')}
+    <p class="full">Библиотека <code>anthropic</code> сама ищет переменную <code>ANTHROPIC_API_KEY</code> — поэтому в коде ключ нигде не упоминается.</p>
+    ${done("agents", 3)}
+
+    <h3>${step("agents", 4)}Первый запрос к модели</h3>
+    <p>Создайте файл <code>hello.py</code>:</p>
+    ${code(`import anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
+client = anthropic.Anthropic()
+
+response = client.messages.create(
+    model="claude-opus-5",
+    max_tokens=16000,
+    messages=[{"role": "user", "content": "Объясни в двух предложениях, что такое ИИ-агент."}],
+)
+
+for block in response.content:
+    if block.type == "text":
+        print(block.text)`)}
+    ${code('python hello.py')}
+    ${out('ИИ-агент — это программа, в которой языковая модель не просто отвечает на вопросы, а сама решает, какие действия выполнить для достижения цели: вызывает инструменты, получает результаты и планирует следующие шаги. По сути, это модель с «руками» и циклом, который позволяет ей работать над задачей самостоятельно, пока она не будет решена.',
+      'Текст у вас будет другим — модель каждый раз формулирует заново. Ответ пришёл — ключ и библиотека работают.')}
+    <div class="full">
+      <ul>
+        <li><code>model</code> — какая модель отвечает. <code>claude-opus-5</code> — умная универсальная модель для агентов.</li>
+        <li><code>max_tokens</code> — потолок длины ответа. Слишком маленький — ответ обрежется на полуслове.</li>
+        <li><code>messages</code> — история диалога: список сообщений с ролями <code>user</code> (вы) и <code>assistant</code> (модель).</li>
+        <li><code>response.content</code> — список блоков ответа: текст, вызовы инструментов и другое. Поэтому перебираем и берём блоки типа <code>text</code>.</li>
+      </ul>
+      <p>Это ещё <b>не агент</b>: модель только отвечает текстом. В следующем шаге дадим ей инструменты.</p>
+    </div>
+    ${done("agents", 4)}
+
+    <h3>${step("agents", 5)}Агент: инструменты и цикл</h3>
+    <p>Подготовьте папку <code>workspace</code> с парой заметок — с ними агент будет работать:</p>
+    ${by({
+      Windows: code('mkdir workspace\nSet-Content workspace/monday.txt "Позвонить бухгалтеру до среды. Купить домен для сайта. Ответить Ане про созвон в четверг." -Encoding utf8\nSet-Content workspace/ideas.txt "Сделать Telegram-бота для записи клиентов. Написать пост про Docker. Купить домен — срочно!" -Encoding utf8'),
+      macOS: code('mkdir workspace\necho "Позвонить бухгалтеру до среды. Купить домен для сайта. Ответить Ане про созвон в четверг." > workspace/monday.txt\necho "Сделать Telegram-бота для записи клиентов. Написать пост про Docker. Купить домен — срочно!" > workspace/ideas.txt'),
+      Linux: code('mkdir workspace\necho "Позвонить бухгалтеру до среды. Купить домен для сайта. Ответить Ане про созвон в четверг." > workspace/monday.txt\necho "Сделать Telegram-бота для записи клиентов. Написать пост про Docker. Купить домен — срочно!" > workspace/ideas.txt'),
+    })}
+    ${out('', by({ Windows: '<code>mkdir</code> выведет таблицу с новой папкой — это нормально. ', macOS: '', Linux: '' }) + 'В папке <code>workspace</code> появились два файла.')}
+    <p>Создайте <code>agent_loop.py</code> — агент целиком, с циклом, написанным вручную:</p>
+    ${code(`import json
+from pathlib import Path
+
+import anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
+client = anthropic.Anthropic()
+
+WORKSPACE = Path("workspace").resolve()
+
+
+def safe_path(name):
+    path = (WORKSPACE / name).resolve()
+    if not path.is_relative_to(WORKSPACE):
+        raise ValueError("Доступ разрешён только к папке workspace")
+    return path
+
+
+def list_files():
+    return "\\n".join(p.name for p in WORKSPACE.iterdir()) or "Папка пуста"
+
+
+def read_file(name):
+    return safe_path(name).read_text(encoding="utf-8")
+
+
+def write_file(name, content):
+    safe_path(name).write_text(content, encoding="utf-8")
+    return f"Файл {name} сохранён"
+
+
+TOOLS = [
+    {
+        "name": "list_files",
+        "description": "Показать список файлов в рабочей папке.",
+        "input_schema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "read_file",
+        "description": "Прочитать текстовый файл из рабочей папки.",
+        "input_schema": {
+            "type": "object",
+            "properties": {"name": {"type": "string", "description": "Имя файла, например notes.txt"}},
+            "required": ["name"],
+        },
+    },
+    {
+        "name": "write_file",
+        "description": "Создать или перезаписать текстовый файл в рабочей папке.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string", "description": "Имя файла"},
+                "content": {"type": "string", "description": "Полный текст файла"},
+            },
+            "required": ["name", "content"],
+        },
+    },
+]
+FUNCTIONS = {"list_files": list_files, "read_file": read_file, "write_file": write_file}
+
+messages = [{"role": "user", "content": input("Задача для агента: ")}]
+
+for step in range(20):  # предохранитель: не больше 20 шагов
+    response = client.beta.messages.create(
+        model="claude-opus-5",
+        max_tokens=16000,
+        system="Ты — помощник по заметкам. С файлами работаешь только через инструменты. Отвечай по-русски.",
+        tools=TOOLS,
+        messages=messages,
+        # если модель откажется по соображениям безопасности, запрос автоматически повторит другая модель
+        betas=["server-side-fallback-2026-07-01"],
+        fallbacks="default",
+    )
+    messages.append({"role": "assistant", "content": response.content})
+
+    if response.stop_reason != "tool_use":
+        break  # модель закончила — инструменты больше не нужны
+
+    results = []
+    for block in response.content:
+        if block.type == "tool_use":
+            print(f"🔧 {block.name} {json.dumps(block.input, ensure_ascii=False)}")
+            try:
+                result = FUNCTIONS[block.name](**block.input)
+                results.append({"type": "tool_result", "tool_use_id": block.id, "content": result})
+            except Exception as e:
+                results.append({"type": "tool_result", "tool_use_id": block.id, "content": f"Ошибка: {e}", "is_error": True})
+    messages.append({"role": "user", "content": results})
+
+if response.stop_reason == "refusal":
+    print("Модель отказалась выполнять эту задачу.")
+for block in response.content:
+    if block.type == "text":
+        print(block.text)`)}
+    <p>Запустите и дайте задачу:</p>
+    ${code('python agent_loop.py')}
+    ${out(`Задача для агента: Прочитай все заметки и сделай файл plan.md — список задач, срочные сверху
+🔧 list_files {}
+🔧 read_file {"name": "monday.txt"}
+🔧 read_file {"name": "ideas.txt"}
+🔧 write_file {"name": "plan.md", "content": "# План задач\\n\\n## Срочно\\n- Купить домен для сайта\\n- Позвонить бухгалтеру (до среды)\\n..."}
+Готово! Я прочитал обе заметки и создал plan.md. Сверху — срочное: покупка домена (упоминается в обеих заметках, во второй с пометкой «срочно») и звонок бухгалтеру до среды.`,
+      'Строки с 🔧 — это действия агента: он сам решил сначала посмотреть список файлов, потом прочитать каждый и записать результат. У вас шаги и текст могут отличаться. Откройте <code>workspace/plan.md</code> — там готовый план.')}
+    <div class="full">
+      <p>Разберём, как это работает:</p>
+      <ul>
+        <li><b>Инструменты</b> — обычные функции Python (<code>list_files</code>, <code>read_file</code>, <code>write_file</code>) плюс их описание в <code>TOOLS</code>:
+          имя, понятное описание и <code>input_schema</code> — какие параметры принимает функция. Модель читает именно описания, поэтому пишите их ясно.</li>
+        <li><b>Цикл</b> <code>for step in range(20)</code>: отправляем историю, получаем ответ. Если <code>stop_reason == "tool_use"</code> — модель просит вызвать инструменты.</li>
+        <li>Выполняем каждый запрошенный инструмент и возвращаем результат блоком <code>tool_result</code> с тем же <code>tool_use_id</code> — так модель понимает, на какой вызов это ответ. Все результаты отправляются <b>одним</b> сообщением.</li>
+        <li>Ошибку инструмента не прячем: отдаём модели текст ошибки с <code>is_error: True</code> — она прочитает и попробует по-другому.</li>
+        <li>Как только модель отвечает без вызова инструментов — задача решена, выходим из цикла и печатаем ответ.</li>
+        <li><code>safe_path</code> — <b>защита</b>: агент не может прочитать или перезаписать ничего за пределами папки <code>workspace</code>, даже если очень «захочет».</li>
+        <li><code>range(20)</code> — предохранитель: если агент запутается и пойдёт по кругу, он остановится, а не будет бесконечно тратить деньги.</li>
+        <li><code>fallbacks="default"</code> — если модель отклонит запрос по соображениям безопасности, его автоматически выполнит другая модель Claude.</li>
+      </ul>
+    </div>
+    ${done("agents", 5)}
+
+    <h3>${step("agents", 6)}То же самое короче: Tool Runner</h3>
+    <p>Цикл из прошлого шага писать каждый раз не нужно: библиотека умеет крутить его сама. Создайте <code>agent.py</code>:</p>
+    ${code(`import sys
+from pathlib import Path
+
+import anthropic
+from anthropic import beta_tool
+from dotenv import load_dotenv
+
+load_dotenv()
+client = anthropic.Anthropic()
+
+WORKSPACE = Path("workspace").resolve()
+
+
+def safe_path(name: str) -> Path:
+    path = (WORKSPACE / name).resolve()
+    if not path.is_relative_to(WORKSPACE):
+        raise ValueError("Доступ разрешён только к папке workspace")
+    return path
+
+
+@beta_tool
+def list_files() -> str:
+    """Показать список файлов в рабочей папке."""
+    return "\\n".join(p.name for p in WORKSPACE.iterdir()) or "Папка пуста"
+
+
+@beta_tool
+def read_file(name: str) -> str:
+    """Прочитать текстовый файл из рабочей папки.
+
+    Args:
+        name: Имя файла, например notes.txt.
+    """
+    return safe_path(name).read_text(encoding="utf-8")
+
+
+@beta_tool
+def write_file(name: str, content: str) -> str:
+    """Создать или перезаписать текстовый файл в рабочей папке.
+
+    Args:
+        name: Имя файла.
+        content: Полный текст файла.
+    """
+    safe_path(name).write_text(content, encoding="utf-8")
+    return f"Файл {name} сохранён"
+
+
+# Задачу можно передать аргументом: python agent.py "Сделай сводку"
+task = " ".join(sys.argv[1:]) or input("Задача для агента: ")
+
+runner = client.beta.messages.tool_runner(
+    model="claude-opus-5",
+    max_tokens=16000,
+    max_iterations=20,
+    system="Ты — помощник по заметкам. С файлами работаешь только через инструменты. Отвечай по-русски.",
+    tools=[list_files, read_file, write_file],
+    messages=[{"role": "user", "content": task}],
+    betas=["server-side-fallback-2026-07-01"],
+    fallbacks="default",
+)
+
+for message in runner:
+    for block in message.content:
+        if block.type == "tool_use":
+            print(f"🔧 {block.name} {block.input}")
+        elif block.type == "text":
+            print(block.text)`)}
+    ${code('python agent.py "Какие задачи у меня связаны с сайтом?"')}
+    ${out(`🔧 list_files {}
+🔧 read_file {'name': 'monday.txt'}
+🔧 read_file {'name': 'ideas.txt'}
+С сайтом связана одна задача — купить домен. Она упоминается в обеих заметках, а в ideas.txt помечена как срочная.`,
+      'Агент тот же, а кода цикла нет. Если модель перед действием пишет пару слов («Посмотрю, какие есть заметки») — они тоже напечатаются.')}
+    <div class="full">
+      <ul>
+        <li><code>@beta_tool</code> превращает обычную функцию в инструмент: описание берётся из docstring (текст в тройных кавычках), параметры — из аргументов функции.
+          Писать <code>TOOLS</code> со схемами вручную больше не нужно.</li>
+        <li><code>tool_runner</code> сам вызывает модель, выполняет инструменты и возвращает результаты, пока модель не закончит. <code>max_iterations=20</code> — тот же предохранитель.</li>
+        <li><code>for message in runner</code> — каждый шаг агента по очереди: можно печатать прогресс, логировать, останавливать.</li>
+        <li>Ручной цикл из шага 5 полезен, чтобы понять механику, и когда нужен полный контроль. Для обычных агентов используйте Tool Runner.</li>
+      </ul>
+      <p>Хотите новое умение — просто добавьте функцию с <code>@beta_tool</code> в список <code>tools</code>: поиск по базе данных, отправку сообщения в Telegram, запрос к сайту.
+        Но помните главное правило: <b>давайте агенту только те инструменты, которые нужны для задачи</b>, и ограничивайте их, как <code>safe_path</code> ограничивает папку.</p>
+    </div>
+    ${done("agents", 6)}
+
+    <h3>${step("agents", 7)}Запустите агента на сервере по расписанию</h3>
+    <p>Чтобы агент работал без вас — например, каждое утро делал план дня, — нужен сервер, который не выключается.
+      Подойдёт самый ${vps('недорогой VPS')} с Ubuntu: как подключиться и подготовить его, подробно в <a href="#/bots/2">уроке про бота на своём сервере</a> (шаги 1–3).
+      Перенесите папку проекта на сервер (через Git или <code>scp</code>), создайте там <code>.venv</code> и <code>.env</code> так же, как в шагах 2–3, затем откройте расписание:</p>
+    ${code('crontab -e')}
+    <p>Добавьте в конец строку (каждый день в 8:00 по времени сервера) и сохраните:</p>
+    ${code('0 8 * * * cd /root/myagent && .venv/bin/python agent.py "Прочитай заметки и обнови plan.md" >> agent.log 2>&1')}
+    ${out('crontab: installing new crontab', 'Расписание сохранено. Результаты и ошибки каждого запуска будут копиться в <code>agent.log</code>: <code>tail -n 30 /root/myagent/agent.log</code>.')}
+    <div class="full">
+      <p>При первом <code>crontab -e</code> система спросит, каким редактором пользоваться, — выберите <code>nano</code> (обычно цифра 1).
+        Формат строки: <code>минута час день месяц день_недели команда</code>. <code>0 8 * * *</code> — в 8:00 каждый день, <code>*/30 * * * *</code> — каждые 30 минут,
+        <code>0 9 * * 1</code> — по понедельникам в 9:00.</p>
+      <p>Чтобы агент работал не по расписанию, а постоянно (например, внутри Telegram-бота), запускайте его как службу systemd — точно так же, как бота в
+        <a href="#/bots/2">уроке 2 по ботам</a>.</p>
+    </div>
+    ${done("agents", 7)}
+
+    <div class="full">
+      <h3>Частые ошибки</h3>
+      <div class="tbl"><table>
+        <tr><th>Сообщение</th><th>Что делать</th></tr>
+        <tr><td>AuthenticationError: 401 invalid x-api-key</td><td>Неверный ключ или нет файла <code>.env</code> в папке, откуда вы запускаете. Проверьте шаг 3.</td></tr>
+        <tr><td>Your credit balance is too low</td><td>Пополните баланс в разделе Billing на platform.claude.com.</td></tr>
+        <tr><td>PermissionDeniedError: 403</td><td>У ключа нет доступа или запрос идёт из страны, где API недоступен.</td></tr>
+        <tr><td>RateLimitError: 429</td><td>Слишком много запросов подряд. Подождите минуту; лимиты растут с историей платежей.</td></tr>
+        <tr><td>No module named 'anthropic'</td><td>Окружение не активировано — нет <code>(.venv)</code> в начале строки. Шаг 2.</td></tr>
+        <tr><td>FileNotFoundError: …workspace</td><td>Нет папки <code>workspace</code> или вы запускаете агента не из папки проекта.</td></tr>
+        <tr><td>Доступ разрешён только к папке workspace</td><td>Не ошибка, а защита: агент попытался выйти за пределы папки, и <code>safe_path</code> его остановил.</td></tr>
+        <tr><td>Агент ходит по кругу</td><td>Уточните задачу и описания инструментов. Предохранитель (20 шагов) остановит его в любом случае.</td></tr>
+      </table></div>
+    </div>
+
+    <h2 id="cheat">Шпаргалка</h2>
+    <div class="tbl"><table>
+      <tr><td>pip install anthropic python-dotenv</td><td>Библиотеки для агента</td></tr>
+      <tr><td>ANTHROPIC_API_KEY=… в .env</td><td>Ключ — только в .env, не в коде</td></tr>
+      <tr><td>client.messages.create(...)</td><td>Один запрос к модели</td></tr>
+      <tr><td>@beta_tool</td><td>Сделать функцию инструментом</td></tr>
+      <tr><td>client.beta.messages.tool_runner(...)</td><td>Агент: модель + инструменты + цикл</td></tr>
+      <tr><td>max_iterations=20</td><td>Предохранитель от бесконечного цикла</td></tr>
+      <tr><td>stop_reason == "tool_use"</td><td>Модель просит вызвать инструмент</td></tr>
+      <tr><td>crontab -e</td><td>Запуск по расписанию на сервере</td></tr>
+    </table></div>
+
+    <a class="next" href="#/agents/advanced">
+      <h3>Продвинутые агенты →</h3>
+      <p>Веб-поиск, память между запусками, MCP, агент в Telegram-боте, подтверждение опасных действий, несколько агентов вместе и экономия на токенах.</p>
+    </a>
+  </article>`,
   bots: [{ t: 'Бот на Vercel', f: () => `
   <article class="lesson">
     <p class="kicker">Боты · Урок 1</p>
@@ -1371,7 +1766,7 @@ You just deployed a new Project to Vercel.`, 'Нажмите <b>Continue to Dash
     <ul>
       <li><b>Без ограничений.</b> Бот работает постоянно: напоминания по расписанию, долгие задачи, данные в памяти.</li>
       <li><b>Сам поднимается.</b> Упал из-за ошибки или сервер перезагрузился — systemd запустит бота снова через 5 секунд.</li>
-      <li><b>Недорого.</b> Самый <a href="https://my.adminvps.ru/aff.php?aff=32834" target="_blank" rel="sponsored noopener">простой VPS</a> стоит как пара чашек кофе в месяц.</li>
+      <li><b>Недорого.</b> Самый ${vps('простой VPS')} стоит как пара чашек кофе в месяц.</li>
       <li><b>Один сервер — много всего.</b> Несколько ботов, база данных, сайт — на одной машине.<span class="full"> Базу из <a href="#/databases">урока по базам данных</a> можно поднять здесь же.</span></li>
       <li><b>Любой язык и библиотеки.</b> Здесь — Python и aiogram, самая популярная связка для ботов.</li>
     </ul>
@@ -1379,9 +1774,9 @@ You just deployed a new Project to Vercel.`, 'Нажмите <b>Continue to Dash
     <h2 id="how">Как сделать</h2>
 
     <h3>${step("bots2", 1)}Арендуйте сервер</h3>
-    <p>Выберите любого хостинг-провайдера с VPS (например, <a href="https://my.adminvps.ru/aff.php?aff=32834" target="_blank" rel="sponsored noopener">AdminVPS</a>, Timeweb Cloud, Selectel, REG.RU, Hetzner) и создайте сервер:
-      <b>Ubuntu 24.04</b>, 1 CPU, 1 ГБ RAM, 10+ ГБ диска. После создания вы получите <b>IP-адрес</b> (вида <code>203.0.113.10</code>) и пароль <b>root</b>.</p>
-    <p class="full">Многие провайдеры при создании сервера предлагают сразу добавить SSH-ключ — если умеете, добавьте (шаг 2 станет короче).
+    <p>Зарегистрируйтесь на ${vps('AdminVPS')} и закажите VPS: <b>Ubuntu 24.04</b>, 1 CPU, 1 ГБ RAM, 10+ ГБ диска — для бота этого достаточно.
+      После создания вы получите <b>IP-адрес</b> сервера (вида <code>203.0.113.10</code>) и пароль <b>root</b>.</p>
+    <p class="full">Самого простого тарифа хватит на несколько ботов, базу данных и небольшой сайт — увеличить мощность можно потом в панели, без переустановки.
       Локацию выбирайте поближе к пользователям; главное — чтобы из неё был доступен <code>api.telegram.org</code>.</p>
     ${done("bots2", 1)}
 
@@ -1617,6 +2012,8 @@ const ADVANCED = {
     'Теги и релизы', 'Pull request и код-ревью', 'GitHub Actions: автоматический деплой'],
   bots: ['Кнопки и меню (inline-клавиатуры)', 'Диалоги с состояниями (FSM)', 'База данных для бота', 'Webhook вместо polling',
     'Платежи в Telegram', 'Рассылки и лимиты Telegram', 'Админ-панель бота', 'Docker и автодеплой бота'],
+  agents: ['Веб-поиск и чтение сайтов', 'Память между запусками', 'MCP: готовые инструменты', 'Агент в Telegram-боте',
+    'Подтверждение опасных действий человеком', 'Несколько агентов вместе', 'Экономия: кэширование и выбор модели', 'Агенты в облаке Anthropic (Managed Agents)'],
   databases: ['Связи между таблицами и JOIN', 'Индексы и скорость запросов', 'Транзакции', 'Миграции схемы',
     'Пользователи и права доступа', 'Бэкапы по расписанию', 'Подключение из Python и Node.js', 'Redis: кэш и очереди'],
   docker: ['Dockerfile: свой образ', 'Многоэтапная сборка и лёгкие образы', 'Тома и бэкапы данных', 'Сети между контейнерами',
